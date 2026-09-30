@@ -1,0 +1,7481 @@
+{
+  "dataset_name": "高等数学LLM基准测试集_v2",
+  "description": "系统评估LLM在高数各领域表现的标准测试集，含标准答案和评分标准",
+  "version": "1.1.0",
+  "total_questions": 500,
+  "created_date": "2026-05-02",
+  "scoring_rubric": {
+    "correct_answer_only": {
+      "score": 0.5,
+      "description": "仅答案正确"
+    },
+    "correct_with_partial_steps": {
+      "score": 0.7,
+      "description": "答案正确且部分步骤正确"
+    },
+    "correct_with_complete_steps": {
+      "score": 0.9,
+      "description": "答案和步骤均正确"
+    },
+    "correct_with_reasoning_and_verification": {
+      "score": 1,
+      "description": "推理完整且有自验证"
+    },
+    "hallucination_penalty": {
+      "score": -0.3,
+      "description": "编造定理或公式扣分"
+    }
+  },
+  "category_summary": {
+    "极限与连续": 60,
+    "导数与微分": 55,
+    "积分计算": 65,
+    "微分方程": 45,
+    "无穷级数": 45,
+    "多元微积分": 55,
+    "向量与几何": 35,
+    "中值定理与导数应用": 40,
+    "线性代数": 45,
+    "概率论基础": 30,
+    "综合题": 25
+  },
+  "questions": [
+    {
+      "id": "极001",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(3x)}{1x}$",
+      "answer": "3",
+      "answer_latex": "3",
+      "knowledge_points": [
+        "重要极限",
+        "正弦极限"
+      ],
+      "estimated_time": 30
+    },
+    {
+      "id": "极002",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 2} \\frac{x^2-4}{x-2}$",
+      "answer": "4",
+      "answer_latex": "4",
+      "knowledge_points": [
+        "因式分解",
+        "函数极限"
+      ],
+      "estimated_time": 32
+    },
+    {
+      "id": "极003",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{4x^2+2x-3}{3x^2-2x+2}$",
+      "answer": "1.3333333333333333",
+      "answer_latex": "1.3333333333333333",
+      "knowledge_points": [
+        "无穷大极限"
+      ],
+      "estimated_time": 34
+    },
+    {
+      "id": "极004",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(4x)}{x^2}$",
+      "answer": "8",
+      "answer_latex": "8",
+      "knowledge_points": [
+        "二倍角公式",
+        "重要极限"
+      ],
+      "estimated_time": 36
+    },
+    {
+      "id": "极005",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "hard",
+      "problem": "用 $\\epsilon-\\delta$ 语言证明 $\\lim_{x \\to 6} (7x-5) = 37$",
+      "answer": "见证明过程",
+      "answer_latex": "见证明过程",
+      "knowledge_points": [
+        "极限严格定义"
+      ],
+      "estimated_time": 38
+    },
+    {
+      "id": "极006",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(13x)}{6x}$",
+      "answer": "2.1666666666666665",
+      "answer_latex": "2.1666666666666665",
+      "knowledge_points": [
+        "重要极限",
+        "正弦极限"
+      ],
+      "estimated_time": 40
+    },
+    {
+      "id": "极007",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 7} \\frac{x^2-49}{x-7}$",
+      "answer": "14",
+      "answer_latex": "14",
+      "knowledge_points": [
+        "因式分解",
+        "函数极限"
+      ],
+      "estimated_time": 42
+    },
+    {
+      "id": "极008",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{9x^2+7x-8}{8x^2-7x+2}$",
+      "answer": "1.125",
+      "answer_latex": "1.125",
+      "knowledge_points": [
+        "无穷大极限"
+      ],
+      "estimated_time": 44
+    },
+    {
+      "id": "极009",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(9x)}{x^2}$",
+      "answer": "40.5",
+      "answer_latex": "40.5",
+      "knowledge_points": [
+        "二倍角公式",
+        "重要极限"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "极010",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "用 $\\epsilon-\\delta$ 语言证明 $\\lim_{x \\to 11} (12x-10) = 122$",
+      "answer": "见证明过程",
+      "answer_latex": "见证明过程",
+      "knowledge_points": [
+        "极限严格定义"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "极011",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(23x)}{11x}$",
+      "answer": "2.090909090909091",
+      "answer_latex": "2.090909090909091",
+      "knowledge_points": [
+        "重要极限",
+        "正弦极限"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "极012",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 12} \\frac{x^2-144}{x-12}$",
+      "answer": "24",
+      "answer_latex": "24",
+      "knowledge_points": [
+        "因式分解",
+        "函数极限"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "极013",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{14x^2+12x-13}{13x^2-12x+2}$",
+      "answer": "1.0769230769230769",
+      "answer_latex": "1.0769230769230769",
+      "knowledge_points": [
+        "无穷大极限"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "极014",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(14x)}{x^2}$",
+      "answer": "98",
+      "answer_latex": "98",
+      "knowledge_points": [
+        "二倍角公式",
+        "重要极限"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "极015",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "用 $\\epsilon-\\delta$ 语言证明 $\\lim_{x \\to 16} (17x-15) = 257$",
+      "answer": "见证明过程",
+      "answer_latex": "见证明过程",
+      "knowledge_points": [
+        "极限严格定义"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "极016",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(33x)}{16x}$",
+      "answer": "2.0625",
+      "answer_latex": "2.0625",
+      "knowledge_points": [
+        "重要极限",
+        "正弦极限"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "极017",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 17} \\frac{x^2-289}{x-17}$",
+      "answer": "34",
+      "answer_latex": "34",
+      "knowledge_points": [
+        "因式分解",
+        "函数极限"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "极018",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{19x^2+17x-18}{18x^2-17x+2}$",
+      "answer": "1.0555555555555556",
+      "answer_latex": "1.0555555555555556",
+      "knowledge_points": [
+        "无穷大极限"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "极019",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(19x)}{x^2}$",
+      "answer": "180.5",
+      "answer_latex": "180.5",
+      "knowledge_points": [
+        "二倍角公式",
+        "重要极限"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "极020",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "hard",
+      "problem": "用 $\\epsilon-\\delta$ 语言证明 $\\lim_{x \\to 21} (22x-20) = 442$",
+      "answer": "见证明过程",
+      "answer_latex": "见证明过程",
+      "knowledge_points": [
+        "极限严格定义"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "极021",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 极限与连续中涉及对数极限和函数极限的数学计算",
+      "answer": "标准解答参考（等价无穷小替换、对数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "等价无穷小替换",
+        "对数极限",
+        "函数极限"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "极022",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在极限与连续中，关于有理函数极限和洛必达法则的应用问题",
+      "answer": "标准解答参考（有理函数极限、洛必达法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数极限",
+        "洛必达法则",
+        "数列极限"
+      ],
+      "estimated_time": 61
+    },
+    {
+      "id": "极023",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在极限与连续中，关于因式分解和等价无穷小替换的证明问题",
+      "answer": "标准解答参考（因式分解、等价无穷小替换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "因式分解",
+        "等价无穷小替换",
+        "间断点分类"
+      ],
+      "estimated_time": 131
+    },
+    {
+      "id": "极024",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 极限与连续中涉及约分法和三角极限的定理证明",
+      "answer": "标准解答参考（无穷极限、约分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "无穷极限",
+        "约分法",
+        "三角极限"
+      ],
+      "estimated_time": 79
+    },
+    {
+      "id": "极025",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 极限与连续中涉及复合函数极限和有理函数极限的实际应用",
+      "answer": "标准解答参考（夹逼定理、复合函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "夹逼定理",
+        "复合函数极限",
+        "有理函数极限"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "极026",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及函数极限和无穷大极限的数学计算",
+      "answer": "标准解答参考（单侧极限、函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "单侧极限",
+        "函数极限",
+        "无穷大极限"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "极027",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及约分法和函数连续性的数学计算",
+      "answer": "标准解答参考（数列极限、约分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数列极限",
+        "约分法",
+        "函数连续性"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "极028",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 极限与连续中涉及等价无穷小替换和直接代入法的定理证明",
+      "answer": "标准解答参考（直接代入法、等价无穷小替换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直接代入法",
+        "等价无穷小替换",
+        "直接代入法"
+      ],
+      "estimated_time": 191
+    },
+    {
+      "id": "极029",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在极限与连续中，关于对数极限和重要极限的计算求解",
+      "answer": "标准解答参考（对数极限、重要极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对数极限",
+        "重要极限",
+        "夹逼定理"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "极030",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用泰勒展开和间断点分类方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（泰勒展开、间断点分类相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒展开",
+        "间断点分类",
+        "根式极限"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "极031",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及夹逼定理和函数极限的数学计算",
+      "answer": "标准解答参考（数列极限、夹逼定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数列极限",
+        "夹逼定理",
+        "函数极限"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "极032",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 极限与连续中涉及无穷极限和间断点分类的实际应用",
+      "answer": "标准解答参考（无穷大极限、无穷极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "无穷大极限",
+        "无穷极限",
+        "间断点分类"
+      ],
+      "estimated_time": 82
+    },
+    {
+      "id": "极033",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在极限与连续中，关于夹逼定理和重要极限的计算求解",
+      "answer": "标准解答参考（夹逼定理、重要极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "夹逼定理",
+        "重要极限",
+        "函数极限"
+      ],
+      "estimated_time": 77
+    },
+    {
+      "id": "极034",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在极限与连续中，关于根式极限和对数极限的计算求解",
+      "answer": "标准解答参考（根式极限、对数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根式极限",
+        "对数极限",
+        "函数连续性"
+      ],
+      "estimated_time": 102
+    },
+    {
+      "id": "极035",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 极限与连续中涉及有理函数极限和直接代入法的定理证明",
+      "answer": "标准解答参考（函数连续性、有理函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数连续性",
+        "有理函数极限",
+        "直接代入法"
+      ],
+      "estimated_time": 145
+    },
+    {
+      "id": "极036",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用因式分解和数列极限方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（因式分解、数列极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "因式分解",
+        "数列极限",
+        "三角极限"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "极037",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及复合函数极限和洛必达法则的数学计算",
+      "answer": "标准解答参考（直接代入法、复合函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直接代入法",
+        "复合函数极限",
+        "洛必达法则"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "极038",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及间断点分类和夹逼定理的数学计算",
+      "answer": "标准解答参考（直接代入法、间断点分类相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直接代入法",
+        "间断点分类",
+        "夹逼定理"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "极039",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用复合函数极限和数列极限方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（复合函数极限、数列极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "复合函数极限",
+        "数列极限",
+        "数列极限"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "极040",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在极限与连续中，关于重要极限和重要极限的证明问题",
+      "answer": "标准解答参考（重要极限、重要极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "重要极限",
+        "重要极限",
+        "直接代入法"
+      ],
+      "estimated_time": 193
+    },
+    {
+      "id": "极041",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 极限与连续中涉及约分法和等价无穷小替换的定理证明",
+      "answer": "标准解答参考（重要极限、约分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "重要极限",
+        "约分法",
+        "等价无穷小替换"
+      ],
+      "estimated_time": 177
+    },
+    {
+      "id": "极042",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用直接代入法和间断点分类方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（直接代入法、间断点分类相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直接代入法",
+        "间断点分类",
+        "因式分解"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "极043",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在极限与连续中，关于复合函数极限和无穷大极限的应用问题",
+      "answer": "标准解答参考（复合函数极限、无穷大极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "复合函数极限",
+        "无穷大极限",
+        "函数极限"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "极044",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在极限与连续中，关于重要极限和因式分解的计算求解",
+      "answer": "标准解答参考（重要极限、因式分解相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "重要极限",
+        "因式分解",
+        "等价无穷小替换"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "极045",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 极限与连续中涉及对数极限和函数极限的数学计算",
+      "answer": "标准解答参考（函数极限、对数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极限",
+        "对数极限",
+        "函数极限"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "极046",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用无穷大极限和因式分解方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（无穷大极限、因式分解相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "无穷大极限",
+        "因式分解",
+        "洛必达法则"
+      ],
+      "estimated_time": 77
+    },
+    {
+      "id": "极047",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用无穷极限和约分法方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（无穷极限、约分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "无穷极限",
+        "约分法",
+        "无穷极限"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "极048",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在极限与连续中，关于因式分解和复合函数极限的证明问题",
+      "answer": "标准解答参考（因式分解、复合函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "因式分解",
+        "复合函数极限",
+        "泰勒展开"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "极049",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 极限与连续中涉及函数连续性和三角极限的数学计算",
+      "answer": "标准解答参考（函数连续性、函数连续性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数连续性",
+        "函数连续性",
+        "三角极限"
+      ],
+      "estimated_time": 95
+    },
+    {
+      "id": "极050",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在极限与连续中，关于函数极限和泰勒展开的计算求解",
+      "answer": "标准解答参考（函数极限、泰勒展开相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极限",
+        "泰勒展开",
+        "夹逼定理"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "极051",
+      "domain": "极限与连续",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用数列极限和对数极限方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（数列极限、对数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数列极限",
+        "对数极限",
+        "无穷极限"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "极052",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在极限与连续中，关于函数连续性和洛必达法则的应用问题",
+      "answer": "标准解答参考（函数连续性、洛必达法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数连续性",
+        "洛必达法则",
+        "无穷大极限"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "极053",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 极限与连续中涉及直接代入法和无穷大极限的数学计算",
+      "answer": "标准解答参考（约分法、直接代入法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "约分法",
+        "直接代入法",
+        "无穷大极限"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "极054",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 极限与连续中涉及有理函数极限和对数极限的数学计算",
+      "answer": "标准解答参考（函数极限、有理函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极限",
+        "有理函数极限",
+        "对数极限"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "极055",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 极限与连续中涉及泰勒展开和数列极限的数学计算",
+      "answer": "标准解答参考（无穷极限、泰勒展开相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "无穷极限",
+        "泰勒展开",
+        "数列极限"
+      ],
+      "estimated_time": 104
+    },
+    {
+      "id": "极056",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用函数极限和函数极限方法求解极限与连续中的相关问题",
+      "answer": "标准解答参考（函数极限、函数极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极限",
+        "函数极限",
+        "函数极限"
+      ],
+      "estimated_time": 91
+    },
+    {
+      "id": "极057",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在极限与连续中，关于约分法和无穷极限的计算求解",
+      "answer": "标准解答参考（约分法、无穷极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "约分法",
+        "无穷极限",
+        "泰勒展开"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "极058",
+      "domain": "极限与连续",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 极限与连续中涉及无穷大极限和数列极限的数学计算",
+      "answer": "标准解答参考（约分法、无穷大极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "约分法",
+        "无穷大极限",
+        "数列极限"
+      ],
+      "estimated_time": 84
+    },
+    {
+      "id": "极059",
+      "domain": "极限与连续",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 极限与连续中涉及无穷极限和有理函数极限的数学计算",
+      "answer": "标准解答参考（有理函数极限、无穷极限相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数极限",
+        "无穷极限",
+        "有理函数极限"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "极060",
+      "domain": "极限与连续",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 极限与连续中涉及函数连续性和约分法的实际应用",
+      "answer": "标准解答参考（洛必达法则、函数连续性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "洛必达法则",
+        "函数连续性",
+        "约分法"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "导061",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{2} - 1x + 0$ 的导数",
+      "answer": "2x^1-1",
+      "answer_latex": "2x^1-1",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 30
+    },
+    {
+      "id": "导062",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(2x)$ 的二阶导数",
+      "answer": "-4\\sin(2x)",
+      "answer_latex": "-4\\sin(2x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 32
+    },
+    {
+      "id": "导063",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{3x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{3}(x-1)",
+      "answer_latex": "y-0=e^{3}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 34
+    },
+    {
+      "id": "导064",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{5} - 4x + 3$ 的导数",
+      "answer": "5x^4-4",
+      "answer_latex": "5x^4-4",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 36
+    },
+    {
+      "id": "导065",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(5x)$ 的二阶导数",
+      "answer": "-25\\sin(5x)",
+      "answer_latex": "-25\\sin(5x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 38
+    },
+    {
+      "id": "导066",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{6x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{6}(x-1)",
+      "answer_latex": "y-0=e^{6}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 40
+    },
+    {
+      "id": "导067",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{8} - 7x + 6$ 的导数",
+      "answer": "8x^7-7",
+      "answer_latex": "8x^7-7",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 42
+    },
+    {
+      "id": "导068",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(8x)$ 的二阶导数",
+      "answer": "-64\\sin(8x)",
+      "answer_latex": "-64\\sin(8x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 44
+    },
+    {
+      "id": "导069",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{9x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{9}(x-1)",
+      "answer_latex": "y-0=e^{9}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "导070",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{11} - 10x + 9$ 的导数",
+      "answer": "11x^10-10",
+      "answer_latex": "11x^10-10",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "导071",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(11x)$ 的二阶导数",
+      "answer": "-121\\sin(11x)",
+      "answer_latex": "-121\\sin(11x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "导072",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{12x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{12}(x-1)",
+      "answer_latex": "y-0=e^{12}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "导073",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{14} - 13x + 12$ 的导数",
+      "answer": "14x^13-13",
+      "answer_latex": "14x^13-13",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "导074",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(14x)$ 的二阶导数",
+      "answer": "-196\\sin(14x)",
+      "answer_latex": "-196\\sin(14x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "导075",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{15x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{15}(x-1)",
+      "answer_latex": "y-0=e^{15}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "导076",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{17} - 16x + 15$ 的导数",
+      "answer": "17x^16-16",
+      "answer_latex": "17x^16-16",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "导077",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(17x)$ 的二阶导数",
+      "answer": "-289\\sin(17x)",
+      "answer_latex": "-289\\sin(17x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "导078",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{18x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "answer": "y-0=e^{18}(x-1)",
+      "answer_latex": "y-0=e^{18}(x-1)",
+      "knowledge_points": [
+        "切线方程",
+        "复合函数导数"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "导079",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{20} - 19x + 18$ 的导数",
+      "answer": "20x^19-19",
+      "answer_latex": "20x^19-19",
+      "knowledge_points": [
+        "幂法则",
+        "多项式求导"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "导080",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(20x)$ 的二阶导数",
+      "answer": "-400\\sin(20x)",
+      "answer_latex": "-400\\sin(20x)",
+      "knowledge_points": [
+        "高阶导数",
+        "链式法则"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "导081",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 导数与微分中涉及对数求导法和链式法则的实际应用",
+      "answer": "标准解答参考（切线方程、对数求导法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "切线方程",
+        "对数求导法",
+        "链式法则"
+      ],
+      "estimated_time": 82
+    },
+    {
+      "id": "导082",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 导数与微分中涉及切线方程和参数方程求导的数学计算",
+      "answer": "标准解答参考（商法则、切线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "商法则",
+        "切线方程",
+        "参数方程求导"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "导083",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在导数与微分中，关于幂法则和微分计算的证明问题",
+      "answer": "标准解答参考（幂法则、微分计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "幂法则",
+        "微分计算",
+        "导数几何意义"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "导084",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用链式法则和指数函数求导方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（链式法则、指数函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "指数函数求导",
+        "商法则"
+      ],
+      "estimated_time": 124
+    },
+    {
+      "id": "导085",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用高阶导数和乘积法则方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（高阶导数、乘积法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "高阶导数",
+        "乘积法则",
+        "乘积法则"
+      ],
+      "estimated_time": 132
+    },
+    {
+      "id": "导086",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 导数与微分中涉及三角函数求导和指数函数求导的定理证明",
+      "answer": "标准解答参考（三角函数求导、三角函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三角函数求导",
+        "三角函数求导",
+        "指数函数求导"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "导087",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 导数与微分中涉及导数几何意义和链式法则的数学计算",
+      "answer": "标准解答参考（乘积法则、导数几何意义相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "乘积法则",
+        "导数几何意义",
+        "链式法则"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "导088",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 导数与微分中涉及隐函数求导和高阶导数的数学计算",
+      "answer": "标准解答参考（幂法则、隐函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "幂法则",
+        "隐函数求导",
+        "高阶导数"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "导089",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在导数与微分中，关于隐函数求导和对数求导法的计算求解",
+      "answer": "标准解答参考（隐函数求导、对数求导法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "隐函数求导",
+        "对数求导法",
+        "隐函数求导"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "导090",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在导数与微分中，关于三角函数求导和三角函数求导的计算求解",
+      "answer": "标准解答参考（三角函数求导、三角函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三角函数求导",
+        "三角函数求导",
+        "指数函数求导"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "导091",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在导数与微分中，关于商法则和反三角函数求导的计算求解",
+      "answer": "标准解答参考（商法则、反三角函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "商法则",
+        "反三角函数求导",
+        "乘积法则"
+      ],
+      "estimated_time": 103
+    },
+    {
+      "id": "导092",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用对数求导法和指数函数求导方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（对数求导法、指数函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对数求导法",
+        "指数函数求导",
+        "微分计算"
+      ],
+      "estimated_time": 80
+    },
+    {
+      "id": "导093",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 导数与微分中涉及切线方程和链式法则的数学计算",
+      "answer": "标准解答参考（商法则、切线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "商法则",
+        "切线方程",
+        "链式法则"
+      ],
+      "estimated_time": 79
+    },
+    {
+      "id": "导094",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 导数与微分中涉及链式法则和乘积法则的数学计算",
+      "answer": "标准解答参考（反三角函数求导、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "反三角函数求导",
+        "链式法则",
+        "乘积法则"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "导095",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用导数几何意义和隐函数求导方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（导数几何意义、隐函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "导数几何意义",
+        "隐函数求导",
+        "切线方程"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "导096",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 导数与微分中涉及链式法则和指数函数求导的数学计算",
+      "answer": "标准解答参考（参数方程求导、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "参数方程求导",
+        "链式法则",
+        "指数函数求导"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "导097",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用隐函数求导和乘积法则方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（隐函数求导、乘积法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "隐函数求导",
+        "乘积法则",
+        "三角函数求导"
+      ],
+      "estimated_time": 139
+    },
+    {
+      "id": "导098",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 导数与微分中涉及微分计算和指数函数求导的实际应用",
+      "answer": "标准解答参考（指数函数求导、微分计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "指数函数求导",
+        "微分计算",
+        "指数函数求导"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "导099",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在导数与微分中，关于乘积法则和幂法则的计算求解",
+      "answer": "标准解答参考（乘积法则、幂法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "乘积法则",
+        "幂法则",
+        "隐函数求导"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "导100",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 导数与微分中涉及参数方程求导和指数函数求导的数学计算",
+      "answer": "标准解答参考（三角函数求导、参数方程求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三角函数求导",
+        "参数方程求导",
+        "指数函数求导"
+      ],
+      "estimated_time": 92
+    },
+    {
+      "id": "导101",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 导数与微分中涉及隐函数求导和导数几何意义的数学计算",
+      "answer": "标准解答参考（幂法则、隐函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "幂法则",
+        "隐函数求导",
+        "导数几何意义"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "导102",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在导数与微分中，关于参数方程求导和参数方程求导的计算求解",
+      "answer": "标准解答参考（参数方程求导、参数方程求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "参数方程求导",
+        "参数方程求导",
+        "对数求导法"
+      ],
+      "estimated_time": 83
+    },
+    {
+      "id": "导103",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 导数与微分中涉及切线方程和三角函数求导的实际应用",
+      "answer": "标准解答参考（对数求导法、切线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对数求导法",
+        "切线方程",
+        "三角函数求导"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "导104",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在导数与微分中，关于微分计算和指数函数求导的计算求解",
+      "answer": "标准解答参考（微分计算、指数函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微分计算",
+        "指数函数求导",
+        "隐函数求导"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "导105",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用反三角函数求导和切线方程方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（反三角函数求导、切线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "反三角函数求导",
+        "切线方程",
+        "链式法则"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "导106",
+      "domain": "导数与微分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用指数函数求导和导数几何意义方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（指数函数求导、导数几何意义相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "指数函数求导",
+        "导数几何意义",
+        "切线方程"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "导107",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及微分计算和三角函数求导的数学计算",
+      "answer": "标准解答参考（链式法则、微分计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "微分计算",
+        "三角函数求导"
+      ],
+      "estimated_time": 80
+    },
+    {
+      "id": "导108",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及反三角函数求导和隐函数求导的数学计算",
+      "answer": "标准解答参考（指数函数求导、反三角函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "指数函数求导",
+        "反三角函数求导",
+        "隐函数求导"
+      ],
+      "estimated_time": 121
+    },
+    {
+      "id": "导109",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在导数与微分中，关于对数求导法和高阶导数的证明问题",
+      "answer": "标准解答参考（对数求导法、高阶导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对数求导法",
+        "高阶导数",
+        "乘积法则"
+      ],
+      "estimated_time": 188
+    },
+    {
+      "id": "导110",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及隐函数求导和导数几何意义的数学计算",
+      "answer": "标准解答参考（参数方程求导、隐函数求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "参数方程求导",
+        "隐函数求导",
+        "导数几何意义"
+      ],
+      "estimated_time": 107
+    },
+    {
+      "id": "导111",
+      "domain": "导数与微分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用参数方程求导和高阶导数方法求解导数与微分中的相关问题",
+      "answer": "标准解答参考（参数方程求导、高阶导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "参数方程求导",
+        "高阶导数",
+        "反三角函数求导"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "导112",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在导数与微分中，关于链式法则和参数方程求导的计算求解",
+      "answer": "标准解答参考（链式法则、参数方程求导相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "参数方程求导",
+        "参数方程求导"
+      ],
+      "estimated_time": 61
+    },
+    {
+      "id": "导113",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在导数与微分中，关于隐函数求导和商法则的计算求解",
+      "answer": "标准解答参考（隐函数求导、商法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "隐函数求导",
+        "商法则",
+        "链式法则"
+      ],
+      "estimated_time": 120
+    },
+    {
+      "id": "导114",
+      "domain": "导数与微分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及导数几何意义和对数求导法的数学计算",
+      "answer": "标准解答参考（商法则、导数几何意义相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "商法则",
+        "导数几何意义",
+        "对数求导法"
+      ],
+      "estimated_time": 85
+    },
+    {
+      "id": "导115",
+      "domain": "导数与微分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 导数与微分中涉及商法则和指数函数求导的实际应用",
+      "answer": "标准解答参考（三角函数求导、商法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三角函数求导",
+        "商法则",
+        "指数函数求导"
+      ],
+      "estimated_time": 90
+    },
+    {
+      "id": "积116",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{2} dx$",
+      "answer": "\\frac{x^{3}}{3}+C",
+      "answer_latex": "\\frac{x^{3}}{3}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 30
+    },
+    {
+      "id": "积117",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{3} x \\cos x dx$",
+      "answer": "\\frac{1}{4}",
+      "answer_latex": "\\frac{1}{4}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 32
+    },
+    {
+      "id": "积118",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-4} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 34
+    },
+    {
+      "id": "积119",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{5} dx$",
+      "answer": "\\frac{x^{6}}{6}+C",
+      "answer_latex": "\\frac{x^{6}}{6}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 36
+    },
+    {
+      "id": "积120",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{6} x \\cos x dx$",
+      "answer": "\\frac{1}{7}",
+      "answer_latex": "\\frac{1}{7}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 38
+    },
+    {
+      "id": "积121",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-7} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 40
+    },
+    {
+      "id": "积122",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{8} dx$",
+      "answer": "\\frac{x^{9}}{9}+C",
+      "answer_latex": "\\frac{x^{9}}{9}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 42
+    },
+    {
+      "id": "积123",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{9} x \\cos x dx$",
+      "answer": "\\frac{1}{10}",
+      "answer_latex": "\\frac{1}{10}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 44
+    },
+    {
+      "id": "积124",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-10} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "积125",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{11} dx$",
+      "answer": "\\frac{x^{12}}{12}+C",
+      "answer_latex": "\\frac{x^{12}}{12}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "积126",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{12} x \\cos x dx$",
+      "answer": "\\frac{1}{13}",
+      "answer_latex": "\\frac{1}{13}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "积127",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-13} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "积128",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{14} dx$",
+      "answer": "\\frac{x^{15}}{15}+C",
+      "answer_latex": "\\frac{x^{15}}{15}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "积129",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{15} x \\cos x dx$",
+      "answer": "\\frac{1}{16}",
+      "answer_latex": "\\frac{1}{16}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "积130",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-16} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "积131",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{17} dx$",
+      "answer": "\\frac{x^{18}}{18}+C",
+      "answer_latex": "\\frac{x^{18}}{18}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "积132",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{18} x \\cos x dx$",
+      "answer": "\\frac{1}{19}",
+      "answer_latex": "\\frac{1}{19}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "积133",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "判断 $\\int_1^{+\\infty} x^{-19} dx$ 是否收敛",
+      "answer": "收敛",
+      "answer_latex": "收敛",
+      "knowledge_points": [
+        "反常积分",
+        "p-积分"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "积134",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{20} dx$",
+      "answer": "\\frac{x^{21}}{21}+C",
+      "answer_latex": "\\frac{x^{21}}{21}+C",
+      "knowledge_points": [
+        "幂法则",
+        "不定积分"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "积135",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{21} x \\cos x dx$",
+      "answer": "\\frac{1}{22}",
+      "answer_latex": "\\frac{1}{22}",
+      "knowledge_points": [
+        "凑微分积分法",
+        "定积分"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "积136",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在积分计算中，关于面积计算和不定积分的应用问题",
+      "answer": "标准解答参考（面积计算、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "面积计算",
+        "不定积分",
+        "牛顿-莱布尼茨公式"
+      ],
+      "estimated_time": 99
+    },
+    {
+      "id": "积137",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用分部积分法和对称性技巧方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（分部积分法、对称性技巧相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分部积分法",
+        "对称性技巧",
+        "弧长计算"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "积138",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 积分计算中涉及弧长计算和面积计算的数学计算",
+      "answer": "标准解答参考（不定积分、弧长计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "不定积分",
+        "弧长计算",
+        "面积计算"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "积139",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用有理函数积分和反常积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "反常积分",
+        "面积计算"
+      ],
+      "estimated_time": 158
+    },
+    {
+      "id": "积140",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 积分计算中涉及体积计算和弧长计算的数学计算",
+      "answer": "标准解答参考（体积计算、体积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "体积计算",
+        "弧长计算"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "积141",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 积分计算中涉及对称性技巧和反常积分的定理证明",
+      "answer": "标准解答参考（分部积分法、对称性技巧相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分部积分法",
+        "对称性技巧",
+        "反常积分"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "积142",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在积分计算中，关于对称性技巧和分部积分法的计算求解",
+      "answer": "标准解答参考（对称性技巧、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对称性技巧",
+        "分部积分法",
+        "几何应用"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "积143",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 在积分计算中，关于三角函数积分和对称性技巧的计算求解",
+      "answer": "标准解答参考（三角函数积分、对称性技巧相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三角函数积分",
+        "对称性技巧",
+        "几何应用"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "积144",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用有理函数积分和体积计算方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、体积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "体积计算",
+        "定积分"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "积145",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 积分计算中涉及几何应用和反常积分的数学计算",
+      "answer": "标准解答参考（体积计算、几何应用相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "几何应用",
+        "反常积分"
+      ],
+      "estimated_time": 77
+    },
+    {
+      "id": "积146",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 积分计算中涉及定积分和几何应用的数学计算",
+      "answer": "标准解答参考（定积分、定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "定积分",
+        "定积分",
+        "几何应用"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "积147",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 积分计算中涉及反常积分和反常积分的定理证明",
+      "answer": "标准解答参考（有理函数积分、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "反常积分",
+        "反常积分"
+      ],
+      "estimated_time": 96
+    },
+    {
+      "id": "积148",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在积分计算中，关于面积计算和三角函数积分的证明问题",
+      "answer": "标准解答参考（面积计算、三角函数积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "面积计算",
+        "三角函数积分",
+        "分部积分法"
+      ],
+      "estimated_time": 156
+    },
+    {
+      "id": "积149",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在积分计算中，关于换元积分法和牛顿-莱布尼茨公式的计算求解",
+      "answer": "标准解答参考（换元积分法、牛顿-莱布尼茨公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "换元积分法",
+        "牛顿-莱布尼茨公式",
+        "有理函数积分"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "积150",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用牛顿-莱布尼茨公式和面积计算方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（牛顿-莱布尼茨公式、面积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "牛顿-莱布尼茨公式",
+        "面积计算",
+        "弧长计算"
+      ],
+      "estimated_time": 101
+    },
+    {
+      "id": "积151",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用体积计算和反常积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（体积计算、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "反常积分",
+        "换元积分法"
+      ],
+      "estimated_time": 92
+    },
+    {
+      "id": "积152",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用有理函数积分和弧长计算方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、弧长计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "弧长计算",
+        "三角函数积分"
+      ],
+      "estimated_time": 86
+    },
+    {
+      "id": "积153",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在积分计算中，关于面积计算和有理函数积分的证明问题",
+      "answer": "标准解答参考（面积计算、有理函数积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "面积计算",
+        "有理函数积分",
+        "牛顿-莱布尼茨公式"
+      ],
+      "estimated_time": 193
+    },
+    {
+      "id": "积154",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 积分计算中涉及有理函数积分和体积计算的数学计算",
+      "answer": "标准解答参考（面积计算、有理函数积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "面积计算",
+        "有理函数积分",
+        "体积计算"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "积155",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 积分计算中涉及反常积分和有理函数积分的数学计算",
+      "answer": "标准解答参考（定积分、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "定积分",
+        "反常积分",
+        "有理函数积分"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "积156",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 积分计算中涉及不定积分和几何应用的数学计算",
+      "answer": "标准解答参考（有理函数积分、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "不定积分",
+        "几何应用"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "积157",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在积分计算中，关于牛顿-莱布尼茨公式和体积计算的应用问题",
+      "answer": "标准解答参考（牛顿-莱布尼茨公式、体积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "牛顿-莱布尼茨公式",
+        "体积计算",
+        "弧长计算"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "积158",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 积分计算中涉及不定积分和不定积分的定理证明",
+      "answer": "标准解答参考（对称性技巧、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对称性技巧",
+        "不定积分",
+        "不定积分"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "积159",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用几何应用和不定积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（几何应用、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "几何应用",
+        "不定积分",
+        "不定积分"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "积160",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用有理函数积分和对称性技巧方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、对称性技巧相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "对称性技巧",
+        "面积计算"
+      ],
+      "estimated_time": 94
+    },
+    {
+      "id": "积161",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用有理函数积分和换元积分法方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、换元积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "换元积分法",
+        "面积计算"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "积162",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用牛顿-莱布尼茨公式和定积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（牛顿-莱布尼茨公式、定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "牛顿-莱布尼茨公式",
+        "定积分",
+        "定积分"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "积163",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 积分计算中涉及分部积分法和反常积分的数学计算",
+      "answer": "标准解答参考（体积计算、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "分部积分法",
+        "反常积分"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "积164",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用定积分和面积计算方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（定积分、面积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "定积分",
+        "面积计算",
+        "换元积分法"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "积165",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在积分计算中，关于有理函数积分和弧长计算的应用问题",
+      "answer": "标准解答参考（有理函数积分、弧长计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "弧长计算",
+        "面积计算"
+      ],
+      "estimated_time": 80
+    },
+    {
+      "id": "积166",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用弧长计算和三角函数积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（弧长计算、三角函数积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "弧长计算",
+        "三角函数积分",
+        "定积分"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "积167",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用对称性技巧和分部积分法方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（对称性技巧、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对称性技巧",
+        "分部积分法",
+        "对称性技巧"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "积168",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用分部积分法和对称性技巧方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（分部积分法、对称性技巧相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分部积分法",
+        "对称性技巧",
+        "牛顿-莱布尼茨公式"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "积169",
+      "domain": "积分计算",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在积分计算中，关于有理函数积分和反常积分的应用问题",
+      "answer": "标准解答参考（有理函数积分、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "反常积分",
+        "面积计算"
+      ],
+      "estimated_time": 90
+    },
+    {
+      "id": "积170",
+      "domain": "积分计算",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用牛顿-莱布尼茨公式和不定积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（牛顿-莱布尼茨公式、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "牛顿-莱布尼茨公式",
+        "不定积分",
+        "定积分"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "积171",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在积分计算中，关于体积计算和分部积分法的证明问题",
+      "answer": "标准解答参考（体积计算、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "分部积分法",
+        "弧长计算"
+      ],
+      "estimated_time": 77
+    },
+    {
+      "id": "积172",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在积分计算中，关于有理函数积分和分部积分法的计算求解",
+      "answer": "标准解答参考（有理函数积分、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "分部积分法",
+        "几何应用"
+      ],
+      "estimated_time": 85
+    },
+    {
+      "id": "积173",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在积分计算中，关于换元积分法和三角函数积分的计算求解",
+      "answer": "标准解答参考（换元积分法、三角函数积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "换元积分法",
+        "三角函数积分",
+        "体积计算"
+      ],
+      "estimated_time": 123
+    },
+    {
+      "id": "积174",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 积分计算中涉及分部积分法和定积分的定理证明",
+      "answer": "标准解答参考（面积计算、分部积分法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "面积计算",
+        "分部积分法",
+        "定积分"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "积175",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用分部积分法和不定积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（分部积分法、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分部积分法",
+        "不定积分",
+        "不定积分"
+      ],
+      "estimated_time": 134
+    },
+    {
+      "id": "积176",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及定积分和弧长计算的数学计算",
+      "answer": "标准解答参考（定积分、定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "定积分",
+        "定积分",
+        "弧长计算"
+      ],
+      "estimated_time": 110
+    },
+    {
+      "id": "积177",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及体积计算和定积分的数学计算",
+      "answer": "标准解答参考（几何应用、体积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "几何应用",
+        "体积计算",
+        "定积分"
+      ],
+      "estimated_time": 119
+    },
+    {
+      "id": "积178",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及不定积分和面积计算的数学计算",
+      "answer": "标准解答参考（弧长计算、不定积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "弧长计算",
+        "不定积分",
+        "面积计算"
+      ],
+      "estimated_time": 127
+    },
+    {
+      "id": "积179",
+      "domain": "积分计算",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及面积计算和三角函数积分的数学计算",
+      "answer": "标准解答参考（体积计算、面积计算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "体积计算",
+        "面积计算",
+        "三角函数积分"
+      ],
+      "estimated_time": 128
+    },
+    {
+      "id": "积180",
+      "domain": "积分计算",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用有理函数积分和反常积分方法求解积分计算中的相关问题",
+      "answer": "标准解答参考（有理函数积分、反常积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "有理函数积分",
+        "反常积分",
+        "三角函数积分"
+      ],
+      "estimated_time": 135
+    },
+    {
+      "id": "微181",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在微分方程中，关于二阶常系数线性方程和可分离变量方程的应用问题",
+      "answer": "标准解答参考（二阶常系数线性方程、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "可分离变量方程",
+        "拉普拉斯变换"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "微182",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用非齐次方程和拉普拉斯变换方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（非齐次方程、拉普拉斯变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "拉普拉斯变换",
+        "常数变易法"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "微183",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 微分方程中涉及拉普拉斯变换和可分离变量方程的数学计算",
+      "answer": "标准解答参考（齐次方程、拉普拉斯变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "齐次方程",
+        "拉普拉斯变换",
+        "可分离变量方程"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "微184",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用特征方程法和齐次方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（特征方程法、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "齐次方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "微185",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 微分方程中涉及可分离变量方程和齐次方程的数学计算",
+      "answer": "标准解答参考（常数变易法、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "可分离变量方程",
+        "齐次方程"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "微186",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用特解与通解和非齐次方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（特解与通解、非齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特解与通解",
+        "非齐次方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 159
+    },
+    {
+      "id": "微187",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 微分方程中涉及特征方程法和特解与通解的实际应用",
+      "answer": "标准解答参考（特解与通解、特征方程法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特解与通解",
+        "特征方程法",
+        "特解与通解"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "微188",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用二阶常系数线性方程和特解与通解方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（二阶常系数线性方程、特解与通解相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "特解与通解",
+        "特解与通解"
+      ],
+      "estimated_time": 61
+    },
+    {
+      "id": "微189",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在微分方程中，关于常数变易法和特征方程法的计算求解",
+      "answer": "标准解答参考（常数变易法、特征方程法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "特征方程法",
+        "特解与通解"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "微190",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 微分方程中涉及拉普拉斯变换和特解与通解的数学计算",
+      "answer": "标准解答参考（非齐次方程、拉普拉斯变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "拉普拉斯变换",
+        "特解与通解"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "微191",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 微分方程中涉及一阶线性微分方程和特解与通解的定理证明",
+      "answer": "标准解答参考（特征方程法、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "一阶线性微分方程",
+        "特解与通解"
+      ],
+      "estimated_time": 168
+    },
+    {
+      "id": "微192",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 微分方程中涉及拉普拉斯变换和常数变易法的定理证明",
+      "answer": "标准解答参考（特解与通解、拉普拉斯变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特解与通解",
+        "拉普拉斯变换",
+        "常数变易法"
+      ],
+      "estimated_time": 159
+    },
+    {
+      "id": "微193",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用拉普拉斯变换和非齐次方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（拉普拉斯变换、非齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉普拉斯变换",
+        "非齐次方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "微194",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在微分方程中，关于常数变易法和齐次方程的证明问题",
+      "answer": "标准解答参考（常数变易法、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "齐次方程",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 181
+    },
+    {
+      "id": "微195",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在微分方程中，关于一阶线性微分方程和常数变易法的证明问题",
+      "answer": "标准解答参考（一阶线性微分方程、常数变易法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "一阶线性微分方程",
+        "常数变易法",
+        "一阶线性微分方程"
+      ],
+      "estimated_time": 89
+    },
+    {
+      "id": "微196",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在微分方程中，关于二阶常系数线性方程和齐次方程的计算求解",
+      "answer": "标准解答参考（二阶常系数线性方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "齐次方程",
+        "一阶线性微分方程"
+      ],
+      "estimated_time": 53
+    },
+    {
+      "id": "微197",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在微分方程中，关于拉普拉斯变换和可分离变量方程的证明问题",
+      "answer": "标准解答参考（拉普拉斯变换、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉普拉斯变换",
+        "可分离变量方程",
+        "一阶线性微分方程"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "微198",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在微分方程中，关于二阶常系数线性方程和齐次方程的证明问题",
+      "answer": "标准解答参考（二阶常系数线性方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "齐次方程",
+        "一阶线性微分方程"
+      ],
+      "estimated_time": 190
+    },
+    {
+      "id": "微199",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于齐次方程和一阶线性微分方程的计算求解",
+      "answer": "标准解答参考（齐次方程、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "齐次方程",
+        "一阶线性微分方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "微200",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于非齐次方程和一阶线性微分方程的计算求解",
+      "answer": "标准解答参考（非齐次方程、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "一阶线性微分方程",
+        "特解与通解"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "微201",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于二阶常系数线性方程和二阶常系数线性方程的计算求解",
+      "answer": "标准解答参考（二阶常系数线性方程、二阶常系数线性方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "二阶常系数线性方程",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "微202",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 微分方程中涉及二阶常系数线性方程和二阶常系数线性方程的定理证明",
+      "answer": "标准解答参考（特征方程法、二阶常系数线性方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "二阶常系数线性方程",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 128
+    },
+    {
+      "id": "微203",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于齐次方程和可分离变量方程的计算求解",
+      "answer": "标准解答参考（齐次方程、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "齐次方程",
+        "可分离变量方程",
+        "特征方程法"
+      ],
+      "estimated_time": 95
+    },
+    {
+      "id": "微204",
+      "domain": "微分方程",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 微分方程中涉及常数变易法和可分离变量方程的数学计算",
+      "answer": "标准解答参考（二阶常系数线性方程、常数变易法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "常数变易法",
+        "可分离变量方程"
+      ],
+      "estimated_time": 96
+    },
+    {
+      "id": "微205",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 微分方程中涉及可分离变量方程和非齐次方程的数学计算",
+      "answer": "标准解答参考（非齐次方程、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "可分离变量方程",
+        "非齐次方程"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "微206",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于常数变易法和特解与通解的计算求解",
+      "answer": "标准解答参考（常数变易法、特解与通解相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "特解与通解",
+        "特解与通解"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "微207",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 微分方程中涉及一阶线性微分方程和可分离变量方程的数学计算",
+      "answer": "标准解答参考（一阶线性微分方程、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "一阶线性微分方程",
+        "一阶线性微分方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "微208",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于常数变易法和齐次方程的计算求解",
+      "answer": "标准解答参考（常数变易法、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "齐次方程",
+        "特解与通解"
+      ],
+      "estimated_time": 102
+    },
+    {
+      "id": "微209",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 微分方程中涉及二阶常系数线性方程和齐次方程的定理证明",
+      "answer": "标准解答参考（特解与通解、二阶常系数线性方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特解与通解",
+        "二阶常系数线性方程",
+        "齐次方程"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "微210",
+      "domain": "微分方程",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 微分方程中涉及二阶常系数线性方程和齐次方程的数学计算",
+      "answer": "标准解答参考（常数变易法、二阶常系数线性方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "二阶常系数线性方程",
+        "齐次方程"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "微211",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于特解与通解和常数变易法的计算求解",
+      "answer": "标准解答参考（特解与通解、常数变易法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特解与通解",
+        "常数变易法",
+        "可分离变量方程"
+      ],
+      "estimated_time": 78
+    },
+    {
+      "id": "微212",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于可分离变量方程和齐次方程的计算求解",
+      "answer": "标准解答参考（可分离变量方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "可分离变量方程",
+        "齐次方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 79
+    },
+    {
+      "id": "微213",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用非齐次方程和特征方程法方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（非齐次方程、特征方程法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "特征方程法",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "微214",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在微分方程中，关于非齐次方程和非齐次方程的计算求解",
+      "answer": "标准解答参考（非齐次方程、非齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "非齐次方程",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "微215",
+      "domain": "微分方程",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用特征方程法和二阶常系数线性方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（特征方程法、二阶常系数线性方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "二阶常系数线性方程",
+        "特征方程法"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "微216",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用常数变易法和一阶线性微分方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（常数变易法、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "常数变易法",
+        "一阶线性微分方程",
+        "二阶常系数线性方程"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "微217",
+      "domain": "微分方程",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 微分方程中涉及齐次方程和特征方程法的数学计算",
+      "answer": "标准解答参考（二阶常系数线性方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "齐次方程",
+        "特征方程法"
+      ],
+      "estimated_time": 89
+    },
+    {
+      "id": "微218",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在微分方程中，关于拉普拉斯变换和可分离变量方程的应用问题",
+      "answer": "标准解答参考（拉普拉斯变换、可分离变量方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉普拉斯变换",
+        "可分离变量方程",
+        "一阶线性微分方程"
+      ],
+      "estimated_time": 83
+    },
+    {
+      "id": "微219",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在微分方程中，关于齐次方程和一阶线性微分方程的计算求解",
+      "answer": "标准解答参考（齐次方程、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "齐次方程",
+        "一阶线性微分方程",
+        "特解与通解"
+      ],
+      "estimated_time": 110
+    },
+    {
+      "id": "微220",
+      "domain": "微分方程",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用特征方程法和常数变易法方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（特征方程法、常数变易法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "常数变易法",
+        "常数变易法"
+      ],
+      "estimated_time": 92
+    },
+    {
+      "id": "微221",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用一阶线性微分方程和非齐次方程方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（一阶线性微分方程、非齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "一阶线性微分方程",
+        "非齐次方程",
+        "可分离变量方程"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "微222",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 微分方程中涉及一阶线性微分方程和拉普拉斯变换的数学计算",
+      "answer": "标准解答参考（特征方程法、一阶线性微分方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "一阶线性微分方程",
+        "拉普拉斯变换"
+      ],
+      "estimated_time": 88
+    },
+    {
+      "id": "微223",
+      "domain": "微分方程",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 微分方程中涉及齐次方程和拉普拉斯变换的数学计算",
+      "answer": "标准解答参考（非齐次方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "非齐次方程",
+        "齐次方程",
+        "拉普拉斯变换"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "微224",
+      "domain": "微分方程",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在微分方程中，关于二阶常系数线性方程和齐次方程的应用问题",
+      "answer": "标准解答参考（二阶常系数线性方程、齐次方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二阶常系数线性方程",
+        "齐次方程",
+        "齐次方程"
+      ],
+      "estimated_time": 90
+    },
+    {
+      "id": "微225",
+      "domain": "微分方程",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用特征方程法和特征方程法方法求解微分方程中的相关问题",
+      "answer": "标准解答参考（特征方程法、特征方程法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征方程法",
+        "特征方程法",
+        "非齐次方程"
+      ],
+      "estimated_time": 115
+    },
+    {
+      "id": "无226",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在无穷级数中，关于麦克劳林展开和幂级数的计算求解",
+      "answer": "标准解答参考（麦克劳林展开、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "幂级数",
+        "根值判别法"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "无227",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 无穷级数中涉及交错级数判别法和收敛半径的实际应用",
+      "answer": "标准解答参考（交错级数判别法、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "交错级数判别法",
+        "交错级数判别法",
+        "收敛半径"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "无228",
+      "domain": "无穷级数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 无穷级数中涉及交错级数判别法和根值判别法的数学计算",
+      "answer": "标准解答参考（收敛半径、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "收敛半径",
+        "交错级数判别法",
+        "根值判别法"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "无229",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用函数展开为级数和比值判别法方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（函数展开为级数、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数展开为级数",
+        "比值判别法",
+        "幂级数"
+      ],
+      "estimated_time": 145
+    },
+    {
+      "id": "无230",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在无穷级数中，关于根值判别法和比较判别法的计算求解",
+      "answer": "标准解答参考（根值判别法、比较判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "比较判别法",
+        "泰勒级数"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "无231",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 无穷级数中涉及麦克劳林展开和幂级数的实际应用",
+      "answer": "标准解答参考（幂级数、麦克劳林展开相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "幂级数",
+        "麦克劳林展开",
+        "幂级数"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "无232",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 无穷级数中涉及函数展开为级数和比较判别法的数学计算",
+      "answer": "标准解答参考（比较判别法、函数展开为级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比较判别法",
+        "函数展开为级数",
+        "比较判别法"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "无233",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在无穷级数中，关于正项级数判别法和交错级数判别法的证明问题",
+      "answer": "标准解答参考（正项级数判别法、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "交错级数判别法",
+        "泰勒级数"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "无234",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在无穷级数中，关于正项级数判别法和幂级数的应用问题",
+      "answer": "标准解答参考（正项级数判别法、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "幂级数",
+        "收敛半径"
+      ],
+      "estimated_time": 87
+    },
+    {
+      "id": "无235",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在无穷级数中，关于根值判别法和幂级数的计算求解",
+      "answer": "标准解答参考（根值判别法、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "幂级数",
+        "收敛半径"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "无236",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在无穷级数中，关于泰勒级数和比较判别法的计算求解",
+      "answer": "标准解答参考（泰勒级数、比较判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒级数",
+        "比较判别法",
+        "麦克劳林展开"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "无237",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在无穷级数中，关于麦克劳林展开和比较判别法的证明问题",
+      "answer": "标准解答参考（麦克劳林展开、比较判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "比较判别法",
+        "级数求和"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "无238",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用正项级数判别法和比较判别法方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（正项级数判别法、比较判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "比较判别法",
+        "比较判别法"
+      ],
+      "estimated_time": 156
+    },
+    {
+      "id": "无239",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 无穷级数中涉及麦克劳林展开和函数展开为级数的定理证明",
+      "answer": "标准解答参考（正项级数判别法、麦克劳林展开相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "麦克劳林展开",
+        "函数展开为级数"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "无240",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 无穷级数中涉及级数求和和泰勒级数的数学计算",
+      "answer": "标准解答参考（麦克劳林展开、级数求和相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "级数求和",
+        "泰勒级数"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "无241",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在无穷级数中，关于正项级数判别法和幂级数的计算求解",
+      "answer": "标准解答参考（正项级数判别法、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "幂级数",
+        "交错级数判别法"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "无242",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在无穷级数中，关于比较判别法和正项级数判别法的证明问题",
+      "answer": "标准解答参考（比较判别法、正项级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比较判别法",
+        "正项级数判别法",
+        "泰勒级数"
+      ],
+      "estimated_time": 82
+    },
+    {
+      "id": "无243",
+      "domain": "无穷级数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 无穷级数中涉及比值判别法和幂级数的数学计算",
+      "answer": "标准解答参考（根值判别法、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "比值判别法",
+        "幂级数"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "无244",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 无穷级数中涉及麦克劳林展开和级数求和的数学计算",
+      "answer": "标准解答参考（级数求和、麦克劳林展开相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "级数求和",
+        "麦克劳林展开",
+        "级数求和"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "无245",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 无穷级数中涉及根值判别法和函数展开为级数的实际应用",
+      "answer": "标准解答参考（正项级数判别法、根值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正项级数判别法",
+        "根值判别法",
+        "函数展开为级数"
+      ],
+      "estimated_time": 85
+    },
+    {
+      "id": "无246",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在无穷级数中，关于交错级数判别法和根值判别法的计算求解",
+      "answer": "标准解答参考（交错级数判别法、根值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "交错级数判别法",
+        "根值判别法",
+        "收敛半径"
+      ],
+      "estimated_time": 101
+    },
+    {
+      "id": "无247",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 无穷级数中涉及级数求和和泰勒级数的定理证明",
+      "answer": "标准解答参考（函数展开为级数、级数求和相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数展开为级数",
+        "级数求和",
+        "泰勒级数"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "无248",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 无穷级数中涉及根值判别法和泰勒级数的实际应用",
+      "answer": "标准解答参考（比较判别法、根值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比较判别法",
+        "根值判别法",
+        "泰勒级数"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "无249",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用交错级数判别法和幂级数方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（交错级数判别法、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "交错级数判别法",
+        "幂级数",
+        "幂级数"
+      ],
+      "estimated_time": 88
+    },
+    {
+      "id": "无250",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 无穷级数中涉及比值判别法和正项级数判别法的数学计算",
+      "answer": "标准解答参考（麦克劳林展开、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "比值判别法",
+        "正项级数判别法"
+      ],
+      "estimated_time": 90
+    },
+    {
+      "id": "无251",
+      "domain": "无穷级数",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在无穷级数中，关于比较判别法和泰勒级数的计算求解",
+      "answer": "标准解答参考（比较判别法、泰勒级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比较判别法",
+        "泰勒级数",
+        "比较判别法"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "无252",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在无穷级数中，关于幂级数和交错级数判别法的计算求解",
+      "answer": "标准解答参考（幂级数、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "幂级数",
+        "交错级数判别法",
+        "比值判别法"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "无253",
+      "domain": "无穷级数",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用函数展开为级数和幂级数方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（函数展开为级数、幂级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数展开为级数",
+        "幂级数",
+        "麦克劳林展开"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "无254",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在无穷级数中，关于比值判别法和收敛半径的证明问题",
+      "answer": "标准解答参考（比值判别法、收敛半径相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "收敛半径",
+        "麦克劳林展开"
+      ],
+      "estimated_time": 184
+    },
+    {
+      "id": "无255",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在无穷级数中，关于根值判别法和正项级数判别法的计算求解",
+      "answer": "标准解答参考（根值判别法、正项级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "正项级数判别法",
+        "泰勒级数"
+      ],
+      "estimated_time": 101
+    },
+    {
+      "id": "无256",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在无穷级数中，关于根值判别法和比值判别法的计算求解",
+      "answer": "标准解答参考（根值判别法、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "比值判别法",
+        "交错级数判别法"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "无257",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用泰勒级数和函数展开为级数方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（泰勒级数、函数展开为级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒级数",
+        "函数展开为级数",
+        "麦克劳林展开"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "无258",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用比值判别法和交错级数判别法方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（比值判别法、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "交错级数判别法",
+        "级数求和"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "无259",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在无穷级数中，关于交错级数判别法和正项级数判别法的计算求解",
+      "answer": "标准解答参考（交错级数判别法、正项级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "交错级数判别法",
+        "正项级数判别法",
+        "收敛半径"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "无260",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 无穷级数中涉及级数求和和级数求和的定理证明",
+      "answer": "标准解答参考（根值判别法、级数求和相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "级数求和",
+        "级数求和"
+      ],
+      "estimated_time": 168
+    },
+    {
+      "id": "无261",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在无穷级数中，关于根值判别法和比值判别法的应用问题",
+      "answer": "标准解答参考（根值判别法、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "比值判别法",
+        "收敛半径"
+      ],
+      "estimated_time": 83
+    },
+    {
+      "id": "无262",
+      "domain": "无穷级数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 无穷级数中涉及函数展开为级数和幂级数的定理证明",
+      "answer": "标准解答参考（比较判别法、函数展开为级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比较判别法",
+        "函数展开为级数",
+        "幂级数"
+      ],
+      "estimated_time": 170
+    },
+    {
+      "id": "无263",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用比值判别法和泰勒级数方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（比值判别法、泰勒级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "泰勒级数",
+        "比较判别法"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "无264",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在无穷级数中，关于根值判别法和函数展开为级数的计算求解",
+      "answer": "标准解答参考（根值判别法、函数展开为级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "根值判别法",
+        "函数展开为级数",
+        "级数求和"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "无265",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用比值判别法和交错级数判别法方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（比值判别法、交错级数判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "交错级数判别法",
+        "交错级数判别法"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "无266",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用泰勒级数和泰勒级数方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（泰勒级数、泰勒级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒级数",
+        "泰勒级数",
+        "根值判别法"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "无267",
+      "domain": "无穷级数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 无穷级数中涉及根值判别法和比较判别法的实际应用",
+      "answer": "标准解答参考（比值判别法、根值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "根值判别法",
+        "比较判别法"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "无268",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 无穷级数中涉及比值判别法和正项级数判别法的数学计算",
+      "answer": "标准解答参考（比值判别法、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "比值判别法",
+        "比值判别法",
+        "正项级数判别法"
+      ],
+      "estimated_time": 109
+    },
+    {
+      "id": "无269",
+      "domain": "无穷级数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在无穷级数中，关于麦克劳林展开和函数展开为级数的计算求解",
+      "answer": "标准解答参考（麦克劳林展开、函数展开为级数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "函数展开为级数",
+        "正项级数判别法"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "无270",
+      "domain": "无穷级数",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用麦克劳林展开和比值判别法方法求解无穷级数中的相关问题",
+      "answer": "标准解答参考（麦克劳林展开、比值判别法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "麦克劳林展开",
+        "比值判别法",
+        "收敛半径"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "多271",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用方向导数和全微分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（方向导数、全微分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "全微分",
+        "全微分"
+      ],
+      "estimated_time": 145
+    },
+    {
+      "id": "多272",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 多元微积分中涉及梯度和方向导数的数学计算",
+      "answer": "标准解答参考（链式法则、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "梯度",
+        "方向导数"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "多273",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在多元微积分中，关于格林公式和高斯公式的计算求解",
+      "answer": "标准解答参考（格林公式、高斯公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "高斯公式",
+        "极坐标变换"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "多274",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 多元微积分中涉及格林公式和极坐标变换的实际应用",
+      "answer": "标准解答参考（极坐标变换、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "极坐标变换",
+        "格林公式",
+        "极坐标变换"
+      ],
+      "estimated_time": 95
+    },
+    {
+      "id": "多275",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 多元微积分中涉及链式法则和偏导数的定理证明",
+      "answer": "标准解答参考（拉格朗日乘子法、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "链式法则",
+        "偏导数"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "多276",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用格林公式和梯度方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（格林公式、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "梯度",
+        "偏导数"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "多277",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在多元微积分中，关于二重积分和梯度的计算求解",
+      "answer": "标准解答参考（二重积分、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二重积分",
+        "梯度",
+        "方向导数"
+      ],
+      "estimated_time": 61
+    },
+    {
+      "id": "多278",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用格林公式和三重积分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（格林公式、三重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "三重积分",
+        "条件极值"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "多279",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在多元微积分中，关于二重积分和二重积分的计算求解",
+      "answer": "标准解答参考（二重积分、二重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二重积分",
+        "二重积分",
+        "三重积分"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "多280",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用梯度和极坐标变换方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（梯度、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "极坐标变换",
+        "偏导数"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "多281",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在多元微积分中，关于格林公式和梯度的证明问题",
+      "answer": "标准解答参考（格林公式、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "梯度",
+        "条件极值"
+      ],
+      "estimated_time": 106
+    },
+    {
+      "id": "多282",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用拉格朗日乘子法和链式法则方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（拉格朗日乘子法、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "链式法则",
+        "二重积分"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "多283",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 多元微积分中涉及方向导数和梯度的数学计算",
+      "answer": "标准解答参考（拉格朗日乘子法、方向导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "方向导数",
+        "梯度"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "多284",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 多元微积分中涉及极坐标变换和偏导数的数学计算",
+      "answer": "标准解答参考（三重积分、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三重积分",
+        "极坐标变换",
+        "偏导数"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "多285",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用高斯公式和格林公式方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（高斯公式、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "高斯公式",
+        "格林公式",
+        "链式法则"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "多286",
+      "domain": "多元微积分",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 在多元微积分中，关于方向导数和高斯公式的计算求解",
+      "answer": "标准解答参考（方向导数、高斯公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "高斯公式",
+        "偏导数"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "多287",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 多元微积分中涉及梯度和偏导数的数学计算",
+      "answer": "标准解答参考（链式法则、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "梯度",
+        "偏导数"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "多288",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在多元微积分中，关于方向导数和格林公式的证明问题",
+      "answer": "标准解答参考（方向导数、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "格林公式",
+        "条件极值"
+      ],
+      "estimated_time": 90
+    },
+    {
+      "id": "多289",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用条件极值和梯度方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（条件极值、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "梯度",
+        "链式法则"
+      ],
+      "estimated_time": 86
+    },
+    {
+      "id": "多290",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在多元微积分中，关于二重积分和链式法则的应用问题",
+      "answer": "标准解答参考（二重积分、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二重积分",
+        "链式法则",
+        "高斯公式"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "多291",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用条件极值和偏导数方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（条件极值、偏导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "偏导数",
+        "方向导数"
+      ],
+      "estimated_time": 174
+    },
+    {
+      "id": "多292",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用极坐标变换和格林公式方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（极坐标变换、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "极坐标变换",
+        "格林公式",
+        "方向导数"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "多293",
+      "domain": "多元微积分",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 多元微积分中涉及条件极值和极坐标变换的数学计算",
+      "answer": "标准解答参考（链式法则、条件极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "条件极值",
+        "极坐标变换"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "多294",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及极坐标变换和全微分的数学计算",
+      "answer": "标准解答参考（条件极值、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "极坐标变换",
+        "全微分"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "多295",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用条件极值和全微分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（条件极值、全微分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "全微分",
+        "二重积分"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "多296",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及方向导数和极坐标变换的数学计算",
+      "answer": "标准解答参考（梯度、方向导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "方向导数",
+        "极坐标变换"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "多297",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在多元微积分中，关于方向导数和链式法则的应用问题",
+      "answer": "标准解答参考（方向导数、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "链式法则",
+        "极坐标变换"
+      ],
+      "estimated_time": 102
+    },
+    {
+      "id": "多298",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在多元微积分中，关于三重积分和极坐标变换的计算求解",
+      "answer": "标准解答参考（三重积分、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "三重积分",
+        "极坐标变换",
+        "高斯公式"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "多299",
+      "domain": "多元微积分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在多元微积分中，关于二重积分和全微分的计算求解",
+      "answer": "标准解答参考（二重积分、全微分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二重积分",
+        "全微分",
+        "极坐标变换"
+      ],
+      "estimated_time": 104
+    },
+    {
+      "id": "多300",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及条件极值和条件极值的数学计算",
+      "answer": "标准解答参考（拉格朗日乘子法、条件极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "条件极值",
+        "条件极值"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "多301",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及梯度和方向导数的数学计算",
+      "answer": "标准解答参考（极坐标变换、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "极坐标变换",
+        "梯度",
+        "方向导数"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "多302",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用拉格朗日乘子法和方向导数方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（拉格朗日乘子法、方向导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "方向导数",
+        "三重积分"
+      ],
+      "estimated_time": 77
+    },
+    {
+      "id": "多303",
+      "domain": "多元微积分",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用梯度和三重积分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（梯度、三重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "三重积分",
+        "条件极值"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "多304",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在多元微积分中，关于方向导数和拉格朗日乘子法的证明问题",
+      "answer": "标准解答参考（方向导数、拉格朗日乘子法相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "拉格朗日乘子法",
+        "拉格朗日乘子法"
+      ],
+      "estimated_time": 168
+    },
+    {
+      "id": "多305",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用格林公式和二重积分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（格林公式、二重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "二重积分",
+        "二重积分"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "多306",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及方向导数和链式法则的数学计算",
+      "answer": "标准解答参考（高斯公式、方向导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "高斯公式",
+        "方向导数",
+        "链式法则"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "多307",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 多元微积分中涉及梯度和二重积分的实际应用",
+      "answer": "标准解答参考（方向导数、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "梯度",
+        "二重积分"
+      ],
+      "estimated_time": 87
+    },
+    {
+      "id": "多308",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在多元微积分中，关于条件极值和梯度的计算求解",
+      "answer": "标准解答参考（条件极值、梯度相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "梯度",
+        "三重积分"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "多309",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在多元微积分中，关于方向导数和格林公式的应用问题",
+      "answer": "标准解答参考（方向导数、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "格林公式",
+        "拉格朗日乘子法"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "多310",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在多元微积分中，关于偏导数和高斯公式的计算求解",
+      "answer": "标准解答参考（偏导数、高斯公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "偏导数",
+        "高斯公式",
+        "极坐标变换"
+      ],
+      "estimated_time": 78
+    },
+    {
+      "id": "多311",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 多元微积分中涉及极坐标变换和极坐标变换的数学计算",
+      "answer": "标准解答参考（极坐标变换、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "极坐标变换",
+        "极坐标变换",
+        "极坐标变换"
+      ],
+      "estimated_time": 96
+    },
+    {
+      "id": "多312",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在多元微积分中，关于梯度和极坐标变换的计算求解",
+      "answer": "标准解答参考（梯度、极坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "极坐标变换",
+        "三重积分"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "多313",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用格林公式和二重积分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（格林公式、二重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "格林公式",
+        "二重积分",
+        "偏导数"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "多314",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用全微分和三重积分方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（全微分、三重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "全微分",
+        "三重积分",
+        "偏导数"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "多315",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 多元微积分中涉及方向导数和二重积分的数学计算",
+      "answer": "标准解答参考（极坐标变换、方向导数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "极坐标变换",
+        "方向导数",
+        "二重积分"
+      ],
+      "estimated_time": 126
+    },
+    {
+      "id": "多316",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在多元微积分中，关于链式法则和全微分的证明问题",
+      "answer": "标准解答参考（链式法则、全微分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "全微分",
+        "高斯公式"
+      ],
+      "estimated_time": 95
+    },
+    {
+      "id": "多317",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在多元微积分中，关于拉格朗日乘子法和链式法则的计算求解",
+      "answer": "标准解答参考（拉格朗日乘子法、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日乘子法",
+        "链式法则",
+        "条件极值"
+      ],
+      "estimated_time": 116
+    },
+    {
+      "id": "多318",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 多元微积分中涉及链式法则和条件极值的数学计算",
+      "answer": "标准解答参考（梯度、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "链式法则",
+        "条件极值"
+      ],
+      "estimated_time": 110
+    },
+    {
+      "id": "多319",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 多元微积分中涉及三重积分和格林公式的数学计算",
+      "answer": "标准解答参考（方向导数、三重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方向导数",
+        "三重积分",
+        "格林公式"
+      ],
+      "estimated_time": 125
+    },
+    {
+      "id": "多320",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 多元微积分中涉及格林公式和三重积分的定理证明",
+      "answer": "标准解答参考（梯度、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "梯度",
+        "格林公式",
+        "三重积分"
+      ],
+      "estimated_time": 89
+    },
+    {
+      "id": "多321",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在多元微积分中，关于链式法则和格林公式的计算求解",
+      "answer": "标准解答参考（链式法则、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "格林公式",
+        "二重积分"
+      ],
+      "estimated_time": 85
+    },
+    {
+      "id": "多322",
+      "domain": "多元微积分",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在多元微积分中，关于链式法则和三重积分的证明问题",
+      "answer": "标准解答参考（链式法则、三重积分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "链式法则",
+        "三重积分",
+        "拉格朗日乘子法"
+      ],
+      "estimated_time": 175
+    },
+    {
+      "id": "多323",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 多元微积分中涉及全微分和方向导数的实际应用",
+      "answer": "标准解答参考（条件极值、全微分相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件极值",
+        "全微分",
+        "方向导数"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "多324",
+      "domain": "多元微积分",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用全微分和链式法则方法求解多元微积分中的相关问题",
+      "answer": "标准解答参考（全微分、链式法则相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "全微分",
+        "链式法则",
+        "偏导数"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "多325",
+      "domain": "多元微积分",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在多元微积分中，关于偏导数和格林公式的应用问题",
+      "answer": "标准解答参考（偏导数、格林公式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "偏导数",
+        "格林公式",
+        "链式法则"
+      ],
+      "estimated_time": 78
+    },
+    {
+      "id": "向326",
+      "domain": "向量与几何",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在向量与几何中，关于直线方程和平面方程的证明问题",
+      "answer": "标准解答参考（直线方程、平面方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直线方程",
+        "平面方程",
+        "坐标变换"
+      ],
+      "estimated_time": 111
+    },
+    {
+      "id": "向327",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 向量与几何中涉及平面方程和混合积的数学计算",
+      "answer": "标准解答参考（二次曲面、平面方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次曲面",
+        "平面方程",
+        "混合积"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "向328",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在向量与几何中，关于叉积和二次曲面的计算求解",
+      "answer": "标准解答参考（叉积、二次曲面相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "叉积",
+        "二次曲面",
+        "叉积"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "向329",
+      "domain": "向量与几何",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用叉积和混合积方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（叉积、混合积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "叉积",
+        "混合积",
+        "混合积"
+      ],
+      "estimated_time": 98
+    },
+    {
+      "id": "向330",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在向量与几何中，关于平面方程和点积的计算求解",
+      "answer": "标准解答参考（平面方程、点积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "点积",
+        "叉积"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "向331",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 向量与几何中涉及坐标变换和叉积的数学计算",
+      "answer": "标准解答参考（点积、坐标变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "点积",
+        "坐标变换",
+        "叉积"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "向332",
+      "domain": "向量与几何",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用混合积和二次曲面方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（混合积、二次曲面相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "混合积",
+        "二次曲面",
+        "空间距离"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "向333",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 在向量与几何中，关于二次曲面和平面方程的计算求解",
+      "answer": "标准解答参考（二次曲面、平面方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次曲面",
+        "平面方程",
+        "点积"
+      ],
+      "estimated_time": 53
+    },
+    {
+      "id": "向334",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 向量与几何中涉及混合积和点积的数学计算",
+      "answer": "标准解答参考（平面方程、混合积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "混合积",
+        "点积"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "向335",
+      "domain": "向量与几何",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 向量与几何中涉及直线方程和向量运算的实际应用",
+      "answer": "标准解答参考（混合积、直线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "混合积",
+        "直线方程",
+        "向量运算"
+      ],
+      "estimated_time": 82
+    },
+    {
+      "id": "向336",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 向量与几何中涉及混合积和平面方程的数学计算",
+      "answer": "标准解答参考（混合积、混合积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "混合积",
+        "混合积",
+        "平面方程"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "向337",
+      "domain": "向量与几何",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用平面方程和点积方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（平面方程、点积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "点积",
+        "叉积"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "向338",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在向量与几何中，关于平面方程和向量运算的计算求解",
+      "answer": "标准解答参考（平面方程、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "向量运算",
+        "平面方程"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "向339",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 使用点积和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（点积、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "点积",
+        "向量运算",
+        "空间距离"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "向340",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在向量与几何中，关于坐标变换和点积的计算求解",
+      "answer": "标准解答参考（坐标变换、点积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "坐标变换",
+        "点积",
+        "二次曲面"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "向341",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 向量与几何中涉及向量运算和叉积的数学计算",
+      "answer": "标准解答参考（平面方程、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "向量运算",
+        "叉积"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "向342",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 向量与几何中涉及点积和混合积的数学计算",
+      "answer": "标准解答参考（点积、点积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "点积",
+        "点积",
+        "混合积"
+      ],
+      "estimated_time": 78
+    },
+    {
+      "id": "向343",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用向量运算和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（向量运算、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量运算",
+        "向量运算",
+        "向量运算"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "向344",
+      "domain": "向量与几何",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用坐标变换和空间距离方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（坐标变换、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "坐标变换",
+        "空间距离",
+        "点积"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "向345",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在向量与几何中，关于直线方程和空间距离的计算求解",
+      "answer": "标准解答参考（直线方程、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直线方程",
+        "空间距离",
+        "空间距离"
+      ],
+      "estimated_time": 101
+    },
+    {
+      "id": "向346",
+      "domain": "向量与几何",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 向量与几何中涉及向量运算和向量运算的定理证明",
+      "answer": "标准解答参考（叉积、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "叉积",
+        "向量运算",
+        "向量运算"
+      ],
+      "estimated_time": 172
+    },
+    {
+      "id": "向347",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 向量与几何中涉及空间距离和混合积的数学计算",
+      "answer": "标准解答参考（坐标变换、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "坐标变换",
+        "空间距离",
+        "混合积"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "向348",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用叉积和空间距离方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（叉积、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "叉积",
+        "空间距离",
+        "二次曲面"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "向349",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在向量与几何中，关于平面方程和空间距离的计算求解",
+      "answer": "标准解答参考（平面方程、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "空间距离",
+        "直线方程"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "向350",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在向量与几何中，关于空间距离和直线方程的计算求解",
+      "answer": "标准解答参考（空间距离、直线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "空间距离",
+        "直线方程",
+        "叉积"
+      ],
+      "estimated_time": 98
+    },
+    {
+      "id": "向351",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 向量与几何中涉及混合积和空间距离的数学计算",
+      "answer": "标准解答参考（向量运算、混合积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量运算",
+        "混合积",
+        "空间距离"
+      ],
+      "estimated_time": 92
+    },
+    {
+      "id": "向352",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在向量与几何中，关于平面方程和空间距离的计算求解",
+      "answer": "标准解答参考（平面方程、空间距离相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "空间距离",
+        "混合积"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "向353",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 向量与几何中涉及直线方程和叉积的数学计算",
+      "answer": "标准解答参考（向量运算、直线方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量运算",
+        "直线方程",
+        "叉积"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "向354",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用空间距离和平面方程方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（空间距离、平面方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "空间距离",
+        "平面方程",
+        "向量运算"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "向355",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用平面方程和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（平面方程、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "平面方程",
+        "向量运算",
+        "直线方程"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "向356",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 向量与几何中涉及点积和空间距离的数学计算",
+      "answer": "标准解答参考（空间距离、点积相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "空间距离",
+        "点积",
+        "空间距离"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "向357",
+      "domain": "向量与几何",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用二次曲面和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（二次曲面、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次曲面",
+        "向量运算",
+        "直线方程"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "向358",
+      "domain": "向量与几何",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用点积和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（点积、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "点积",
+        "向量运算",
+        "空间距离"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "向359",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在向量与几何中，关于直线方程和平面方程的计算求解",
+      "answer": "标准解答参考（直线方程、平面方程相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "直线方程",
+        "平面方程",
+        "混合积"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "向360",
+      "domain": "向量与几何",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用二次曲面和向量运算方法求解向量与几何中的相关问题",
+      "answer": "标准解答参考（二次曲面、向量运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次曲面",
+        "向量运算",
+        "空间距离"
+      ],
+      "estimated_time": 119
+    },
+    {
+      "id": "中361",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 中值定理与导数应用中涉及拉格朗日中值定理和曲率的数学计算",
+      "answer": "标准解答参考（函数最值、拉格朗日中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数最值",
+        "拉格朗日中值定理",
+        "曲率"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "中362",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 中值定理与导数应用中涉及函数极值和柯西中值定理的实际应用",
+      "answer": "标准解答参考（泰勒中值定理、函数极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒中值定理",
+        "函数极值",
+        "柯西中值定理"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "中363",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 中值定理与导数应用中涉及函数极值和罗尔定理的数学计算",
+      "answer": "标准解答参考（最优化问题、函数极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "最优化问题",
+        "函数极值",
+        "罗尔定理"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "中364",
+      "domain": "中值定理与导数应用",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 在中值定理与导数应用中，关于泰勒中值定理和渐近线的计算求解",
+      "answer": "标准解答参考（泰勒中值定理、渐近线相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "泰勒中值定理",
+        "渐近线",
+        "曲率"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "中365",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用函数单调性和最优化问题方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（函数单调性、最优化问题相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数单调性",
+        "最优化问题",
+        "函数极值"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "中366",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用函数极值和函数极值方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（函数极值、函数极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极值",
+        "函数极值",
+        "函数单调性"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "中367",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 中值定理与导数应用中涉及渐近线和曲率的数学计算",
+      "answer": "标准解答参考（函数最值、渐近线相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数最值",
+        "渐近线",
+        "曲率"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "中368",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在中值定理与导数应用中，关于柯西中值定理和拉格朗日中值定理的证明问题",
+      "answer": "标准解答参考（柯西中值定理、拉格朗日中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "柯西中值定理",
+        "拉格朗日中值定理",
+        "罗尔定理"
+      ],
+      "estimated_time": 124
+    },
+    {
+      "id": "中369",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用拉格朗日中值定理和泰勒中值定理方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拉格朗日中值定理、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日中值定理",
+        "泰勒中值定理",
+        "最优化问题"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "中370",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用拉格朗日中值定理和函数最值方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拉格朗日中值定理、函数最值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日中值定理",
+        "函数最值",
+        "泰勒中值定理"
+      ],
+      "estimated_time": 61
+    },
+    {
+      "id": "中371",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用罗尔定理和曲率方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（罗尔定理、曲率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "曲率",
+        "凹凸性"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "中372",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用罗尔定理和曲率方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（罗尔定理、曲率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "曲率",
+        "凹凸性"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "中373",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 中值定理与导数应用中涉及凹凸性和拐点的数学计算",
+      "answer": "标准解答参考（函数单调性、凹凸性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数单调性",
+        "凹凸性",
+        "拐点"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "中374",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用拉格朗日中值定理和函数单调性方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拉格朗日中值定理、函数单调性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日中值定理",
+        "函数单调性",
+        "最优化问题"
+      ],
+      "estimated_time": 138
+    },
+    {
+      "id": "中375",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 中值定理与导数应用中涉及函数最值和拐点的定理证明",
+      "answer": "标准解答参考（罗尔定理、函数最值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "函数最值",
+        "拐点"
+      ],
+      "estimated_time": 190
+    },
+    {
+      "id": "中376",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在中值定理与导数应用中，关于拐点和柯西中值定理的应用问题",
+      "answer": "标准解答参考（拐点、柯西中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拐点",
+        "柯西中值定理",
+        "拉格朗日中值定理"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "中377",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在中值定理与导数应用中，关于最优化问题和渐近线的计算求解",
+      "answer": "标准解答参考（最优化问题、渐近线相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "最优化问题",
+        "渐近线",
+        "泰勒中值定理"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "中378",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 中值定理与导数应用中涉及最优化问题和最优化问题的实际应用",
+      "answer": "标准解答参考（最优化问题、最优化问题相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "最优化问题",
+        "最优化问题",
+        "最优化问题"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "中379",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在中值定理与导数应用中，关于渐近线和泰勒中值定理的应用问题",
+      "answer": "标准解答参考（渐近线、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "渐近线",
+        "泰勒中值定理",
+        "泰勒中值定理"
+      ],
+      "estimated_time": 71
+    },
+    {
+      "id": "中380",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 中值定理与导数应用中涉及函数极值和函数极值的定理证明",
+      "answer": "标准解答参考（拐点、函数极值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拐点",
+        "函数极值",
+        "函数极值"
+      ],
+      "estimated_time": 180
+    },
+    {
+      "id": "中381",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用渐近线和罗尔定理方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（渐近线、罗尔定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "渐近线",
+        "罗尔定理",
+        "柯西中值定理"
+      ],
+      "estimated_time": 190
+    },
+    {
+      "id": "中382",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用拐点和拐点方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拐点、拐点相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拐点",
+        "拐点",
+        "拉格朗日中值定理"
+      ],
+      "estimated_time": 91
+    },
+    {
+      "id": "中383",
+      "domain": "中值定理与导数应用",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 中值定理与导数应用中涉及函数最值和罗尔定理的数学计算",
+      "answer": "标准解答参考（曲率、函数最值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "曲率",
+        "函数最值",
+        "罗尔定理"
+      ],
+      "estimated_time": 103
+    },
+    {
+      "id": "中384",
+      "domain": "中值定理与导数应用",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 在中值定理与导数应用中，关于渐近线和曲率的计算求解",
+      "answer": "标准解答参考（渐近线、曲率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "渐近线",
+        "曲率",
+        "函数最值"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "中385",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 中值定理与导数应用中涉及泰勒中值定理和柯西中值定理的数学计算",
+      "answer": "标准解答参考（渐近线、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "渐近线",
+        "泰勒中值定理",
+        "柯西中值定理"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "中386",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用凹凸性和拉格朗日中值定理方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（凹凸性、拉格朗日中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "凹凸性",
+        "拉格朗日中值定理",
+        "凹凸性"
+      ],
+      "estimated_time": 46
+    },
+    {
+      "id": "中387",
+      "domain": "中值定理与导数应用",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 中值定理与导数应用中涉及泰勒中值定理和罗尔定理的数学计算",
+      "answer": "标准解答参考（罗尔定理、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "泰勒中值定理",
+        "罗尔定理"
+      ],
+      "estimated_time": 103
+    },
+    {
+      "id": "中388",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 中值定理与导数应用中涉及拉格朗日中值定理和函数单调性的定理证明",
+      "answer": "标准解答参考（罗尔定理、拉格朗日中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "拉格朗日中值定理",
+        "函数单调性"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "中389",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用函数极值和凹凸性方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（函数极值、凹凸性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数极值",
+        "凹凸性",
+        "泰勒中值定理"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "中390",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 中值定理与导数应用中涉及函数最值和函数极值的实际应用",
+      "answer": "标准解答参考（函数最值、函数最值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数最值",
+        "函数最值",
+        "函数极值"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "中391",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在中值定理与导数应用中，关于函数最值和函数最值的计算求解",
+      "answer": "标准解答参考（函数最值、函数最值相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "函数最值",
+        "函数最值",
+        "凹凸性"
+      ],
+      "estimated_time": 76
+    },
+    {
+      "id": "中392",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在中值定理与导数应用中，关于柯西中值定理和泰勒中值定理的计算求解",
+      "answer": "标准解答参考（柯西中值定理、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "柯西中值定理",
+        "泰勒中值定理",
+        "函数极值"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "中393",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用拐点和拐点方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拐点、拐点相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拐点",
+        "拐点",
+        "拐点"
+      ],
+      "estimated_time": 57
+    },
+    {
+      "id": "中394",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 中值定理与导数应用中涉及泰勒中值定理和函数单调性的定理证明",
+      "answer": "标准解答参考（柯西中值定理、泰勒中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "柯西中值定理",
+        "泰勒中值定理",
+        "函数单调性"
+      ],
+      "estimated_time": 93
+    },
+    {
+      "id": "中395",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 中值定理与导数应用中涉及柯西中值定理和函数单调性的数学计算",
+      "answer": "标准解答参考（最优化问题、柯西中值定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "最优化问题",
+        "柯西中值定理",
+        "函数单调性"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "中396",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用拉格朗日中值定理和曲率方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拉格朗日中值定理、曲率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日中值定理",
+        "曲率",
+        "凹凸性"
+      ],
+      "estimated_time": 188
+    },
+    {
+      "id": "中397",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 中值定理与导数应用中涉及函数单调性和罗尔定理的数学计算",
+      "answer": "标准解答参考（罗尔定理、函数单调性相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "罗尔定理",
+        "函数单调性",
+        "罗尔定理"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "中398",
+      "domain": "中值定理与导数应用",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 中值定理与导数应用中涉及拐点和渐近线的数学计算",
+      "answer": "标准解答参考（凹凸性、拐点相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "凹凸性",
+        "拐点",
+        "渐近线"
+      ],
+      "estimated_time": 88
+    },
+    {
+      "id": "中399",
+      "domain": "中值定理与导数应用",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 中值定理与导数应用中涉及曲率和最优化问题的定理证明",
+      "answer": "标准解答参考（柯西中值定理、曲率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "柯西中值定理",
+        "曲率",
+        "最优化问题"
+      ],
+      "estimated_time": 150
+    },
+    {
+      "id": "中400",
+      "domain": "中值定理与导数应用",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用拉格朗日中值定理和罗尔定理方法求解中值定理与导数应用中的相关问题",
+      "answer": "标准解答参考（拉格朗日中值定理、罗尔定理相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "拉格朗日中值定理",
+        "罗尔定理",
+        "拉格朗日中值定理"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "线401",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 线性代数中涉及行列式和向量空间的数学计算",
+      "answer": "标准解答参考（特征值与特征向量、行列式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "行列式",
+        "向量空间"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "线402",
+      "domain": "线性代数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 线性代数中涉及二次型和秩的实际应用",
+      "answer": "标准解答参考（向量空间、二次型相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量空间",
+        "二次型",
+        "秩"
+      ],
+      "estimated_time": 86
+    },
+    {
+      "id": "线403",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用线性变换和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性变换、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性变换",
+        "线性变换",
+        "二次型"
+      ],
+      "estimated_time": 54
+    },
+    {
+      "id": "线404",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于矩阵运算和逆矩阵的计算求解",
+      "answer": "标准解答参考（矩阵运算、逆矩阵相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "矩阵运算",
+        "逆矩阵",
+        "二次型"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "线405",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于向量空间和线性变换的计算求解",
+      "answer": "标准解答参考（向量空间、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量空间",
+        "线性变换",
+        "对角化"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "线406",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 线性代数中涉及逆矩阵和逆矩阵的数学计算",
+      "answer": "标准解答参考（行列式、逆矩阵相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "行列式",
+        "逆矩阵",
+        "逆矩阵"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "线407",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于对角化和对角化的计算求解",
+      "answer": "标准解答参考（对角化、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对角化",
+        "对角化",
+        "线性变换"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "线408",
+      "domain": "线性代数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 使用逆矩阵和线性方程组方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（逆矩阵、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "线性方程组",
+        "矩阵运算"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "线409",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 在线性代数中，关于秩和线性方程组的证明问题",
+      "answer": "标准解答参考（秩、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "秩",
+        "线性方程组",
+        "对角化"
+      ],
+      "estimated_time": 89
+    },
+    {
+      "id": "线410",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于逆矩阵和线性方程组的计算求解",
+      "answer": "标准解答参考（逆矩阵、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "线性方程组",
+        "秩"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "线411",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于秩和线性方程组的计算求解",
+      "answer": "标准解答参考（秩、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "秩",
+        "线性方程组",
+        "二次型"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "线412",
+      "domain": "线性代数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 使用线性变换和行列式方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性变换、行列式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性变换",
+        "行列式",
+        "线性变换"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "线413",
+      "domain": "线性代数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 线性代数中涉及特征值与特征向量和对角化的实际应用",
+      "answer": "标准解答参考（行列式、特征值与特征向量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "行列式",
+        "特征值与特征向量",
+        "对角化"
+      ],
+      "estimated_time": 98
+    },
+    {
+      "id": "线414",
+      "domain": "线性代数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 线性代数中涉及线性变换和行列式的数学计算",
+      "answer": "标准解答参考（特征值与特征向量、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "线性变换",
+        "行列式"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "线415",
+      "domain": "线性代数",
+      "type": "multiple_choice",
+      "difficulty": "easy",
+      "problem": "[选择题] 使用线性变换和二次型方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性变换、二次型相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性变换",
+        "二次型",
+        "二次型"
+      ],
+      "estimated_time": 48
+    },
+    {
+      "id": "线416",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在线性代数中，关于对角化和线性方程组的计算求解",
+      "answer": "标准解答参考（对角化、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对角化",
+        "线性方程组",
+        "行列式"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "线417",
+      "domain": "线性代数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 线性代数中涉及二次型和对角化的实际应用",
+      "answer": "标准解答参考（特征值与特征向量、二次型相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "二次型",
+        "对角化"
+      ],
+      "estimated_time": 99
+    },
+    {
+      "id": "线418",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用行列式和向量空间方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（行列式、向量空间相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "行列式",
+        "向量空间",
+        "二次型"
+      ],
+      "estimated_time": 69
+    },
+    {
+      "id": "线419",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用逆矩阵和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（逆矩阵、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "线性变换",
+        "二次型"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "线420",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在线性代数中，关于线性变换和向量空间的计算求解",
+      "answer": "标准解答参考（线性变换、向量空间相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性变换",
+        "向量空间",
+        "向量空间"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "线421",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 线性代数中涉及对角化和二次型的数学计算",
+      "answer": "标准解答参考（特征值与特征向量、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "对角化",
+        "二次型"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "线422",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用线性方程组和矩阵运算方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性方程组、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性方程组",
+        "矩阵运算",
+        "行列式"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "线423",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用逆矩阵和线性方程组方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（逆矩阵、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "线性方程组",
+        "二次型"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "线424",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用矩阵运算和特征值与特征向量方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（矩阵运算、特征值与特征向量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "矩阵运算",
+        "特征值与特征向量",
+        "线性变换"
+      ],
+      "estimated_time": 99
+    },
+    {
+      "id": "线425",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用秩和矩阵运算方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（秩、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "秩",
+        "矩阵运算",
+        "行列式"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "线426",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 线性代数中涉及逆矩阵和矩阵运算的定理证明",
+      "answer": "标准解答参考（行列式、逆矩阵相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "行列式",
+        "逆矩阵",
+        "矩阵运算"
+      ],
+      "estimated_time": 78
+    },
+    {
+      "id": "线427",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用对角化和矩阵运算方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（对角化、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "对角化",
+        "矩阵运算",
+        "向量空间"
+      ],
+      "estimated_time": 140
+    },
+    {
+      "id": "线428",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用线性方程组和对角化方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性方程组、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性方程组",
+        "对角化",
+        "矩阵运算"
+      ],
+      "estimated_time": 79
+    },
+    {
+      "id": "线429",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用二次型和对角化方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（二次型、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次型",
+        "对角化",
+        "特征值与特征向量"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "线430",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用向量空间和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（向量空间、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量空间",
+        "线性变换",
+        "矩阵运算"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "线431",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用线性方程组和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性方程组、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性方程组",
+        "线性变换",
+        "对角化"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "线432",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 线性代数中涉及对角化和行列式的定理证明",
+      "answer": "标准解答参考（二次型、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "二次型",
+        "对角化",
+        "行列式"
+      ],
+      "estimated_time": 187
+    },
+    {
+      "id": "线433",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用特征值与特征向量和特征值与特征向量方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（特征值与特征向量、特征值与特征向量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "特征值与特征向量",
+        "特征值与特征向量"
+      ],
+      "estimated_time": 83
+    },
+    {
+      "id": "线434",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在线性代数中，关于线性方程组和线性变换的计算求解",
+      "answer": "标准解答参考（线性方程组、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性方程组",
+        "线性变换",
+        "秩"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "线435",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在线性代数中，关于逆矩阵和矩阵运算的计算求解",
+      "answer": "标准解答参考（逆矩阵、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "矩阵运算",
+        "行列式"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "线436",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用矩阵运算和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（矩阵运算、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "矩阵运算",
+        "线性变换",
+        "行列式"
+      ],
+      "estimated_time": 113
+    },
+    {
+      "id": "线437",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 线性代数中涉及矩阵运算和秩的定理证明",
+      "answer": "标准解答参考（特征值与特征向量、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "矩阵运算",
+        "秩"
+      ],
+      "estimated_time": 122
+    },
+    {
+      "id": "线438",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在线性代数中，关于向量空间和线性方程组的计算求解",
+      "answer": "标准解答参考（向量空间、线性方程组相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量空间",
+        "线性方程组",
+        "特征值与特征向量"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "线439",
+      "domain": "线性代数",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 线性代数中涉及对角化和对角化的数学计算",
+      "answer": "标准解答参考（矩阵运算、对角化相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "矩阵运算",
+        "对角化",
+        "对角化"
+      ],
+      "estimated_time": 99
+    },
+    {
+      "id": "线440",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在线性代数中，关于逆矩阵和线性变换的计算求解",
+      "answer": "标准解答参考（逆矩阵、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "逆矩阵",
+        "线性变换",
+        "线性方程组"
+      ],
+      "estimated_time": 130
+    },
+    {
+      "id": "线441",
+      "domain": "线性代数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用线性方程组和逆矩阵方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（线性方程组、逆矩阵相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "线性方程组",
+        "逆矩阵",
+        "线性方程组"
+      ],
+      "estimated_time": 73
+    },
+    {
+      "id": "线442",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在线性代数中，关于特征值与特征向量和矩阵运算的计算求解",
+      "answer": "标准解答参考（特征值与特征向量、矩阵运算相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "矩阵运算",
+        "对角化"
+      ],
+      "estimated_time": 75
+    },
+    {
+      "id": "线443",
+      "domain": "线性代数",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用特征值与特征向量和线性变换方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（特征值与特征向量、线性变换相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "特征值与特征向量",
+        "线性变换",
+        "向量空间"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "线444",
+      "domain": "线性代数",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 线性代数中涉及行列式和逆矩阵的实际应用",
+      "answer": "标准解答参考（向量空间、行列式相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "向量空间",
+        "行列式",
+        "逆矩阵"
+      ],
+      "estimated_time": 86
+    },
+    {
+      "id": "线445",
+      "domain": "线性代数",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用矩阵运算和逆矩阵方法求解线性代数中的相关问题",
+      "answer": "标准解答参考（矩阵运算、逆矩阵相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "矩阵运算",
+        "逆矩阵",
+        "逆矩阵"
+      ],
+      "estimated_time": 118
+    },
+    {
+      "id": "概446",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在概率论基础中，关于分布函数和大数定律的计算求解",
+      "answer": "标准解答参考（分布函数、大数定律相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分布函数",
+        "大数定律",
+        "大数定律"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "概447",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及随机变量和期望的数学计算",
+      "answer": "标准解答参考（条件概率、随机变量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件概率",
+        "随机变量",
+        "期望"
+      ],
+      "estimated_time": 49
+    },
+    {
+      "id": "概448",
+      "domain": "概率论基础",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 概率论基础中涉及条件概率和正态分布的实际应用",
+      "answer": "标准解答参考（条件概率、条件概率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件概率",
+        "条件概率",
+        "正态分布"
+      ],
+      "estimated_time": 62
+    },
+    {
+      "id": "概449",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及大数定律和分布函数的数学计算",
+      "answer": "标准解答参考（大数定律、大数定律相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "大数定律",
+        "大数定律",
+        "分布函数"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "概450",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "medium",
+      "problem": "[证明] 使用分布函数和协方差方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（分布函数、协方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分布函数",
+        "协方差",
+        "方差"
+      ],
+      "estimated_time": 81
+    },
+    {
+      "id": "概451",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及协方差和大数定律的数学计算",
+      "answer": "标准解答参考（方差、协方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "协方差",
+        "大数定律"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "概452",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在概率论基础中，关于协方差和期望的计算求解",
+      "answer": "标准解答参考（协方差、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "协方差",
+        "期望",
+        "大数定律"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "概453",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及条件概率和大数定律的数学计算",
+      "answer": "标准解答参考（分布函数、条件概率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分布函数",
+        "条件概率",
+        "大数定律"
+      ],
+      "estimated_time": 50
+    },
+    {
+      "id": "概454",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在概率论基础中，关于随机变量和分布函数的计算求解",
+      "answer": "标准解答参考（随机变量、分布函数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "随机变量",
+        "分布函数",
+        "条件概率"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "概455",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及随机变量和随机变量的数学计算",
+      "answer": "标准解答参考（期望、随机变量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "期望",
+        "随机变量",
+        "随机变量"
+      ],
+      "estimated_time": 55
+    },
+    {
+      "id": "概456",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在概率论基础中，关于条件概率和条件概率的计算求解",
+      "answer": "标准解答参考（条件概率、条件概率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "条件概率",
+        "条件概率",
+        "条件概率"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "概457",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 概率论基础中涉及随机变量和条件概率的数学计算",
+      "answer": "标准解答参考（方差、随机变量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "随机变量",
+        "条件概率"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "概458",
+      "domain": "概率论基础",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 在概率论基础中，关于协方差和条件概率的应用问题",
+      "answer": "标准解答参考（协方差、条件概率相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "协方差",
+        "条件概率",
+        "正态分布"
+      ],
+      "estimated_time": 104
+    },
+    {
+      "id": "概459",
+      "domain": "概率论基础",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 概率论基础中涉及期望和大数定律的实际应用",
+      "answer": "标准解答参考（正态分布、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正态分布",
+        "期望",
+        "大数定律"
+      ],
+      "estimated_time": 66
+    },
+    {
+      "id": "概460",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在概率论基础中，关于正态分布和期望的证明问题",
+      "answer": "标准解答参考（正态分布、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正态分布",
+        "期望",
+        "协方差"
+      ],
+      "estimated_time": 108
+    },
+    {
+      "id": "概461",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在概率论基础中，关于正态分布和期望的证明问题",
+      "answer": "标准解答参考（正态分布、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正态分布",
+        "期望",
+        "正态分布"
+      ],
+      "estimated_time": 130
+    },
+    {
+      "id": "概462",
+      "domain": "概率论基础",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用正态分布和期望方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（正态分布、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "正态分布",
+        "期望",
+        "方差"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "概463",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用期望和分布函数方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（期望、分布函数相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "期望",
+        "分布函数",
+        "分布函数"
+      ],
+      "estimated_time": 104
+    },
+    {
+      "id": "概464",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用协方差和随机变量方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（协方差、随机变量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "协方差",
+        "随机变量",
+        "随机变量"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "概465",
+      "domain": "概率论基础",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 概率论基础中涉及方差和分布函数的数学计算",
+      "answer": "标准解答参考（方差、方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "方差",
+        "分布函数"
+      ],
+      "estimated_time": 101
+    },
+    {
+      "id": "概466",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用方差和正态分布方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（方差、正态分布相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "正态分布",
+        "协方差"
+      ],
+      "estimated_time": 68
+    },
+    {
+      "id": "概467",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 概率论基础中涉及大数定律和协方差的定理证明",
+      "answer": "标准解答参考（随机变量、大数定律相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "随机变量",
+        "大数定律",
+        "协方差"
+      ],
+      "estimated_time": 164
+    },
+    {
+      "id": "概468",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在概率论基础中，关于方差和大数定律的计算求解",
+      "answer": "标准解答参考（方差、大数定律相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "大数定律",
+        "方差"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "概469",
+      "domain": "概率论基础",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用随机变量和方差方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（随机变量、方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "随机变量",
+        "方差",
+        "条件概率"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "概470",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在概率论基础中，关于分布函数和随机变量的计算求解",
+      "answer": "标准解答参考（分布函数、随机变量相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分布函数",
+        "随机变量",
+        "随机变量"
+      ],
+      "estimated_time": 93
+    },
+    {
+      "id": "概471",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 概率论基础中涉及期望和期望的数学计算",
+      "answer": "标准解答参考（随机变量、期望相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "随机变量",
+        "期望",
+        "期望"
+      ],
+      "estimated_time": 59
+    },
+    {
+      "id": "概472",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在概率论基础中，关于期望和方差的计算求解",
+      "answer": "标准解答参考（期望、方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "期望",
+        "方差",
+        "分布函数"
+      ],
+      "estimated_time": 88
+    },
+    {
+      "id": "概473",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 使用方差和正态分布方法求解概率论基础中的相关问题",
+      "answer": "标准解答参考（方差、正态分布相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "方差",
+        "正态分布",
+        "协方差"
+      ],
+      "estimated_time": 67
+    },
+    {
+      "id": "概474",
+      "domain": "概率论基础",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 概率论基础中涉及正态分布和方差的数学计算",
+      "answer": "标准解答参考（分布函数、正态分布相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "分布函数",
+        "正态分布",
+        "方差"
+      ],
+      "estimated_time": 98
+    },
+    {
+      "id": "概475",
+      "domain": "概率论基础",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在概率论基础中，关于大数定律和协方差的证明问题",
+      "answer": "标准解答参考（大数定律、协方差相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "大数定律",
+        "协方差",
+        "条件概率"
+      ],
+      "estimated_time": 158
+    },
+    {
+      "id": "综476",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在综合题中，关于数学建模和几何与代数综合的计算求解",
+      "answer": "标准解答参考（数学建模、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数学建模",
+        "几何与代数综合",
+        "几何与代数综合"
+      ],
+      "estimated_time": 63
+    },
+    {
+      "id": "综477",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 综合题中涉及代数与分析综合和代数与分析综合的数学计算",
+      "answer": "标准解答参考（代数与分析综合、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "代数与分析综合",
+        "代数与分析综合"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "综478",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在综合题中，关于代数与分析综合和数学建模的计算求解",
+      "answer": "标准解答参考（代数与分析综合、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "数学建模",
+        "微积分综合"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "综479",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 综合题中涉及几何与代数综合和微积分综合的数学计算",
+      "answer": "标准解答参考（微积分综合、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微积分综合",
+        "几何与代数综合",
+        "微积分综合"
+      ],
+      "estimated_time": 58
+    },
+    {
+      "id": "综480",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在综合题中，关于代数与分析综合和综合能力的计算求解",
+      "answer": "标准解答参考（代数与分析综合、综合能力相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "综合能力",
+        "数学建模"
+      ],
+      "estimated_time": 65
+    },
+    {
+      "id": "综481",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在综合题中，关于综合能力和几何与代数综合的计算求解",
+      "answer": "标准解答参考（综合能力、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "几何与代数综合",
+        "微积分综合"
+      ],
+      "estimated_time": 45
+    },
+    {
+      "id": "综482",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用微积分综合和数学建模方法求解综合题中的相关问题",
+      "answer": "标准解答参考（微积分综合、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微积分综合",
+        "数学建模",
+        "微积分综合"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "综483",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 在综合题中，关于数学建模和代数与分析综合的计算求解",
+      "answer": "标准解答参考（数学建模、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数学建模",
+        "代数与分析综合",
+        "代数与分析综合"
+      ],
+      "estimated_time": 56
+    },
+    {
+      "id": "综484",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 综合题中涉及几何与代数综合和微积分综合的数学计算",
+      "answer": "标准解答参考（代数与分析综合、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "几何与代数综合",
+        "微积分综合"
+      ],
+      "estimated_time": 51
+    },
+    {
+      "id": "综485",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "easy",
+      "problem": "[计算题] 使用综合能力和数学建模方法求解综合题中的相关问题",
+      "answer": "标准解答参考（综合能力、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "数学建模",
+        "数学建模"
+      ],
+      "estimated_time": 74
+    },
+    {
+      "id": "综486",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在综合题中，关于综合能力和代数与分析综合的计算求解",
+      "answer": "标准解答参考（综合能力、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "代数与分析综合",
+        "代数与分析综合"
+      ],
+      "estimated_time": 70
+    },
+    {
+      "id": "综487",
+      "domain": "综合题",
+      "type": "application",
+      "difficulty": "medium",
+      "problem": "[应用题] 使用代数与分析综合和数学建模方法求解综合题中的相关问题",
+      "answer": "标准解答参考（代数与分析综合、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "数学建模",
+        "代数与分析综合"
+      ],
+      "estimated_time": 100
+    },
+    {
+      "id": "综488",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 综合题中涉及几何与代数综合和综合能力的数学计算",
+      "answer": "标准解答参考（代数与分析综合、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "几何与代数综合",
+        "综合能力"
+      ],
+      "estimated_time": 53
+    },
+    {
+      "id": "综489",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在综合题中，关于数学建模和几何与代数综合的证明问题",
+      "answer": "标准解答参考（数学建模、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数学建模",
+        "几何与代数综合",
+        "综合能力"
+      ],
+      "estimated_time": 52
+    },
+    {
+      "id": "综490",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在综合题中，关于综合能力和综合能力的证明问题",
+      "answer": "标准解答参考（综合能力、综合能力相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "综合能力",
+        "几何与代数综合"
+      ],
+      "estimated_time": 103
+    },
+    {
+      "id": "综491",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 综合题中涉及代数与分析综合和代数与分析综合的数学计算",
+      "answer": "标准解答参考（代数与分析综合、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "代数与分析综合",
+        "代数与分析综合"
+      ],
+      "estimated_time": 47
+    },
+    {
+      "id": "综492",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 使用微积分综合和数学建模方法求解综合题中的相关问题",
+      "answer": "标准解答参考（微积分综合、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微积分综合",
+        "数学建模",
+        "综合能力"
+      ],
+      "estimated_time": 97
+    },
+    {
+      "id": "综493",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在综合题中，关于代数与分析综合和代数与分析综合的证明问题",
+      "answer": "标准解答参考（代数与分析综合、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "代数与分析综合",
+        "代数与分析综合",
+        "代数与分析综合"
+      ],
+      "estimated_time": 85
+    },
+    {
+      "id": "综494",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在综合题中，关于综合能力和数学建模的证明问题",
+      "answer": "标准解答参考（综合能力、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "数学建模",
+        "综合能力"
+      ],
+      "estimated_time": 96
+    },
+    {
+      "id": "综495",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "medium",
+      "problem": "[计算题] 在综合题中，关于数学建模和微积分综合的计算求解",
+      "answer": "标准解答参考（数学建模、微积分综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数学建模",
+        "微积分综合",
+        "数学建模"
+      ],
+      "estimated_time": 64
+    },
+    {
+      "id": "综496",
+      "domain": "综合题",
+      "type": "multiple_choice",
+      "difficulty": "medium",
+      "problem": "[选择题] 使用微积分综合和微积分综合方法求解综合题中的相关问题",
+      "answer": "标准解答参考（微积分综合、微积分综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微积分综合",
+        "微积分综合",
+        "综合能力"
+      ],
+      "estimated_time": 60
+    },
+    {
+      "id": "综497",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 综合题中涉及几何与代数综合和微积分综合的数学计算",
+      "answer": "标准解答参考（微积分综合、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "微积分综合",
+        "几何与代数综合",
+        "微积分综合"
+      ],
+      "estimated_time": 102
+    },
+    {
+      "id": "综498",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 综合题中涉及代数与分析综合和几何与代数综合的定理证明",
+      "answer": "标准解答参考（综合能力、代数与分析综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "综合能力",
+        "代数与分析综合",
+        "几何与代数综合"
+      ],
+      "estimated_time": 166
+    },
+    {
+      "id": "综499",
+      "domain": "综合题",
+      "type": "proof",
+      "difficulty": "hard",
+      "problem": "（困难）[证明] 在综合题中，关于数学建模和几何与代数综合的证明问题",
+      "answer": "标准解答参考（数学建模、几何与代数综合相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "数学建模",
+        "几何与代数综合",
+        "综合能力"
+      ],
+      "estimated_time": 72
+    },
+    {
+      "id": "综500",
+      "domain": "综合题",
+      "type": "calculation",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 综合题中涉及数学建模和代数与分析综合的数学计算",
+      "answer": "标准解答参考（几何与代数综合、数学建模相关）",
+      "answer_latex": "\\text{答案见解题过程}",
+      "knowledge_points": [
+        "几何与代数综合",
+        "数学建模",
+        "代数与分析综合"
+      ],
+      "estimated_time": 115
+    }
+  ],
+  "difficulty_distribution": {
+    "easy": 113,
+    "hard": 129,
+    "medium": 258
+  }
+}

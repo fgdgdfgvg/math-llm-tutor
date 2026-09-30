@@ -1,0 +1,376 @@
+{
+  "module_name": "微分方程全体系",
+  "module_id": "differential_equations_full_system",
+  "description": "涵盖一阶微分方程、高阶微分方程、线性微分方程组、常系数线性微分方程、变系数方程、拉普拉斯变换解法、级数解法及微分方程建模与应用",
+  "knowledge_points": [
+    {
+      "id": "de_basic_concepts",
+      "name": "微分方程基本概念",
+      "description": "微分方程的定义、阶数、通解、特解、初始条件、解的存在唯一性定理",
+      "formulas": ["F(x,y,y',y'',...,y^{(n)})=0", "y^{(n)}=f(x,y,y',...,y^{(n-1)})"],
+      "difficulty": "easy",
+      "prerequisites": ["derivative_rules", "integral_methods"],
+      "applications": ["物理建模", "工程问题", "生物种群模型", "经济学动态分析"],
+      "common_mistakes": ["混淆通解与特解", "初始条件代入错误", "忽略解的存在区间"],
+      "exercise_types": ["判断微分方程阶数", "验证函数是否为解", "由通解求特解"],
+      "latex_templates": [
+        "F(x,y,y',\\cdots,y^{(n)})=0",
+        "y=\\varphi(x,C_1,C_2,\\cdots,C_n)"
+      ]
+    },
+    {
+      "id": "separable_ode",
+      "name": "可分离变量方程",
+      "description": "可写成g(y)dy=f(x)dx形式的一阶微分方程，通过两边积分求解",
+      "formulas": ["\\frac{dy}{dx}=f(x)g(y)", "\\int\\frac{dy}{g(y)}=\\int f(x)dx+C"],
+      "difficulty": "easy",
+      "prerequisites": ["integral_methods", "de_basic_concepts"],
+      "applications": ["放射性衰变", "牛顿冷却定律", "人口增长模型"],
+      "common_mistakes": ["分离变量时遗漏除数为零的情况（奇异解）", "积分常数C遗漏"],
+      "exercise_types": ["直接可分离变量的方程求解", "需适当变形后方可分离的方程", "含奇解（包络）的方程"],
+      "latex_templates": [
+        "\\frac{dy}{dx}=f(x)g(y)\\Rightarrow\\int\\frac{dy}{g(y)}=\\int f(x)dx"
+      ]
+    },
+    {
+      "id": "homogeneous_ode",
+      "name": "齐次方程",
+      "description": "可化为dy/dx=φ(y/x)形式的一阶方程，通过u=y/x替换化为可分离变量方程",
+      "formulas": ["\\frac{dy}{dx}=\\varphi\\left(\\frac{y}{x}\\right)", "y=ux,\\ \\frac{dy}{dx}=u+x\\frac{du}{dx}"],
+      "difficulty": "medium",
+      "prerequisites": ["separable_ode", "substitution_method"],
+      "applications": ["几何问题中的曲线族", "热传导问题"],
+      "common_mistakes": ["未正确识别齐次形式", "变量替换后忘记回代"],
+      "exercise_types": ["标准齐次方程求解", "可化为齐次方程的方程"],
+      "latex_templates": [
+        "\\frac{dy}{dx}=f\\left(\\frac{y}{x}\\right),\\ u=\\frac{y}{x}\\Rightarrow x\\frac{du}{dx}=f(u)-u"
+      ]
+    },
+    {
+      "id": "first_order_linear_ode",
+      "name": "一阶线性微分方程",
+      "description": "形如y'+P(x)y=Q(x)的一阶方程，使用积分因子法或常数变易法求解",
+      "formulas": [
+        "y'+P(x)y=Q(x)",
+        "\\mu(x)=e^{\\int P(x)dx}",
+        "y=e^{-\\int Pdx}\\left(\\int Qe^{\\int Pdx}dx+C\\right)"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["integral_methods", "separable_ode"],
+      "applications": ["RC电路分析", "药物代谢动力学", "混合问题"],
+      "common_mistakes": ["积分因子计算错误", "忘记乘以积分因子", "最终表达式中遗漏常数C"],
+      "exercise_types": ["标准一阶线性方程求解", "常数变易法求解", "含参数的线性方程"],
+      "latex_templates": [
+        "\\frac{dy}{dx}+P(x)y=Q(x),\\ \\mu=e^{\\int Pdx}"
+      ]
+    },
+    {
+      "id": "bernoulli_ode",
+      "name": "伯努利方程",
+      "description": "形如y'+P(x)y=Q(x)y^n (n≠0,1)的非线性方程，通过z=y^{1-n}变换化为线性方程",
+      "formulas": [
+        "y'+P(x)y=Q(x)y^n",
+        "z=y^{1-n},\\ \\frac{dz}{dx}+(1-n)P(x)z=(1-n)Q(x)"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["first_order_linear_ode", "substitution_method"],
+      "applications": ["人口增长的逻辑斯蒂模型", "化学反应动力学"],
+      "common_mistakes": ["变换公式记忆错误", "忘记验证n=0和n=1的特殊情况"],
+      "exercise_types": ["标准伯努利方程求解", "识别并化简为伯努利形式"],
+      "latex_templates": [
+        "y'+P(x)y=Q(x)y^n,\\ z=y^{1-n}"
+      ]
+    },
+    {
+      "id": "exact_ode",
+      "name": "全微分方程（恰当方程）",
+      "description": "形如P(x,y)dx+Q(x,y)dy=0满足∂P/∂y=∂Q/∂x的方程，存在势函数U(x,y)=C",
+      "formulas": [
+        "Pdx+Qdy=0,\\ \\frac{\\partial P}{\\partial y}=\\frac{\\partial Q}{\\partial x}",
+        "U(x,y)=\\int Pdx+\\varphi(y),\\ \\frac{\\partial U}{\\partial y}=Q"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["partial_derivatives", "integral_methods"],
+      "applications": ["保守力场中的运动", "热力学问题"],
+      "common_mistakes": ["恰当条件验证错误", "求势函数时换元错误"],
+      "exercise_types": ["验证恰当性并求解", "利用积分因子化为恰当方程"],
+      "latex_templates": [
+        "Mdx+Ndy=0,\\ \\frac{\\partial M}{\\partial y}=\\frac{\\partial N}{\\partial x}"
+      ]
+    },
+    {
+      "id": "integrating_factor",
+      "name": "积分因子法",
+      "description": "将非恰当方程Pdx+Qdy=0乘以积分因子μ(x,y)后化为恰当方程求解",
+      "formulas": [
+        "\\mu Pdx+\\mu Qdy=0",
+        "\\frac{\\partial(\\mu P)}{\\partial y}=\\frac{\\partial(\\mu Q)}{\\partial x}",
+        "\\mu(x)=e^{\\int\\frac{P_y-Q_x}{Q}dx}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["exact_ode", "partial_derivatives"],
+      "applications": ["非保守力场修正", "工程热力学"],
+      "common_mistakes": ["积分因子类型判断错误（只与x或y有关）", "偏导数计算错误"],
+      "exercise_types": ["求仅与x有关的积分因子", "求仅与y有关的积分因子", "特殊形式积分因子"],
+      "latex_templates": [
+        "\\mu=e^{\\int\\frac{M_y-N_x}{N}dx},\\ \\mu=e^{\\int\\frac{N_x-M_y}{M}dy}"
+      ]
+    },
+    {
+      "id": "higher_order_linear_ode",
+      "name": "高阶线性微分方程",
+      "description": "n阶常系数线性微分方程的结构理论：齐次解、特解和通解的关系",
+      "formulas": [
+        "y^{(n)}+a_1y^{(n-1)}+\\cdots+a_ny=f(x)",
+        "y=y_h+y_p",
+        "W(x)=\\begin{vmatrix}y_1&\\cdots&y_n\\\\\\vdots&\\ddots&\\vdots\\\\y_1^{(n-1)}&\\cdots&y_n^{(n-1)}\\end{vmatrix}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["first_order_linear_ode", "linear_algebra_basics", "eigenvalues"],
+      "applications": ["弹簧振子系统", "RLC电路", "结构振动分析"],
+      "common_mistakes": ["混淆齐次解和特解的求法", "特征根重根情况处理错误", "朗斯基行列式计算错误"],
+      "exercise_types": ["求齐次方程通解", "求非齐次方程特解", "验证线性无关"],
+      "latex_templates": [
+        "y^{(n)}+a_1y^{(n-1)}+\\cdots+a_ny=0,\\ \\lambda^n+a_1\\lambda^{n-1}+\\cdots+a_n=0"
+      ]
+    },
+    {
+      "id": "constant_coeff_homogeneous",
+      "name": "常系数齐次线性方程",
+      "description": "特征方程法求解常系数齐次线性微分方程，包括不同特征根情况",
+      "formulas": [
+        "y''+py'+qy=0\\Rightarrow\\lambda^2+p\\lambda+q=0",
+        "实根r_1\\neq r_2: y=C_1e^{r_1x}+C_2e^{r_2x}",
+        "重根r: y=(C_1+C_2x)e^{rx}",
+        "共轭复根\\alpha\\pm i\\beta: y=e^{\\alpha x}(C_1\\cos\\beta x+C_2\\sin\\beta x)"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["higher_order_linear_ode", "quadratic_equations", "complex_numbers"],
+      "applications": ["阻尼振动", "RLC振荡电路", "耦合振动系统"],
+      "common_mistakes": ["特征方程列写错误", "复根情况三角函数形式遗忘", "重根时缺少x因子"],
+      "exercise_types": ["二阶齐次方程求解", "高阶齐次方程求解", "含参数特征根讨论"],
+      "latex_templates": [
+        "y''+py'+qy=0,\\ r_{1,2}=\\frac{-p\\pm\\sqrt{p^2-4q}}{2}"
+      ]
+    },
+    {
+      "id": "undetermined_coefficients",
+      "name": "待定系数法",
+      "description": "根据非齐次项f(x)的形式设定特解形式，代入方程确定待定系数",
+      "formulas": [
+        "f(x)=P_n(x)e^{\\alpha x}: y_p=Q_n(x)e^{\\alpha x}x^k",
+        "f(x)=e^{\\alpha x}(A\\cos\\beta x+B\\sin\\beta x): y_p=e^{\\alpha x}(M\\cos\\beta x+N\\sin\\beta x)x^k"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["constant_coeff_homogeneous", "trigonometric_functions"],
+      "applications": ["受迫振动", "交流电路分析", "控制系统响应"],
+      "common_mistakes": ["特解形式设定不完整", "忘记乘x^k因子（k为特征根重数）", "非齐次项为多项式时遗漏最高次项"],
+      "exercise_types": ["指数型非齐次项", "三角型非齐次项", "多项式型非齐次项", "组合型非齐次项"],
+      "latex_templates": [
+        "y_p=x^k Q_m(x)e^{\\alpha x},\\ k为\\alpha作为特征根的重数"
+      ]
+    },
+    {
+      "id": "variation_of_parameters",
+      "name": "常数变易法（参数变易法）",
+      "description": "将齐次解中的常数替换为待定函数，通过联立条件确定",
+      "formulas": [
+        "y=C_1(x)y_1+C_2(x)y_2",
+        "C_1'=-\\frac{y_2f}{W},\\ C_2'=\\frac{y_1f}{W}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["higher_order_linear_ode", "integral_methods"],
+      "applications": ["非标准激励响应", "变系数方程特解", "控制理论"],
+      "common_mistakes": ["朗斯基行列式计算错误", "积分计算遗漏常数"],
+      "exercise_types": ["二阶常数变易法求解", "验证与应用"],
+      "latex_templates": [
+        "y_p=-y_1\\int\\frac{y_2f}{W}dx+y_2\\int\\frac{y_1f}{W}dx"
+      ]
+    },
+    {
+      "id": "euler_cauchy_ode",
+      "name": "欧拉-柯西方程",
+      "description": "形如x^ny^{(n)}+a_1x^{n-1}y^{(n-1)}+...+a_ny=f(x)的变系数方程，通过x=e^t变换化为常系数方程",
+      "formulas": [
+        "x^2y''+axy'+by=f(x)",
+        "x=e^t,\\ xy'=\\dot{y},\\ x^2y''=\\ddot{y}-\\dot{y}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["constant_coeff_homogeneous", "variable_transformation"],
+      "applications": ["轴对称热传导", "弹性力学问题"],
+      "common_mistakes": ["变换后导数关系计算错误", "方程标准形式识别错误"],
+      "exercise_types": ["二阶欧拉方程求解", "非齐次欧拉方程求解"],
+      "latex_templates": [
+        "x^2y''+axy'+by=0,\\ x=e^t\\Rightarrow\\ddot{y}+(a-1)\\dot{y}+by=0"
+      ]
+    },
+    {
+      "id": "laplace_transform_method",
+      "name": "拉普拉斯变换解法",
+      "description": "利用拉普拉斯变换将微分方程化为代数方程求解，再通过逆变换得到时域解",
+      "formulas": [
+        "\\mathcal{L}\\{y(t)\\}=Y(s)=\\int_0^\\infty y(t)e^{-st}dt",
+        "\\mathcal{L}\\{y'\\}=sY(s)-y(0)",
+        "\\mathcal{L}\\{y''\\}=s^2Y(s)-sy(0)-y'(0)"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["improper_integrals", "constant_coeff_homogeneous"],
+      "applications": ["控制系统分析", "信号处理", "电路瞬态分析", "结构动力学"],
+      "common_mistakes": ["初始条件代入时机错误", "反变换查表错误", "部分分式分解错误"],
+      "exercise_types": ["初值问题求解", "含阶跃激励的问题", "含脉冲激励的问题"],
+      "latex_templates": [
+        "\\mathcal{L}\\{y^{(n)}\\}=s^nY(s)-s^{n-1}y(0)-\\cdots-y^{(n-1)}(0)"
+      ]
+    },
+    {
+      "id": "power_series_solution",
+      "name": "幂级数解法",
+      "description": "设解为幂级数形式代入微分方程，通过比较系数确定级数系数，适用于变系数方程",
+      "formulas": [
+        "y=\\sum_{n=0}^{\\infty}a_n(x-x_0)^n",
+        "y'=\\sum_{n=1}^{\\infty}na_n(x-x_0)^{n-1}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["power_series", "higher_order_linear_ode"],
+      "applications": ["勒让德方程", "贝塞尔方程", "量子力学中的特殊函数"],
+      "common_mistakes": ["收敛半径判断错误", "递推公式推导错误", "级数下标处理混乱"],
+      "exercise_types": ["求递推公式", "求级数解的前几项", "判断收敛半径"],
+      "latex_templates": [
+        "y=\\sum_{n=0}^{\\infty}a_nx^n,\\ a_{n+2}=f(n)a_n"
+      ]
+    },
+    {
+      "id": "system_of_odes",
+      "name": "微分方程组",
+      "description": "多个微分方程联立组成的系统，使用消元法或矩阵特征值法求解",
+      "formulas": [
+        "\\begin{cases}x'=a_{11}x+a_{12}y\\\\y'=a_{21}x+a_{22}y\\end{cases}",
+        "\\mathbf{x}'=A\\mathbf{x},\\ \\mathbf{x}=e^{At}\\mathbf{c}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["constant_coeff_homogeneous", "linear_algebra_eigenvalues", "matrix_exponential"],
+      "applications": ["捕食者-猎物模型", "传染病SIR模型", "耦合振荡系统"],
+      "common_mistakes": ["消元后方程阶数判断错误", "矩阵指数计算错误", "特征向量求解错误"],
+      "exercise_types": ["消元法解方程组", "特征值法解方程组", "非齐次方程组求解"],
+      "latex_templates": [
+        "\\mathbf{X}'=\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}\\mathbf{X}"
+      ]
+    },
+    {
+      "id": "phase_plane_analysis",
+      "name": "相平面分析",
+      "description": "在相平面上研究自治系统的轨线形态，包括结点、鞍点、焦点、中心等奇点类型",
+      "formulas": [
+        "\\frac{dx}{dt}=P(x,y),\\ \\frac{dy}{dt}=Q(x,y)",
+        "\\lambda_{1,2}=\\frac{\\tau\\pm\\sqrt{\\tau^2-4\\Delta}}{2}",
+        "\\tau=\\text{tr}(J),\\ \\Delta=\\det(J)"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["system_of_odes", "eigenvalues_stability"],
+      "applications": ["非线性动力学", "生态系统稳定性", "化学反应动力学", "神经动力学"],
+      "common_mistakes": ["雅可比矩阵计算错误", "奇点类型分类错误", "忽略非线性效应"],
+      "exercise_types": ["求奇点并分类", "画出相轨线草图", "分析稳定性"],
+      "latex_templates": [
+        "J=\\begin{pmatrix}\\partial P/\\partial x&\\partial P/\\partial y\\\\\\partial Q/\\partial x&\\partial Q/\\partial y\\end{pmatrix}"
+      ]
+    },
+    {
+      "id": "bvp_intro",
+      "name": "边值问题初步",
+      "description": "微分方程在给定区间端点条件（而非初始条件）下的求解与特征值问题",
+      "formulas": [
+        "y''+\\lambda y=0,\\ y(0)=0,\\ y(L)=0",
+        "\\lambda_n=\\left(\\frac{n\\pi}{L}\\right)^2,\\ y_n=\\sin\\frac{n\\pi x}{L}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["constant_coeff_homogeneous", "trigonometric_functions"],
+      "applications": ["弦振动", "热传导特征值", "量子力学无限深势阱"],
+      "common_mistakes": ["忽略平凡解y=0对应的λ值", "特征函数归一化遗漏"],
+      "exercise_types": ["求特征值和特征函数", "含参数的正交性验证"],
+      "latex_templates": [
+        "y''+\\lambda y=0,\\ y(0)=y(L)=0"
+      ]
+    },
+    {
+      "id": "de_modeling_applications",
+      "name": "微分方程建模综合应用",
+      "description": "综合运用各类微分方程知识建立实际问题的数学模型",
+      "formulas": ["依具体问题建立方程"],
+      "difficulty": "hard",
+      "prerequisites": ["所有前述知识点"],
+      "applications": ["流行病传播模型", "连续复利经济模型", "化学反应速率模型", "机械振动系统分析"],
+      "common_mistakes": ["建模假设不合理", "忽略实际约束条件", "模型过于简化或复杂化"],
+      "exercise_types": ["物理建模", "生物种群建模", "经济动态建模", "工程系统建模"],
+      "latex_templates": []
+    },
+    {
+      "id": "numerical_ode_methods",
+      "name": "数值解法概述",
+      "description": "了解欧拉法、改进欧拉法和龙格-库塔方法等微分方程数值解法的基本思想",
+      "formulas": [
+        "y_{n+1}=y_n+hf(x_n,y_n)",
+        "y_{n+1}=y_n+\\frac{h}{6}(k_1+2k_2+2k_3+k_4)"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["de_basic_concepts", "taylor_theorem"],
+      "applications": ["复杂非线性方程求解", "计算机仿真模拟"],
+      "common_mistakes": ["步长选择不当导致精度不足或不稳定", "未考虑数值稳定性条件"],
+      "exercise_types": ["欧拉法近似计算", "理解龙格-库塔方法的精度阶"],
+      "latex_templates": [
+        "y_{n+1}=y_n+\\frac{h}{2}[f(x_n,y_n)+f(x_{n+1},y_{n+1}^*)]"
+      ]
+    }
+  ],
+  "inter_relationships": [
+    {"from": "de_basic_concepts", "to": "separable_ode", "relation": "可分离变量方程是最基础的一阶微分方程类型"},
+    {"from": "separable_ode", "to": "homogeneous_ode", "relation": "齐次方程通过变量替换化为可分离变量方程"},
+    {"from": "separable_ode", "to": "first_order_linear_ode", "relation": "一阶线性方程可通过积分因子法化为可分离形式"},
+    {"from": "first_order_linear_ode", "to": "bernoulli_ode", "relation": "伯努利方程通过变换化为线性方程"},
+    {"from": "integral_methods", "to": "exact_ode", "relation": "恰当方程的求解依赖于多元积分和偏导数概念"},
+    {"from": "exact_ode", "to": "integrating_factor", "relation": "积分因子是非恰当方程化为恰当方程的方法"},
+    {"from": "first_order_linear_ode", "to": "higher_order_linear_ode", "relation": "高阶方程理论是一阶理论的推广"},
+    {"from": "higher_order_linear_ode", "to": "constant_coeff_homogeneous", "relation": "常系数齐次方程是特征方程法的直接应用"},
+    {"from": "constant_coeff_homogeneous", "to": "undetermined_coefficients", "relation": "待定系数法需要先求出齐次方程的通解"},
+    {"from": "constant_coeff_homogeneous", "to": "variation_of_parameters", "relation": "常数变易法建立在齐次解基础之上"},
+    {"from": "constant_coeff_homogeneous", "to": "euler_cauchy_ode", "relation": "欧拉方程通过变量代换化为常系数方程"},
+    {"from": "higher_order_linear_ode", "to": "laplace_transform_method", "relation": "拉普拉斯变换提供了一种代数化求解方法"},
+    {"from": "higher_order_linear_ode", "to": "power_series_solution", "relation": "级数解法适用于变系数方程的级数形式求解"},
+    {"from": "system_of_odes", "to": "phase_plane_analysis", "relation": "相平面分析是方程组定性理论的核心工具"},
+    {"from": "constant_coeff_homogeneous", "to": "system_of_odes", "relation": "方程组可通过消元法化为高阶方程处理"},
+    {"from": "system_of_odes", "to": "bvp_intro", "relation": "边值问题在方程组中也存在对应形式"},
+    {"from": "linear_algebra_eigenvalues", "to": "system_of_odes", "relation": "特征值方法是求解线性方程组的矩阵方法基础"},
+    {"from": "laplace_transform_method", "to": "de_modeling_applications", "relation": "拉普拉斯变换是控制系统建模的常用工具"},
+    {"from": "phase_plane_analysis", "to": "de_modeling_applications", "relation": "相平面分析用于模型长期行为的定性预测"},
+    {"from": "numerical_ode_methods", "to": "de_modeling_applications", "relation": "数值方法处理无法获得解析解的实际模型"}
+  ],
+  "teaching_sequence": [
+    "de_basic_concepts",
+    "separable_ode",
+    "homogeneous_ode",
+    "first_order_linear_ode",
+    "bernoulli_ode",
+    "exact_ode",
+    "integrating_factor",
+    "higher_order_linear_ode",
+    "constant_coeff_homogeneous",
+    "undetermined_coefficients",
+    "variation_of_parameters",
+    "euler_cauchy_ode",
+    "laplace_transform_method",
+    "power_series_solution",
+    "system_of_odes",
+    "phase_plane_analysis",
+    "bvp_intro",
+    "numerical_ode_methods",
+    "de_modeling_applications"
+  ],
+  "statistics": {
+    "total_knowledge_points": 19,
+    "difficulty_distribution": {
+      "easy": 2,
+      "medium": 7,
+      "hard": 10
+    },
+    "total_exercise_types": 64
+  }
+}

@@ -1,0 +1,32 @@
+const checkAllServicesHealth = async (): Promise<void> => {
+  const startTime = Date.now();
+  try {
+    const response = await uni.request({
+      url: getApiUrl('/health'),
+      method: 'GET',
+      timeout: 10000,
+    });
+    
+    const data = response.data as {
+      status: string;
+      services?: Record<string, { status: string; message?: string }>;
+    };
+    
+    if (data.services) {
+      services.value.forEach(service => {
+        const serviceData = data.services[service.key];
+        if (serviceData) {
+          service.healthy = serviceData.status === 'healthy';
+        }
+      });
+    }
+    
+    const totalLatency = Date.now() - startTime;
+    addLog('info', `Health check completed (${totalLatency}ms) - Status: ${data.status}`);
+  } catch (error) {
+    services.value.forEach(service => {
+      service.healthy = false;
+    });
+    addLog('error', 'Cannot connect to backend service');
+  }
+};

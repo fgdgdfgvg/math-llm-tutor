@@ -1,0 +1,268 @@
+{
+  "module_name": "微分中值定理与导数应用",
+  "module_id": "mean_value_theorem_and_derivative_applications",
+  "description": "涵盖微分中值定理（罗尔定理、拉格朗日中值定理、柯西中值定理）及导数在函数研究中的应用（单调性、极值、最值、凹凸性、拐点、渐近线、曲率）",
+  "knowledge_points": [
+    {
+      "id": "rolles_theorem",
+      "name": "罗尔定理",
+      "description": "若函数f(x)在[a,b]上连续，在(a,b)内可导，且f(a)=f(b)，则存在ξ∈(a,b)使得f'(ξ)=0",
+      "formulas": ["f'(\\xi)=0", "\\xi\\in(a,b)"],
+      "difficulty": "medium",
+      "prerequisites": ["continuity", "derivative_definition"],
+      "applications": ["证明方程根的存在性", "证明不等式", "证明函数恒等式"],
+      "common_mistakes": ["忽略端点值相等的条件", "未验证连续性和可导性", "混淆罗尔定理和拉格朗日中值定理"],
+      "exercise_types": ["验证罗尔定理条件", "利用罗尔定理证明存在性"],
+      "latex_templates": [
+        "f(x)\\in C[a,b]\\cap D(a,b),\\ f(a)=f(b)\\Rightarrow\\exists\\xi\\in(a,b):f'(\\xi)=0"
+      ]
+    },
+    {
+      "id": "lagrange_mean_value_theorem",
+      "name": "拉格朗日中值定理",
+      "description": "若f(x)在[a,b]上连续，在(a,b)内可导，则存在ξ∈(a,b)，使f'(ξ)=[f(b)-f(a)]/(b-a)",
+      "formulas": ["f'(\\xi)=\\frac{f(b)-f(a)}{b-a}", "\\xi\\in(a,b)"],
+      "difficulty": "medium",
+      "prerequisites": ["continuity", "derivative_definition", "rolles_theorem"],
+      "applications": ["证明不等式", "估计函数值范围", "判断函数单调性", "求极限"],
+      "common_mistakes": ["混淆ξ的取值区间", "忘记验证在闭区间连续、开区间可导的条件"],
+      "exercise_types": ["证明不等式", "求满足定理条件的ξ值", "判断定理条件"],
+      "latex_templates": [
+        "\\frac{f(b)-f(a)}{b-a}=f'(\\xi),\\ \\xi\\in(a,b)"
+      ]
+    },
+    {
+      "id": "cauchy_mean_value_theorem",
+      "name": "柯西中值定理",
+      "description": "若f(x),g(x)在[a,b]上连续，在(a,b)内可导，g'(x)≠0，则存在ξ∈(a,b)使[f(b)-f(a)]/[g(b)-g(a)]=f'(ξ)/g'(ξ)",
+      "formulas": ["\\frac{f(b)-f(a)}{g(b)-g(a)}=\\frac{f'(\\xi)}{g'(\\xi)}", "\\xi\\in(a,b)"],
+      "difficulty": "hard",
+      "prerequisites": ["lagrange_mean_value_theorem", "derivative_rules"],
+      "applications": ["证明洛必达法则", "证明泰勒公式余项", "函数性质比较"],
+      "common_mistakes": ["忘记g'(x)≠0的条件", "将柯西中值定理与洛必达法则混淆"],
+      "exercise_types": ["利用柯西中值定理证明", "选择合适的辅助函数"],
+      "latex_templates": [
+        "\\frac{f(b)-f(a)}{g(b)-g(a)}=\\frac{f'(\\xi)}{g'(\\xi)},\\ \\xi\\in(a,b)"
+      ]
+    },
+    {
+      "id": "taylor_theorem",
+      "name": "泰勒中值定理",
+      "description": "若f(x)在含x₀的区间内具有n+1阶导数，则f(x)=f(x₀)+f'(x₀)(x-x₀)+...+f^{(n)}(x₀)/n!·(x-x₀)^n+R_n(x)，其中R_n为余项",
+      "formulas": [
+        "f(x)=\\sum_{k=0}^n\\frac{f^{(k)}(x_0)}{k!}(x-x_0)^k+R_n(x)",
+        "R_n(x)=\\frac{f^{(n+1)}(\\xi)}{(n+1)!}(x-x_0)^{n+1}",
+        "R_n(x)=o((x-x_0)^n)"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["higher_derivatives", "cauchy_mean_value_theorem"],
+      "applications": ["函数近似计算", "极限计算", "不等式证明", "近似积分"],
+      "common_mistakes": ["余项形式选择不当", "展开阶数过高忽略余项", "展开点选择不合理"],
+      "exercise_types": ["求函数的泰勒展开", "用泰勒公式求极限", "估计近似误差"],
+      "latex_templates": [
+        "f(x)=P_n(x)+R_n(x)",
+        "R_n(x)=\\frac{f^{(n+1)}(\\xi)}{(n+1)!}(x-a)^{n+1},\\ \\xi\\in(a,x)"
+      ]
+    },
+    {
+      "id": "function_monotonicity",
+      "name": "函数单调性判别",
+      "description": "利用一阶导数的正负号判断函数在区间上的增减性",
+      "formulas": ["f'(x)>0\\Rightarrow递增", "f'(x)<0\\Rightarrow递减"],
+      "difficulty": "easy",
+      "prerequisites": ["derivative_rules", "lagrange_mean_value_theorem"],
+      "applications": ["求函数单调区间", "不等式证明", "函数图像绘制"],
+      "common_mistakes": ["忽略导数不存在的点", "单调区间开闭区间混淆"],
+      "exercise_types": ["求函数的单调区间", "证明函数的单调性"],
+      "latex_templates": [
+        "f'(x)>0,\\ x\\in I\\Rightarrow f(x)\\text{在}I\\text{上严格单调递增}"
+      ]
+    },
+    {
+      "id": "function_extreme_values",
+      "name": "函数极值",
+      "description": "函数局部最大值和最小值的判定与求解",
+      "formulas": [
+        "f'(x_0)=0\\ （必要条件）",
+        "f''(x_0)>0\\Rightarrow极小值",
+        "f''(x_0)<0\\Rightarrow极大值"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["derivative_rules", "function_monotonicity"],
+      "applications": ["最优化问题", "经济决策", "工程设计"],
+      "common_mistakes": ["混淆极值和最值", "二阶导数为0时误判为无极值", "未检查一阶导数符号变化"],
+      "exercise_types": ["求函数极值", "极值应用题", "参数极值问题"],
+      "latex_templates": [
+        "f'(x_0)=0,\\ f''(x_0)<0\\Rightarrow f(x_0)\\text{是极大值}"
+      ]
+    },
+    {
+      "id": "function_max_min",
+      "name": "函数最值",
+      "description": "函数在闭区间上的全局最大值和最小值", 
+      "formulas": ["\\max f(x)=\\max\\{f(a),f(b),f(\\text{驻点})\\}", "\\min f(x)=\\min\\{f(a),f(b),f(\\text{驻点})\\}"],
+      "difficulty": "medium",
+      "prerequisites": ["function_extreme_values"],
+      "applications": ["材料最省问题", "效益最大化", "成本最小化"],
+      "common_mistakes": ["只比较驻点忽略了区间端点", "未验证驻点是否在区间内"],
+      "exercise_types": ["求闭区间最值", "最值应用题", "含参最值问题"],
+      "latex_templates": [
+        "M=\\max_{x\\in[a,b]}f(x),\\ m=\\min_{x\\in[a,b]}f(x)"
+      ]
+    },
+    {
+      "id": "concavity_inflection",
+      "name": "凹凸性与拐点",
+      "description": "利用二阶导数判断函数曲线的弯曲方向和拐点",
+      "formulas": [
+        "f''(x)>0\\Rightarrow凹(concave\\ up)",
+        "f''(x)<0\\Rightarrow凸(concave\\ down)",
+        "f''(x_0)=0\\ \\&\\ f'''(x_0)\\neq0\\Rightarrow拐点"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["higher_derivatives", "function_monotonicity"],
+      "applications": ["经济学边际分析", "函数图像分析", "最优化判断"],
+      "common_mistakes": ["中外凹凸定义混淆", "拐点条件检验不全", "二阶导数为0但三阶导数也为0的特殊情况"],
+      "exercise_types": ["判断凹凸区间", "求拐点坐标", "综合函数分析"],
+      "latex_templates": [
+        "f''(x_0)=0,\\ f'''(x_0)\\neq0\\Rightarrow(x_0,f(x_0))\\text{是拐点}"
+      ]
+    },
+    {
+      "id": "asymptote_analysis",
+      "name": "渐近线",
+      "description": "曲线无限延伸时趋近的直线",
+      "formulas": [
+        "水平渐近线: \\lim_{x\\to\\pm\\infty}f(x)=c\\Rightarrow y=c",
+        "垂直渐近线: \\lim_{x\\to a}f(x)=\\infty\\Rightarrow x=a",
+        "斜渐近线: k=\\lim_{x\\to\\infty}\\frac{f(x)}{x},\\ b=\\lim_{x\\to\\infty}(f(x)-kx)\\Rightarrow y=kx+b"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["limit_computation", "function_analysis"],
+      "applications": ["函数图像绘制", "极限行为分析"],
+      "common_mistakes": ["忘记检查所有可能类型的渐近线", "斜渐近线的k计算错误"],
+      "exercise_types": ["求函数的所有渐近线", "判断渐近线类型"],
+      "latex_templates": [
+        "k=\\lim_{x\\to\\infty}\\frac{f(x)}{x},\\ b=\\lim_{x\\to\\infty}(f(x)-kx)"
+      ]
+    },
+    {
+      "id": "curvature",
+      "name": "曲率与曲率半径",
+      "description": "描述曲线弯曲程度的量",
+      "formulas": [
+        "K=\\frac{|y''|}{(1+y'^2)^{3/2}}",
+        "R=\\frac{1}{K}",
+        "K=\\frac{|x'y''-x''y'|}{(x'^2+y'^2)^{3/2}}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["higher_derivatives", "parametric"],
+      "applications": ["道路设计", "光学设计", "机械工程"],
+      "common_mistakes": ["公式记忆错误", "绝对值遗漏", "参数方程的曲率公式应用不当"],
+      "exercise_types": ["求曲线上某点的曲率", "求曲率半径", "求曲率圆方程"],
+      "latex_templates": [
+        "K=\\frac{|y''|}{(1+(y')^2)^{3/2}},\\ \\rho=\\frac{1}{K}"
+      ]
+    },
+    {
+      "id": "lhopital_rule_derivative",
+      "name": "洛必达法则(导数应用)",
+      "description": "利用导数求不定式极限的重要方法",
+      "formulas": [
+        "\\lim_{x\\to a}\\frac{f(x)}{g(x)}=\\lim_{x\\to a}\\frac{f'(x)}{g'(x)}",
+        "条件: 0/0型或∞/∞型不定式"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["cauchy_mean_value_theorem", "derivative_rules"],
+      "applications": ["不定式极限计算", "无穷小比较", "函数渐近行为分析"],
+      "common_mistakes": ["不验证不定式条件就使用", "将洛必达法则与商法则混淆", "多次使用时未重新验证条件"],
+      "exercise_types": ["0/0型极限", "∞/∞型极限", "可转化型不定式"],
+      "latex_templates": [
+        "\\lim_{x\\to a}\\frac{f(x)}{g(x)}=\\lim_{x\\to a}\\frac{f'(x)}{g'(x)}"
+      ]
+    },
+    {
+      "id": "related_rates",
+      "name": "相关变化率",
+      "description": "多个相互关联的变量对时间的变化率关系",
+      "formulas": ["\\frac{dV}{dt}=\\frac{dV}{dr}\\cdot\\frac{dr}{dt}"],
+      "difficulty": "medium",
+      "prerequisites": ["chain_rule", "implicit_differentiation"],
+      "applications": ["注水放水问题", "运动学问题", "经济学变化率"],
+      "common_mistakes": ["未正确建立变量关系式", "链式法则使用错误"],
+      "exercise_types": ["梯子滑动问题", "气球充气问题", "影子长度变化问题"],
+      "latex_templates": [
+        "\\frac{dy}{dt}=\\frac{dy}{dx}\\cdot\\frac{dx}{dt}"
+      ]
+    },
+    {
+      "id": "differentials_approximation",
+      "name": "微分的近似计算",
+      "description": "利用微分进行函数值的近似计算",
+      "formulas": [
+        "f(x_0+\\Delta x)\\approx f(x_0)+f'(x_0)\\Delta x",
+        "\\Delta y\\approx dy=f'(x_0)dx"
+      ],
+      "difficulty": "easy",
+      "prerequisites": ["differential_rules"],
+      "applications": ["数值估算", "误差估计", "工程近似计算"],
+      "common_mistakes": ["忽略高阶无穷小量", "近似范围判断错误"],
+      "exercise_types": ["近似计算函数值", "估计误差范围"],
+      "latex_templates": [
+        "f(x_0+\\Delta x)\\approx f(x_0)+f'(x_0)\\Delta x"
+      ]
+    },
+    {
+      "id": "function_graphing",
+      "name": "函数作图综合",
+      "description": "综合运用导数知识绘制函数完整图像",
+      "formulas": ["需结合单调性、极值、凹凸性、拐点、渐近线等"],
+      "difficulty": "medium",
+      "prerequisites": ["所有导数应用知识点"],
+      "applications": ["函数可视化", "性质综合分析"],
+      "common_mistakes": ["只关注局部忽略全局趋势", "遗漏渐近线"],
+      "exercise_types": ["作函数完整图像", "分析函数的全面性质"],
+      "latex_templates": []
+    }
+  ],
+  "inter_relationships": [
+    {"from": "rolles_theorem", "to": "lagrange_mean_value_theorem", "relation": "拉格朗日中值定理是罗尔定理的推广"},
+    {"from": "lagrange_mean_value_theorem", "to": "cauchy_mean_value_theorem", "relation": "柯西中值定理是拉格朗日中值定理的推广"},
+    {"from": "cauchy_mean_value_theorem", "to": "taylor_theorem", "relation": "泰勒中值定理可由柯西中值定理推导"},
+    {"from": "cauchy_mean_value_theorem", "to": "lhopital_rule_derivative", "relation": "洛必达法则的证明依赖柯西中值定理"},
+    {"from": "lagrange_mean_value_theorem", "to": "function_monotonicity", "relation": "单调性判别的理论基础"},
+    {"from": "function_monotonicity", "to": "function_extreme_values", "relation": "极值的一阶充分条件"},
+    {"from": "function_extreme_values", "to": "function_max_min", "relation": "最值的求解方法"},
+    {"from": "concavity_inflection", "to": "function_extreme_values", "relation": "极值的二阶充分条件"},
+    {"from": "function_monotonicity", "to": "function_graphing", "relation": "曲线绘制的基础"},
+    {"from": "function_extreme_values", "to": "function_graphing", "relation": "极值是图像的关键特征"},
+    {"from": "concavity_inflection", "to": "function_graphing", "relation": "凹凸性与拐点是图像的形状特征"},
+    {"from": "asymptote_analysis", "to": "function_graphing", "relation": "渐近线是图像的极限行为"},
+    {"from": "curvature", "to": "function_graphing", "relation": "曲率描述了图像的弯曲程度"}
+  ],
+  "teaching_sequence": [
+    "rolles_theorem",
+    "lagrange_mean_value_theorem", 
+    "cauchy_mean_value_theorem",
+    "lhopital_rule_derivative",
+    "taylor_theorem",
+    "function_monotonicity",
+    "function_extreme_values",
+    "function_max_min",
+    "concavity_inflection",
+    "asymptote_analysis",
+    "differentials_approximation",
+    "related_rates",
+    "curvature",
+    "function_graphing"
+  ],
+  "statistics": {
+    "total_knowledge_points": 14,
+    "difficulty_distribution": {
+      "easy": 2,
+      "medium": 9,
+      "hard": 3
+    },
+    "total_exercise_types": 42
+  }
+}

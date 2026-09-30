@@ -1,0 +1,228 @@
+{
+  "module_name": "向量代数与空间解析几何",
+  "module_id": "vector_algebra_spatial_geometry",
+  "description": "涵盖空间直角坐标系、向量及其线性运算、数量积与向量积、平面与空间直线方程、空间曲面与空间曲线、二次曲面分类及其标准方程",
+  "knowledge_points": [
+    {
+      "id": "spatial_coordinate_system",
+      "name": "空间直角坐标系",
+      "description": "空间直角坐标系的建立，点的坐标表示，两点间距离公式，空间中的象限与卦限划分",
+      "formulas": [
+        "d=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2}",
+        "M(x,y,z)"
+      ],
+      "difficulty": "easy",
+      "prerequisites": ["plane_analytic_geometry", "trigonometry_basics"],
+      "applications": ["三维建模", "GPS定位", "物理空间描述", "计算机图形学"],
+      "common_mistakes": ["坐标轴正方向混淆", "两点间距离公式遗漏z坐标", "卦限编号记忆错误"],
+      "exercise_types": ["求两点间距离", "求空间中点的对称点", "判断点所在卦限"],
+      "latex_templates": [
+        "|AB|=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2}"
+      ]
+    },
+    {
+      "id": "vector_basic_concepts",
+      "name": "向量的基本概念与线性运算",
+      "description": "向量的定义、模、方向角与方向余弦，向量的加法和减法（三角形法则、平行四边形法则），数与向量的乘法",
+      "formulas": [
+        "\\vec{a}=(a_x,a_y,a_z)",
+        "|\\vec{a}|=\\sqrt{a_x^2+a_y^2+a_z^2}",
+        "\\cos\\alpha=\\frac{a_x}{|\\vec{a}|},\\ \\cos^2\\alpha+\\cos^2\\beta+\\cos^2\\gamma=1"
+      ],
+      "difficulty": "easy",
+      "prerequisites": ["spatial_coordinate_system", "trigonometry_basics"],
+      "applications": ["力学中的力矢量", "速度与加速度", "电磁学中的场矢量"],
+      "common_mistakes": ["方向余弦符号错误", "向量模的计算遗漏分量"],
+      "exercise_types": ["求向量的模与方向余弦", "向量的线性运算", "求单位向量"],
+      "latex_templates": [
+        "\\vec{a}=(a_x,a_y,a_z),\\ |\\vec{a}|=\\sqrt{a_x^2+a_y^2+a_z^2}"
+      ]
+    },
+    {
+      "id": "dot_product",
+      "name": "向量的数量积（点积）",
+      "description": "数量积的定义、坐标表示、运算性质及应用：判定垂直、求夹角、求投影",
+      "formulas": [
+        "\\vec{a}\\cdot\\vec{b}=|\\vec{a}||\\vec{b}|\\cos\\theta",
+        "\\vec{a}\\cdot\\vec{b}=a_x b_x+a_y b_y+a_z b_z",
+        "\\cos\\theta=\\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{a}||\\vec{b}|}",
+        "\\text{Prj}_{\\vec{b}}\\vec{a}=\\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{b}|}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["vector_basic_concepts", "trigonometry_basics"],
+      "applications": ["功的计算（W=F·s）", "判断向量垂直", "方向导数基础"],
+      "common_mistakes": ["点积与叉积混淆", "投影长度符号错误", "坐标计算时遗漏分量"],
+      "exercise_types": ["计算数量积", "求两向量夹角", "求向量在另一向量上的投影", "证明垂直关系"],
+      "latex_templates": [
+        "\\vec{a}\\cdot\\vec{b}=|\\vec{a}||\\vec{b}|\\cos\\theta",
+        "\\vec{a}\\perp\\vec{b}\\iff\\vec{a}\\cdot\\vec{b}=0"
+      ]
+    },
+    {
+      "id": "cross_product",
+      "name": "向量的向量积（叉积）",
+      "description": "向量积的定义、几何意义（面积）、坐标表示、运算性质及应用：判定平行、求面积",
+      "formulas": [
+        "|\\vec{a}\\times\\vec{b}|=|\\vec{a}||\\vec{b}|\\sin\\theta",
+        "\\vec{a}\\times\\vec{b}=\\begin{vmatrix} \\vec{i} & \\vec{j} & \\vec{k} \\\\ a_x & a_y & a_z \\\\ b_x & b_y & b_z \\end{vmatrix}",
+        "S_{\\text{平行四边形}}=|\\vec{a}\\times\\vec{b}|"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["dot_product", "determinants"],
+      "applications": ["力矩的计算（M=r×F）", "平行四边形面积", "判定向量平行"],
+      "common_mistakes": ["叉积反交换律（a×b=-b×a）忽略符号", "行列式计算符号错误", "方向判断错误（右手定则）"],
+      "exercise_types": ["计算向量积", "求平行四边形的面积", "求同时垂直于两个向量的向量", "证明平行关系"],
+      "latex_templates": [
+        "\\vec{a}\\times\\vec{b}=\\begin{vmatrix}\\vec{i}&\\vec{j}&\\vec{k}\\\\a_x&a_y&a_z\\\\b_x&b_y&b_z\\end{vmatrix}",
+        "\\vec{a}\\parallel\\vec{b}\\iff\\vec{a}\\times\\vec{b}=\\vec{0}"
+      ]
+    },
+    {
+      "id": "scalar_triple_product",
+      "name": "向量的混合积",
+      "description": "三个向量的混合积定义、坐标表示、几何意义（平行六面体体积）及应用：判定共面",
+      "formulas": [
+        "[\\vec{a}\\ \\vec{b}\\ \\vec{c}]=(\\vec{a}\\times\\vec{b})\\cdot\\vec{c}=\\begin{vmatrix} a_x & a_y & a_z \\\\ b_x & b_y & b_z \\\\ c_x & c_y & c_z \\end{vmatrix}",
+        "V_{\\text{平行六面体}}=|[\\vec{a}\\ \\vec{b}\\ \\vec{c}]|"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["dot_product", "cross_product", "determinants"],
+      "applications": ["四面体体积", "判定三向量共面", "晶胞体积计算"],
+      "common_mistakes": ["混合积的轮换性质记忆错误", "体积计算遗漏绝对值"],
+      "exercise_types": ["计算混合积", "求四面体体积", "判断三向量是否共面"],
+      "latex_templates": [
+        "[\\vec{a}\\ \\vec{b}\\ \\vec{c}]=\\begin{vmatrix}a_x&a_y&a_z\\\\b_x&b_y&b_z\\\\c_x&c_y&c_z\\end{vmatrix}"
+      ]
+    },
+    {
+      "id": "plane_equations",
+      "name": "平面方程",
+      "description": "平面的点法式方程、一般方程、截距式方程，两平面的夹角，点到平面的距离",
+      "formulas": [
+        "A(x-x_0)+B(y-y_0)+C(z-z_0)=0",
+        "Ax+By+Cz+D=0",
+        "d=\\frac{|Ax_0+By_0+Cz_0+D|}{\\sqrt{A^2+B^2+C^2}}",
+        "\\cos\\theta=\\frac{|A_1A_2+B_1B_2+C_1C_2|}{\\sqrt{A_1^2+B_1^2+C_1^2}\\sqrt{A_2^2+B_2^2+C_2^2}}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["dot_product", "vector_basic_concepts"],
+      "applications": ["三维几何建模", "计算机图形学裁剪面", "地质层面表示"],
+      "common_mistakes": ["法向量方向确定错误", "点到平面距离公式的绝对值遗漏", "一般方程系数与法向量的对应关系出错"],
+      "exercise_types": ["已知点和法向量求平面方程", "求点到平面的距离", "求两平面的夹角", "求过三点的平面方程"],
+      "latex_templates": [
+        "\\vec{n}\\cdot(\\vec{r}-\\vec{r}_0)=0",
+        "d=\\frac{|Ax_0+By_0+Cz_0+D|}{\\sqrt{A^2+B^2+C^2}}"
+      ]
+    },
+    {
+      "id": "space_line_equations",
+      "name": "空间直线方程",
+      "description": "空间直线的点向式方程（对称式）、参数方程、一般方程（两平面交线），两直线的夹角，直线与平面的夹角",
+      "formulas": [
+        "\\frac{x-x_0}{m}=\\frac{y-y_0}{n}=\\frac{z-z_0}{p}",
+        "\\begin{cases} A_1x+B_1y+C_1z+D_1=0 \\\\ A_2x+B_2y+C_2z+D_2=0 \\end{cases}",
+        "\\cos\\theta=\\frac{|m_1m_2+n_1n_2+p_1p_2|}{\\sqrt{m_1^2+n_1^2+p_1^2}\\sqrt{m_2^2+n_2^2+p_2^2}}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["plane_equations", "vector_basic_concepts"],
+      "applications": ["光线追踪", "机械臂运动轨迹", "三维路径规划"],
+      "common_mistakes": ["方向向量为零时分母为零的情况", "参数方程与对称式转换错误", "直线与平面夹角用\\sin而非\\cos"],
+      "exercise_types": ["求空间直线方程", "求点到直线的距离", "判断两直线位置关系", "求直线与平面的交点"],
+      "latex_templates": [
+        "\\frac{x-x_0}{m}=\\frac{y-y_0}{n}=\\frac{z-z_0}{p}",
+        "\\begin{cases}x=x_0+mt\\\\y=y_0+nt\\\\z=z_0+pt\\end{cases}"
+      ]
+    },
+    {
+      "id": "surfaces",
+      "name": "空间曲面",
+      "description": "曲面方程的一般形式和参数形式，旋转曲面（绕坐标轴旋转所得曲面），柱面（母线平行于坐标轴的柱面），常见曲面举例",
+      "formulas": [
+        "F(x,y,z)=0",
+        "\\begin{cases} x=x(u,v) \\\\ y=y(u,v) \\\\ z=z(u,v) \\end{cases}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["plane_equations", "multivariable_functions"],
+      "applications": ["CAD造型", "建筑曲面设计", "物理中的等位面"],
+      "common_mistakes": ["旋转曲面方程推导中消去参数的符号错误", "柱面方程少写一个变量（实际省略了该变量的范围）"],
+      "exercise_types": ["判断曲面类型", "求旋转曲面方程", "求柱面方程", "画常见曲面草图"],
+      "latex_templates": [
+        "x^2+y^2=R^2\\ (\\text{圆柱面})",
+        "z=x^2+y^2\\ (\\text{旋转抛物面})"
+      ]
+    },
+    {
+      "id": "space_curves",
+      "name": "空间曲线",
+      "description": "空间曲线的表示方法（一般方程——两曲面交线、参数方程），空间曲线在坐标面上的投影曲线",
+      "formulas": [
+        "\\begin{cases} F(x,y,z)=0 \\\\ G(x,y,z)=0 \\end{cases}",
+        "\\begin{cases} x=\\varphi(t) \\\\ y=\\psi(t) \\\\ z=\\omega(t) \\end{cases}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["surfaces", "space_line_equations"],
+      "applications": ["粒子运动轨迹", "机器人路径规划", "三维参数曲线设计"],
+      "common_mistakes": ["投影曲线方程中遗漏消去参数的条件", "参数方程与一般方程之间的转换错误"],
+      "exercise_types": ["求空间曲线的参数方程", "求曲线在坐标面上的投影", "判断曲线类型"],
+      "latex_templates": [
+        "\\begin{cases}x^2+y^2+z^2=R^2\\\\z=h\\end{cases}\\ (\\text{圆})"
+      ]
+    },
+    {
+      "id": "quadric_surfaces",
+      "name": "二次曲面",
+      "description": "椭球面、单叶双曲面、双叶双曲面、椭圆抛物面、双曲抛物面（马鞍面）、二次锥面的标准方程与图形特征，截痕法判断二次曲面形状",
+      "formulas": [
+        "\\frac{x^2}{a^2}+\\frac{y^2}{b^2}+\\frac{z^2}{c^2}=1\\ (\\text{椭球面})",
+        "\\frac{x^2}{a^2}+\\frac{y^2}{b^2}-\\frac{z^2}{c^2}=1\\ (\\text{单叶双曲面})",
+        "\\frac{x^2}{a^2}-\\frac{y^2}{b^2}-\\frac{z^2}{c^2}=1\\ (\\text{双叶双曲面})",
+        "z=\\frac{x^2}{a^2}+\\frac{y^2}{b^2}\\ (\\text{椭圆抛物面})",
+        "z=\\frac{x^2}{a^2}-\\frac{y^2}{b^2}\\ (\\text{马鞍面})"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["surfaces", "conic_sections"],
+      "applications": ["建筑设计（双曲面冷却塔）", "天线反射面设计", "光学镜面设计"],
+      "common_mistakes": ["单叶与双叶双曲面符号混淆", "马鞍面方向判断错误", "截痕法不一定适用于所有二次曲面"],
+      "exercise_types": ["根据方程判断二次曲面类型", "用截痕法分析曲面形状", "求旋转抛物面的焦点"],
+      "latex_templates": [
+        "\\frac{x^2}{a^2}+\\frac{y^2}{b^2}+\\frac{z^2}{c^2}=1",
+        "z=\\frac{x^2}{2p}+\\frac{y^2}{2q}"
+      ]
+    },
+    {
+      "id": "spatial_transformations",
+      "name": "空间坐标变换",
+      "description": "坐标轴的平移变换和旋转变换，一般二次方程通过坐标变换化为标准型的基本思想",
+      "formulas": [
+        "\\begin{cases} x=x'+x_0 \\\\ y=y'+y_0 \\\\ z=z'+z_0 \\end{cases}",
+        "\\begin{pmatrix} x' \\\\ y' \\\\ z' \\end{pmatrix}=R\\begin{pmatrix} x \\\\ y \\\\ z \\end{pmatrix}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["quadric_surfaces", "linear_algebra_basics"],
+      "applications": ["刚体运动学", "坐标系转换", "机器人坐标变换"],
+      "common_mistakes": ["旋转矩阵的逆矩阵公式错误", "平移和旋转顺序不正确"],
+      "exercise_types": ["平移变换化简曲面方程", "求旋转变换矩阵", "判断变换后曲面的类型"],
+      "latex_templates": [
+        "\\begin{cases}x=x_0+x'\\\\y=y_0+y'\\\\z=z_0+z'\\end{cases}"
+      ]
+    },
+    {
+      "id": "spatial_distance_angle",
+      "name": "空间距离与角度综合",
+      "description": "空间中的距离问题（点到直线、点到平面、两异面直线间距离）与角度问题（线线角、线面角、面面角）的综合计算",
+      "formulas": [
+        "d_{\\text{点到直线}}=\\frac{|\\vec{PM}\\times\\vec{s}|}{|\\vec{s}|}",
+        "d_{\\text{异面直线}}=\\frac{|[\\vec{M_1M_2}\\ \\vec{s_1}\\ \\vec{s_2}]|}{|\\vec{s_1}\\times\\vec{s_2}|}",
+        "\\sin\\phi_{\\text{线面角}}=\\frac{|Am+Bn+Cp|}{\\sqrt{A^2+B^2+C^2}\\sqrt{m^2+n^2+p^2}}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["plane_equations", "space_line_equations", "cross_product", "scalar_triple_product"],
+      "applications": ["三维测量", "路径规划中的避障距离", "建筑结构分析"],
+      "common_mistakes": ["线面角用cos而不是sin", "异面直线距离公式行列式符号", "距离与角度的计算公式混淆"],
+      "exercise_types": ["求点到直线的距离", "求两异面直线的距离", "综合计算距离与角度"],
+      "latex_templates": [
+        "d=\\frac{|[\\vec{AB}\\ \\vec{s_1}\\ \\vec{s_2}]|}{|\\vec{s_1}\\times\\vec{s_2}|}"
+      ]
+    }
+  ]
+}

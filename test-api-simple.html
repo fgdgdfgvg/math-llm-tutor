@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleTex API简单测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>SimpleTex API简单测试</h1>
+    
+    <div class="test-section">
+        <h2>测试结果</h2>
+        <button onclick="testConnection()">测试网络连接</button>
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testConnection() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.innerHTML = '<p>正在测试网络连接...</p>';
+
+            try {
+                // 测试基本网络连接
+                const response = await fetch('https://www.google.com', {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += '<p class="success">网络连接正常</p>';
+                } else {
+                    resultDiv.innerHTML += '<p class="error">网络连接失败</p>';
+                }
+
+                // 测试SimpleTex API服务器连接
+                resultDiv.innerHTML += '<p>正在测试SimpleTex API服务器...</p>';
+                const apiResponse = await fetch('https://server.simpletex.cn', {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                if (apiResponse.ok) {
+                    resultDiv.innerHTML += '<p class="success">SimpleTex API服务器可访问</p>';
+                } else {
+                    resultDiv.innerHTML += `<p class="error">SimpleTex API服务器访问失败: ${apiResponse.status} ${apiResponse.statusText}</p>`;
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="error">错误: ${error.message}</p>`;
+                resultDiv.innerHTML += `<p>错误详情: ${error.stack}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+diff --git a/node_modules/@vant/use/dist/index.esm.mjs b/node_modules/@vant/use/dist/index.esm.mjs
+index 93a6643..dfd63f0 100644
+--- a/node_modules/@vant/use/dist/index.esm.mjs
++++ b/node_modules/@vant/use/dist/index.esm.mjs
+@@ -76,11 +76,11 @@ function useParent(key) {
+ 
+ // src/useRelation/useChildren.ts
+ import {
+-  isVNode,
+   provide,
+   reactive,
+   getCurrentInstance as getCurrentInstance2
+ } from "vue";
++import { isVNode } from "@vue/runtime-core";
+ function flattenVNodes(children) {
+   const result = [];
+   const traverse = (children2) => {

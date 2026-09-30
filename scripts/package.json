@@ -1,0 +1,14 @@
+{
+  "name": "math-questions-import",
+  "version": "1.0.0",
+  "description": "Import math questions from math.json to MongoDB",
+  "main": "import-math-questions.js",
+  "scripts": {
+    "import": "node import-math-questions.js"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.1",
+    "markdown-it-katex": "^2.0.3",
+    "mongoose": "^7.0.0"
+  }
+}

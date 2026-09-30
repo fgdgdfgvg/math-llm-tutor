@@ -1,0 +1,198 @@
+{
+  "module_name": "重积分",
+  "module_id": "multiple_integrals",
+  "description": "涵盖二重积分的概念与性质、直角坐标系与极坐标系下的二重积分计算、三重积分的概念与计算、重积分的换元法与对称性、重积分在几何与物理中的应用",
+  "knowledge_points": [
+    {
+      "id": "double_integral_concept",
+      "name": "二重积分的概念与性质",
+      "description": "曲顶柱体体积引入二重积分，二重积分的定义（分割、近似、求和、取极限），二重积分的可积条件与基本性质（线性性、区域可加性、保号性、估值不等式、积分中值定理）",
+      "formulas": [
+        "\\iint_D f(x,y)d\\sigma=\\lim_{\\lambda\\to0}\\sum_{i=1}^{n}f(\\xi_i,\\eta_i)\\Delta\\sigma_i",
+        "m\\cdot S\\le\\iint_D f(x,y)d\\sigma\\le M\\cdot S",
+        "\\iint_D f(x,y)d\\sigma=f(\\xi,\\eta)\\cdot S\\ (\\text{积分中值定理})"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["definite_integral", "multivariable_functions", "multivariable_limit"],
+      "applications": ["曲顶柱体体积", "平面薄板质量", "电荷总量"],
+      "common_mistakes": ["与定积分的定义混淆（网格划分和取点方式不同）", "积分区域D不画出来直接用不等式"],
+      "exercise_types": ["利用定义比较二重积分大小", "利用积分中值定理求极限", "利用对称性化简积分"],
+      "latex_templates": [
+        "\\iint_D f(x,y)\\,\\mathrm{d}x\\mathrm{d}y",
+        "\\iint_D f(x,y)\\,\\mathrm{d}\\sigma"
+      ]
+    },
+    {
+      "id": "double_integral_rectangular",
+      "name": "直角坐标系下二重积分的计算",
+      "description": "X型区域和Y型区域的划分，化二重积分为二次积分（累次积分），积分次序的选择与交换",
+      "formulas": [
+        "\\iint_D f(x,y)d\\sigma=\\int_a^b dx\\int_{\\varphi_1(x)}^{\\varphi_2(x)}f(x,y)dy\\ (\\text{X型})",
+        "\\iint_D f(x,y)d\\sigma=\\int_c^d dy\\int_{\\psi_1(y)}^{\\psi_2(y)}f(x,y)dx\\ (\\text{Y型})"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_concept", "definite_integral", "plane_curves"],
+      "applications": ["面积计算", "形心坐标", "转动惯量"],
+      "common_mistakes": ["积分上下限的确定错误（特别是X型与Y型的区分）", "交换积分次序时区域边界表达式写错", "被积函数是否有x或y影响积分次序选择"],
+      "exercise_types": ["化二重积分为二次积分并计算", "交换二次积分次序", "分段区域上的二重积分"],
+      "latex_templates": [
+        "\\iint_D f(x,y)\\,\\mathrm{d}x\\mathrm{d}y=\\int_a^b\\mathrm{d}x\\int_{y_1(x)}^{y_2(x)}f(x,y)\\,\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "double_integral_polar",
+      "name": "极坐标系下二重积分的计算",
+      "description": "极坐标变换（x=rcosθ, y=rsinθ），面积元素dσ=rdrdθ，极坐标下积分区域的表示和积分限的确定",
+      "formulas": [
+        "\\iint_D f(x,y)d\\sigma=\\iint_D f(r\\cos\\theta,r\\sin\\theta)r\\ dr d\\theta",
+        "d\\sigma=r\\ dr d\\theta"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_rectangular", "polar_coordinates"],
+      "applications": ["圆形区域上的积分", "扇形区域", "含x²+y²的被积函数"],
+      "common_mistakes": ["面积元素遗漏r因子（dσ=R dr dθ而非dσ=dr dθ）", "极坐标下θ和r的积分限确定错误", "曲线交点错判导致区域划分错误"],
+      "exercise_types": ["圆形区域上的二重积分", "圆环区域上的积分", "坐标变换后的二重积分"],
+      "latex_templates": [
+        "\\iint_D f(x,y)\\,\\mathrm{d}\\sigma=\\int_{\\alpha}^{\\beta}\\mathrm{d}\\theta\\int_{r_1(\\theta)}^{r_2(\\theta)}f(r\\cos\\theta,r\\sin\\theta)r\\,\\mathrm{d}r"
+      ]
+    },
+    {
+      "id": "double_integral_transformation",
+      "name": "二重积分的换元法",
+      "description": "一般变量代换x=x(u,v), y=y(u,v)，雅可比行列式的引入，面积元素变换dσ=|J|dudv，常见换元技巧",
+      "formulas": [
+        "\\iint_D f(x,y)dxdy=\\iint_{D'}f(x(u,v),y(u,v))|J|dudv",
+        "J=\\frac{\\partial(x,y)}{\\partial(u,v)}=\\begin{vmatrix} x_u & x_v \\\\ y_u & y_v \\end{vmatrix}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["double_integral_polar", "partial_derivatives", "determinants"],
+      "applications": ["广义极坐标变换", "椭圆区域简化", "特定对称区域"],
+      "common_mistakes": ["雅可比行列式计算错误", "忘记取绝对值|J|", "新积分区域D'的确定"],
+      "exercise_types": ["利用换元法计算二重积分", "利用广义极坐标变换", "判断换元是否合理"],
+      "latex_templates": [
+        "\\frac{\\partial(x,y)}{\\partial(u,v)}=\\begin{vmatrix}x_u&x_v\\\\y_u&y_v\\end{vmatrix}"
+      ]
+    },
+    {
+      "id": "triple_integral_concept",
+      "name": "三重积分的概念与性质",
+      "description": "三重积分定义（空间物体的质量），三重积分的性质（线性性、区域可加性、积分中值定理），空间直角坐标系下的表示",
+      "formulas": [
+        "\\iiint_\\Omega f(x,y,z)dV=\\lim_{\\lambda\\to0}\\sum_{i=1}^{n}f(\\xi_i,\\eta_i,\\zeta_i)\\Delta V_i",
+        "dV=dx\\ dy\\ dz"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_concept", "spatial_coordinate_system"],
+      "applications": ["空间物体质量", "电荷分布", "三维密度函数"],
+      "common_mistakes": ["积分区域Ω的三维图形想象不清", "三重积分的累次积分形式写错"],
+      "exercise_types": ["利用定义判断三重积分大小", "利用对称性化简三重积分"],
+      "latex_templates": [
+        "\\iiint_\\Omega f(x,y,z)\\,\\mathrm{d}V"
+      ]
+    },
+    {
+      "id": "triple_integral_rectangular",
+      "name": "直角坐标系下三重积分的计算",
+      "description": "投影法（先一后二法）：向坐标面投影，确定z的上下限；截面法（先二后一法）：用平面截取截面，确定截面面积",
+      "formulas": [
+        "\\iiint_\\Omega f dV=\\iint_{D_{xy}}dxdy\\int_{z_1(x,y)}^{z_2(x,y)}f dz\\ (\\text{投影法})",
+        "\\iiint_\\Omega f dV=\\int_{c_1}^{c_2}dz\\iint_{D(z)}f dxdy\\ (\\text{截面法})"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["triple_integral_concept", "double_integral_rectangular", "space_surfaces"],
+      "applications": ["体积计算", "质心坐标", "引力计算"],
+      "common_mistakes": ["投影法时z的上下限函数写反", "截面法时截面积分区域确定不准确", "投影面选择不当导致积分复杂化"],
+      "exercise_types": ["用投影法计算三重积分", "用截面法计算三重积分", "选择合适方法计算"],
+      "latex_templates": [
+        "\\iiint_\\Omega f\\,\\mathrm{d}V=\\iint_{D_{xy}}\\mathrm{d}x\\mathrm{d}y\\int_{z_1}^{z_2}f\\,\\mathrm{d}z"
+      ]
+    },
+    {
+      "id": "triple_integral_cylindrical",
+      "name": "柱坐标系下三重积分",
+      "description": "柱坐标变换（x=rcosθ, y=rsinθ, z=z），体积元素dV=r dr dθ dz，适用于旋转对称区域",
+      "formulas": [
+        "\\iiint_\\Omega f dV=\\iiint_\\Omega f(r\\cos\\theta,r\\sin\\theta,z)r\\ dr d\\theta dz",
+        "dV=r\\ dr d\\theta dz"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["triple_integral_rectangular", "double_integral_polar"],
+      "applications": ["圆柱体上的积分", "旋转抛物面围成的区域", "锥体上的积分"],
+      "common_mistakes": ["柱坐标体积元素遗漏r", "θ范围的确定（是0到2π还是0到π）", "r的表达式根据投影确定"],
+      "exercise_types": ["圆柱体上三重积分", "旋转体上三重积分", "柱坐标与直角坐标混合使用"],
+      "latex_templates": [
+        "\\iiint_\\Omega f\\,\\mathrm{d}V=\\int_{\\alpha}^{\\beta}\\mathrm{d}\\theta\\int_{r_1}^{r_2}r\\mathrm{d}r\\int_{z_1}^{z_2}f\\,\\mathrm{d}z"
+      ]
+    },
+    {
+      "id": "triple_integral_spherical",
+      "name": "球坐标系下三重积分",
+      "description": "球坐标变换（x=ρsinφcosθ, y=ρsinφsinθ, z=ρcosφ），体积元素dV=ρ²sinφ dρ dφ dθ，适用于球对称区域",
+      "formulas": [
+        "\\begin{cases} x=\\rho\\sin\\varphi\\cos\\theta \\\\ y=\\rho\\sin\\varphi\\sin\\theta \\\\ z=\\rho\\cos\\varphi \\end{cases}",
+        "dV=\\rho^2\\sin\\varphi\\ d\\rho\\ d\\varphi\\ d\\theta"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["triple_integral_cylindrical", "spherical_coordinates"],
+      "applications": ["球体上的积分", "球壳上的积分", "包含x²+y²+z²的被积函数"],
+      "common_mistakes": ["球坐标体积元素ρ²sinφ的遗漏或符号错误", "φ（与z轴夹角）和θ（极角）的混淆", "球坐标下积分限的确定（特别是φ的范围[0,π]）"],
+      "exercise_types": ["球体上三重积分", "球冠区域的积分", "球锥区域的积分"],
+      "latex_templates": [
+        "\\iiint_\\Omega f\\,\\mathrm{d}V=\\int_0^{2\\pi}\\mathrm{d}\\theta\\int_0^{\\pi}\\sin\\varphi\\mathrm{d}\\varphi\\int_0^{\\rho(\\varphi,\\theta)}\\rho^2f\\,\\mathrm{d}\\rho"
+      ]
+    },
+    {
+      "id": "multiple_integral_applications_geometry",
+      "name": "重积分的几何应用",
+      "description": "利用二重积分求平面区域面积、曲面面积；利用三重积分求空间立体体积，利用二重积分求空间曲面的面积",
+      "formulas": [
+        "S_D=\\iint_D dxdy\\ (\\text{平面区域面积})",
+        "V_\\Omega=\\iiint_\\Omega dV\\ (\\text{立体体积})",
+        "S_{\\text{曲面}}=\\iint_D\\sqrt{1+z_x^2+z_y^2}dxdy\\ (\\text{曲面面积})"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_rectangular", "triple_integral_rectangular", "partial_derivatives"],
+      "applications": ["曲面面积计算", "地形面积计算", "容器容积计算"],
+      "common_mistakes": ["曲面面积公式中的偏导数平方和根号下+1遗漏", "曲面投影区域选择不当", "曲面的单值性条件"],
+      "exercise_types": ["求平面区域的面积", "求曲面面积", "求立体体积"],
+      "latex_templates": [
+        "S=\\iint_D\\sqrt{1+\\left(\\frac{\\partial z}{\\partial x}\\right)^2+\\left(\\frac{\\partial z}{\\partial y}\\right)^2}\\,\\mathrm{d}x\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "multiple_integral_applications_physics",
+      "name": "重积分的物理应用",
+      "description": "利用重积分计算质量、质心（形心）、转动惯量、引力等物理量",
+      "formulas": [
+        "M=\\iiint_\\Omega\\rho(x,y,z)dV\\ (\\text{质量})",
+        "\\bar{x}=\\frac{\\iiint_\\Omega x\\rho dV}{M}\\ (\\text{质心坐标})",
+        "I_z=\\iiint_\\Omega(x^2+y^2)\\rho dV\\ (\\text{对z轴转动惯量})"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["multiple_integral_applications_geometry", "physics_mechanics_basics"],
+      "applications": ["工程构件质量分析", "旋转机械的转动惯量", "天体引力计算"],
+      "common_mistakes": ["转动惯量公式中对哪个轴的平方和写错", "质心坐标积分遗漏除以总质量", "引力分量计算的积分方向"],
+      "exercise_types": ["求薄板质量与质心", "求转动惯量", "求物体间的引力"],
+      "latex_templates": [
+        "\\bar{x}=\\frac{1}{M}\\iiint_\\Omega x\\rho(x,y,z)\\,\\mathrm{d}V"
+      ]
+    },
+    {
+      "id": "multiple_integral_symmetry",
+      "name": "重积分的对称性与奇偶性",
+      "description": "利用积分区域关于坐标面（轴）的对称性和被积函数的奇偶性简化重积分计算",
+      "formulas": [
+        "D\\text{关于}y\\text{轴对称}:\\iint_D f d\\sigma=\\begin{cases}2\\iint_{D_{\\text{右}}}f d\\sigma&f\\text{关于}x\\text{为偶函数}\\\\0&f\\text{关于}x\\text{为奇函数}\\end{cases}",
+        "\\Omega\\text{关于}xOy\\text{面对称}，类似结论"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_concept", "triple_integral_concept"],
+      "applications": ["快速估算积分为零的情况", "简化复杂区域上的积分"],
+      "common_mistakes": ["对称性与奇偶性的条件判断错误（对称需关于坐标轴/面/原点）", "被积函数奇偶性判断错误", "奇×偶=奇的结论应用"],
+      "exercise_types": ["利用对称性判断积分值", "利用对称性简化计算", "判断积分是否为零"],
+      "latex_templates": [
+        "\\iint_D xy\\,\\mathrm{d}\\sigma=0\\ (D\\text{关于}x\\text{轴对称且}f(x,-y)=-f(x,y))"
+      ]
+    }
+  ]
+}

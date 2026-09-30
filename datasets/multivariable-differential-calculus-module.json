@@ -1,0 +1,327 @@
+{
+  "module_name": "多元函数微分学",
+  "module_id": "multivariable_differential_calculus",
+  "description": "涵盖多元函数的基本概念、偏导数、全微分、方向导数与梯度、隐函数定理、多元函数极值与条件极值（拉格朗日乘数法）及其在最优化中的应用",
+  "knowledge_points": [
+    {
+      "id": "multivariable_function_basics",
+      "name": "多元函数基本概念",
+      "description": "多元函数的定义、定义域、值域、几何表示（曲面）、邻域与区域，n维欧氏空间R^n的基本拓扑概念",
+      "formulas": ["z=f(x,y)", "u=F(x_1,x_2,...,x_n)"],
+      "difficulty": "easy",
+      "prerequisites": ["single_variable_functions", "set_theory_basics", "analytic_geometry"],
+      "applications": ["温度场描述", "压力分布", "电磁场表达"],
+      "common_mistakes": ["混淆定义域和值域", "邻域概念理解不透彻", "区域和闭区域区分不清"],
+      "exercise_types": ["求定义域", "画定义域区域", "判断点集性质"],
+      "latex_templates": [
+        "D=\\{(x,y)\\in\\mathbb{R}^2:\\text{条件}\\}"
+      ]
+    },
+    {
+      "id": "multivariable_limit",
+      "name": "多元函数极限",
+      "description": "P→P₀时f(P)→A的定义，二重极限的存在性和计算，累次极限与二重极限的关系",
+      "formulas": [
+        "\\lim_{(x,y)\\to(x_0,y_0)}f(x,y)=A",
+        "\\forall\\varepsilon>0,\\exists\\delta>0:\\ 0<\\rho<\\delta\\Rightarrow|f-A|<\\varepsilon"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["multivariable_function_basics", "single_variable_limit"],
+      "applications": ["曲面奇点分析", "函数连续性判断"],
+      "common_mistakes": ["认为沿任何路径极限都相等才能确定极限", "将二重极限和二次极限（累次极限）混淆"],
+      "exercise_types": ["用定义证明极限", "判断极限不存在", "计算二重极限"],
+      "latex_templates": [
+        "\\lim_{(x,y)\\to(0,0)}f(x,y)=L",
+        "\\rho=\\sqrt{(x-x_0)^2+(y-y_0)^2}"
+      ]
+    },
+    {
+      "id": "multivariable_continuity",
+      "name": "多元函数连续性",
+      "description": "多元函数在点处和区域上的连续性，连续函数的性质（有界性、最值定理、介值定理），初等函数的连续性",
+      "formulas": [
+        "\\lim_{(x,y)\\to(x_0,y_0)}f(x,y)=f(x_0,y_0)",
+        "f\\in C(D)\\Rightarrow f\\text{在}D\\text{上有界且取得最大值和最小值}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["multivariable_limit"],
+      "applications": ["曲面光滑性分析", "插值方法基础"],
+      "common_mistakes": ["混淆点连续和区域连续", "不验证函数是否为初等函数"],
+      "exercise_types": ["判断连续性", "找间断点类型", "讨论含参函数的连续性"],
+      "latex_templates": [
+        "f(x,y)\\in C(D)"
+      ]
+    },
+    {
+      "id": "partial_derivatives",
+      "name": "偏导数",
+      "description": "多元函数对某一自变量的偏导数定义、几何意义和计算方法，高阶偏导数",
+      "formulas": [
+        "\\frac{\\partial f}{\\partial x}=\\lim_{\\Delta x\\to0}\\frac{f(x+\\Delta x,y)-f(x,y)}{\\Delta x}",
+        "f_x(x_0,y_0)",
+        "\\frac{\\partial^2 f}{\\partial x\\partial y}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["multivariable_limit", "single_variable_derivatives"],
+      "applications": ["边际分析（经济学）", "灵敏度分析", "误差传递"],
+      "common_mistakes": ["偏导数记号混淆（f_x, ∂f/∂x）", "高阶混合偏导数顺序不验证可交换性"],
+      "exercise_types": ["求一阶偏导数", "求高阶偏导数", "偏导数几何意义"],
+      "latex_templates": [
+        "\\frac{\\partial f}{\\partial x}=\\lim_{\\Delta x\\to0}\\frac{f(x+\\Delta x,y)-f(x,y)}{\\Delta x}"
+      ]
+    },
+    {
+      "id": "total_differential",
+      "name": "全微分",
+      "description": "全微分的定义、可微的充分条件、全微分的四则运算和链式法则",
+      "formulas": [
+        "dz=\\frac{\\partial z}{\\partial x}dx+\\frac{\\partial z}{\\partial y}dy",
+        "\\Delta z=f_x\\Delta x+f_y\\Delta y+o(\\rho)",
+        "dz=f_x dx+f_y dy"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["partial_derivatives", "single_variable_differentials"],
+      "applications": ["近似计算", "误差估计", "灵敏度分析"],
+      "common_mistakes": ["混淆'可导'和'可微'概念", "不验证偏导数连续的可微性充分条件"],
+      "exercise_types": ["求全微分", "全微分近似计算", "判断函数可微性"],
+      "latex_templates": [
+        "du=f_x dx+f_y dy+f_z dz"
+      ]
+    },
+    {
+      "id": "chain_rule_multivariable",
+      "name": "多元复合函数求导（链式法则）",
+      "description": "多元复合函数求导的链式法则，包括全导数和偏导数情况，变量关系图法",
+      "formulas": [
+        "\\frac{dz}{dt}=\\frac{\\partial z}{\\partial x}\\frac{dx}{dt}+\\frac{\\partial z}{\\partial y}\\frac{dy}{dt}",
+        "\\frac{\\partial z}{\\partial u}=\\frac{\\partial z}{\\partial x}\\frac{\\partial x}{\\partial u}+\\frac{\\partial z}{\\partial y}\\frac{\\partial y}{\\partial u}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["partial_derivatives", "single_variable_chain_rule"],
+      "applications": ["变量替换", "物理中的坐标变换", "最优化中的敏感度"],
+      "common_mistakes": ["变量关系图理解错误", "中间变量和自变量混淆", "漏项（忘记所有路径求和）"],
+      "exercise_types": ["全导数问题", "复合函数偏导数", "抽象函数求导"],
+      "latex_templates": [
+        "\\frac{\\partial z}{\\partial x}=\\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x}"
+      ]
+    },
+    {
+      "id": "implicit_function_theorem",
+      "name": "隐函数定理",
+      "description": "隐函数的存在性条件（隐函数定理）及隐函数的求导方法（公式法和直接法）",
+      "formulas": [
+        "F(x,y)=0,\\ F_y\\neq0\\Rightarrow\\frac{dy}{dx}=-\\frac{F_x}{F_y}",
+        "F(x,y,z)=0,\\ F_z\\neq0\\Rightarrow\\frac{\\partial z}{\\partial x}=-\\frac{F_x}{F_z}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["partial_derivatives", "total_differential"],
+      "applications": ["等值面分析", "约束方程的导数", "热力学方程"],
+      "common_mistakes": ["负号遗漏", "分子分母颠倒", "不验证F_y≠0条件"],
+      "exercise_types": ["一个方程一个隐函数", "一个方程两个隐函数", "方程组隐函数"],
+      "latex_templates": [
+        "\\frac{\\partial z}{\\partial x}=-\\frac{F_x}{F_z},\\ \\frac{\\partial z}{\\partial y}=-\\frac{F_y}{F_z}"
+      ]
+    },
+    {
+      "id": "directional_derivative",
+      "name": "方向导数",
+      "description": "函数沿给定方向的变化率定义与计算，方向导数与偏导数的关系",
+      "formulas": [
+        "\\frac{\\partial f}{\\partial\\mathbf{l}}=\\lim_{t\\to0^+}\\frac{f(x_0+t\\cos\\alpha,y_0+t\\cos\\beta)-f(x_0,y_0)}{t}",
+        "\\frac{\\partial f}{\\partial\\mathbf{l}}=f_x\\cos\\alpha+f_y\\cos\\beta"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["partial_derivatives", "vector_basics"],
+      "applications": ["最速上升/下降方向", "地形分析", "热流方向"],
+      "common_mistakes": ["方向向量的方向余弦计算错误", "与偏导数混淆（偏导数是特殊的方向导数）"],
+      "exercise_types": ["求指定方向导数", "最大方向导数（梯度模）", "方向导数为零的方向"],
+      "latex_templates": [
+        "\\frac{\\partial f}{\\partial\\mathbf{l}}=\\nabla f\\cdot\\mathbf{u}"
+      ]
+    },
+    {
+      "id": "gradient",
+      "name": "梯度",
+      "description": "梯度向量的定义、性质（最大方向导数方向）、几何意义（等值线的法向量）",
+      "formulas": [
+        "\\nabla f=\\left(\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y}\\right)",
+        "\\nabla f=\\frac{\\partial f}{\\partial x}\\mathbf{i}+\\frac{\\partial f}{\\partial y}\\mathbf{j}+\\frac{\\partial f}{\\partial z}\\mathbf{k}",
+        "\\|\\nabla f\\|=\\max\\frac{\\partial f}{\\partial\\mathbf{l}}"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["directional_derivative", "vector_operations"],
+      "applications": ["最优化中的梯度下降法", "图像边缘检测", "机器学习参数更新"],
+      "common_mistakes": ["梯度和方向导数公式混淆", "忘记梯度方向是函数增长最快的方向"],
+      "exercise_types": ["求梯度向量", "求最大方向导数", "求等值线的法线"],
+      "latex_templates": [
+        "\\nabla f(x_0,y_0)=(f_x(x_0,y_0),f_y(x_0,y_0))"
+      ]
+    },
+    {
+      "id": "tangent_plane_normal_line",
+      "name": "空间曲线的切线与法平面、曲面的切平面与法线",
+      "description": "利用偏导数和梯度求曲线和曲面的切向和法向量",
+      "formulas": [
+        "\\mathbf{T}=(x'(t_0),y'(t_0),z'(t_0))",
+        "\\mathbf{n}=\\nabla F(x_0,y_0,z_0)",
+        "F_x(x-x_0)+F_y(y-y_0)+F_z(z-z_0)=0"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["gradient", "spatial_analytic_geometry"],
+      "applications": ["碰撞检测", "曲面拟合", "CAD建模"],
+      "common_mistakes": ["切线和法线方向混淆", "参数方程和一般方程的切向量公式混淆"],
+      "exercise_types": ["求空间曲线的切线", "求曲面的切平面", "求法线方程"],
+      "latex_templates": [
+        "F_x(x_0,y_0,z_0)(x-x_0)+F_y(x_0,y_0,z_0)(y-y_0)+F_z(x_0,y_0,z_0)(z-z_0)=0"
+      ]
+    },
+    {
+      "id": "multivariable_extrema",
+      "name": "多元函数的极值",
+      "description": "无条件极值的必要条件（梯度为零）和充分条件（海森矩阵的正定性），二元函数的AC-B²判别法",
+      "formulas": [
+        "\\nabla f=0\\text{（必要条件）}",
+        "A=f_{xx},\\ B=f_{xy},\\ C=f_{yy}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["partial_derivatives", "higher_order_derivatives", "quadratic_forms"],
+      "applications": ["工程优化设计", "经济利润最大化", "数据拟合"],
+      "common_mistakes": ["不检查二阶导数就下结论", "AC-B²=0时不进一步分析", "忽略定义域边界"],
+      "exercise_types": ["求无条件极值", "极值判定", "隐函数极值"],
+      "latex_templates": [
+        "AC-B^2>0,\\ A>0\\Rightarrow\\text{极小值}",
+        "AC-B^2>0,\\ A<0\\Rightarrow\\text{极大值}"
+      ]
+    },
+    {
+      "id": "lagrange_multipliers",
+      "name": "拉格朗日乘数法（条件极值）",
+      "description": "在等式约束条件下求多元函数极值的拉格朗日乘数法",
+      "formulas": [
+        "L(x,y,\\lambda)=f(x,y)+\\lambda\\varphi(x,y)",
+        "\\frac{\\partial L}{\\partial x}=0,\\ \\frac{\\partial L}{\\partial y}=0,\\ \\frac{\\partial L}{\\partial\\lambda}=0",
+        "L(x_1,...,x_n,\\lambda_1,...,\\lambda_m)=f+\\sum\\lambda_i\\varphi_i"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["multivariable_extrema", "implicit_function_theorem"],
+      "applications": ["资源分配优化", "最短路径问题", "最大化效用（经济学）", "工程设计约束"],
+      "common_mistakes": ["拉格朗日函数构造错误（符号错误）", "多个约束时遗漏约束", "解方程组出错"],
+      "exercise_types": ["一元约束极值", "二元约束极值", "多个约束条件"],
+      "latex_templates": [
+        "\\begin{cases}f_x+\\lambda\\varphi_x=0\\\\f_y+\\lambda\\varphi_y=0\\\\\\varphi(x,y)=0\\end{cases}"
+      ]
+    },
+    {
+      "id": "max_min_multivariable",
+      "name": "多元函数的最值",
+      "description": "在有界闭区域上求多元函数最大值和最小值的方法：比较内部驻点和边界上的值",
+      "formulas": [
+        "M=\\max_{(x,y)\\in D}f(x,y)",
+        "m=\\min_{(x,y)\\in D}f(x,y)"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["multivariable_extrema", "lagrange_multipliers"],
+      "applications": ["最优生产方案", "投资组合优化", "物流中心选址"],
+      "common_mistakes": ["忘记检查区域边界上的值", "内部驻点遗漏"],
+      "exercise_types": ["闭区域最值", "实际最优化建模", "含参数的最值"],
+      "latex_templates": [
+        "\\max_D f=\\max\\{f(\\text{内驻点}),f(\\text{边界})\\}"
+      ]
+    },
+    {
+      "id": "jacobian_determinant",
+      "name": "雅可比行列式",
+      "description": "Jacobi矩阵和Jacobi行列式的概念，变量变换（坐标变换）中的导数关系",
+      "formulas": [
+        "J=\\frac{\\partial(u,v)}{\\partial(x,y)}=\\begin{vmatrix}u_x&u_y\\\\v_x&v_y\\end{vmatrix}",
+        "\\frac{\\partial(x,y)}{\\partial(u,v)}=\\left(\\frac{\\partial(u,v)}{\\partial(x,y)}\\right)^{-1}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["partial_derivatives", "determinants", "inverse_functions"],
+      "applications": ["坐标变换", "二重积分换元", "偏微分方程变换"],
+      "common_mistakes": ["雅可比行列式和雅可比矩阵混淆", "逆变换关系计算错误"],
+      "exercise_types": ["求雅可比行列式", "验证逆变换关系", "坐标变换"],
+      "latex_templates": [
+        "J=\\det\\begin{pmatrix}\\frac{\\partial u}{\\partial x}&\\frac{\\partial u}{\\partial y}\\\\\\frac{\\partial v}{\\partial x}&\\frac{\\partial v}{\\partial y}\\end{pmatrix}"
+      ]
+    },
+    {
+      "id": "taylor_multivariable",
+      "name": "多元函数的泰勒公式",
+      "description": "二元函数在一点邻域的泰勒展开，一阶和二阶近似",
+      "formulas": [
+        "f(x,y)=f(x_0,y_0)+[f_x\\Delta x+f_y\\Delta y]+\\frac{1}{2!}[f_{xx}(\\Delta x)^2+2f_{xy}\\Delta x\\Delta y+f_{yy}(\\Delta y)^2]+R_2",
+        "f(\\mathbf{x})\\approx f(\\mathbf{x}_0)+\\nabla f^T(\\mathbf{x}-\\mathbf{x}_0)+\\frac{1}{2}(\\mathbf{x}-\\mathbf{x}_0)^TH(\\mathbf{x}-\\mathbf{x}_0)"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["partial_derivatives", "single_variable_taylor"],
+      "applications": ["非线性函数近似", "最优化算法", "误差分析"],
+      "common_mistakes": ["二阶项遗漏交叉导数项", "海森矩阵构造错误"],
+      "exercise_types": ["二元泰勒展开", "矩阵形式的泰勒展开"],
+      "latex_templates": [
+        "f(\\mathbf{x})\\approx f(\\mathbf{x}_0)+\\nabla f\\cdot(\\mathbf{x}-\\mathbf{x}_0)+\\frac{1}{2}(\\mathbf{x}-\\mathbf{x}_0)^T H_f (\\mathbf{x}-\\mathbf{x}_0)"
+      ]
+    },
+    {
+      "id": "multivariable_optimization_apps",
+      "name": "多元微分学优化综合应用",
+      "description": "综合运用多元微分学知识解决实际最优化问题，包括最小二乘法、最大似然估计等",
+      "formulas": ["依问题而定"],
+      "difficulty": "hard",
+      "prerequisites": ["所有前述知识点"],
+      "applications": ["机器学习损失函数最小化", "参数估计", "工程设计最优方案"],
+      "common_mistakes": ["实际问题建模时遗漏约束", "最优解不在允许范围内"],
+      "exercise_types": ["最小二乘拟合", "最大似然估计", "最优设计问题"],
+      "latex_templates": []
+    }
+  ],
+  "inter_relationships": [
+    {"from": "multivariable_function_basics", "to": "multivariable_limit", "relation": "极限是研究多元函数局部性质的基础"},
+    {"from": "multivariable_limit", "to": "multivariable_continuity", "relation": "连续性是极限存在的直接推论"},
+    {"from": "multivariable_limit", "to": "partial_derivatives", "relation": "偏导数定义涉及一元极限，是多元极限的特例"},
+    {"from": "partial_derivatives", "to": "total_differential", "relation": "全微分由偏导数和自变量微分线性组合而成"},
+    {"from": "partial_derivatives", "to": "chain_rule_multivariable", "relation": "链式法则用于求复合函数的偏导数"},
+    {"from": "total_differential", "to": "chain_rule_multivariable", "relation": "一阶全微分形式不变性是链式法则的理论基础"},
+    {"from": "total_differential", "to": "implicit_function_theorem", "relation": "隐函数定理利用偏导数关系求隐函数的导数"},
+    {"from": "partial_derivatives", "to": "directional_derivative", "relation": "方向导数是偏导数沿方向的推广"},
+    {"from": "directional_derivative", "to": "gradient", "relation": "梯度指出了方向导数取最大值的方向"},
+    {"from": "gradient", "to": "tangent_plane_normal_line", "relation": "梯度是曲面的法向量，用于确定切平面"},
+    {"from": "partial_derivatives", "to": "multivariable_extrema", "relation": "极值的必要条件是一阶偏导数为零"},
+    {"from": "chain_rule_multivariable", "to": "lagrange_multipliers", "relation": "拉格朗日乘数法是含约束的链式法则推广"},
+    {"from": "multivariable_extrema", "to": "lagrange_multipliers", "relation": "条件极值是无条件极值在约束下的推广"},
+    {"from": "lagrange_multipliers", "to": "max_min_multivariable", "relation": "最值需要综合考虑内部极值点和边界约束"},
+    {"from": "partial_derivatives", "to": "jacobian_determinant", "relation": "雅可比矩阵由偏导数构成"},
+    {"from": "jacobian_determinant", "to": "chain_rule_multivariable", "relation": "雅可比矩阵是链式法则的矩阵形式"},
+    {"from": "total_differential", "to": "taylor_multivariable", "relation": "泰勒展开是全微分的高阶推广"},
+    {"from": "multivariable_extrema", "to": "taylor_multivariable", "relation": "海森矩阵是泰勒展开的二阶项矩阵，用于极值判定"},
+    {"from": "lagrange_multipliers", "to": "multivariable_optimization_apps", "relation": "拉格朗日乘数法是约束优化的核心工具"},
+    {"from": "gradient", "to": "multivariable_optimization_apps", "relation": "梯度下降法是最优化的重要数值方法"}
+  ],
+  "teaching_sequence": [
+    "multivariable_function_basics",
+    "multivariable_limit",
+    "multivariable_continuity",
+    "partial_derivatives",
+    "total_differential",
+    "chain_rule_multivariable",
+    "implicit_function_theorem",
+    "directional_derivative",
+    "gradient",
+    "tangent_plane_normal_line",
+    "multivariable_extrema",
+    "lagrange_multipliers",
+    "max_min_multivariable",
+    "jacobian_determinant",
+    "taylor_multivariable",
+    "multivariable_optimization_apps"
+  ],
+  "statistics": {
+    "total_knowledge_points": 16,
+    "difficulty_distribution": {
+      "easy": 1,
+      "medium": 9,
+      "hard": 6
+    },
+    "total_exercise_types": 58
+  }
+}

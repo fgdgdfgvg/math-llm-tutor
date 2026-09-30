@@ -1,0 +1,71 @@
+{
+	"pages": [
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "Login",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "Home"
+			}
+		},
+		{
+			"path": "pages/solver/index",
+			"style": {
+				"navigationBarTitleText": "AI Math Solver"
+			}
+		},
+		{
+			"path": "pages/knowledge/index",
+			"style": {
+				"navigationBarTitleText": "Knowledge Graph"
+			}
+		},
+		{
+			"path": "pages/progress/index",
+			"style": {
+				"navigationBarTitleText": "Learning Progress"
+			}
+		},
+		{
+			"path": "pages/scenario/index",
+			"style": {
+				"navigationBarTitleText": "Scenario Demo"
+			}
+		},
+		{
+			"path": "pages/settings/index",
+			"style": {
+				"navigationBarTitleText": "Settings"
+			}
+		},
+		{
+			"path": "pages/practice/index",
+			"style": {
+				"navigationBarTitleText": "专项练习"
+			}
+		},
+		{
+			"path": "pages/mistakes/index",
+			"style": {
+				"navigationBarTitleText": "错题本"
+			}
+		},
+		{
+			"path": "pages/test/index",
+			"style": {
+				"navigationBarTitleText": "测试页面"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "Math AI Tutor",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}

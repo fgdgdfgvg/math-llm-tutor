@@ -1,0 +1,203 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: math_tutor_mongodb
+    restart: unless-stopped
+    ports:
+      # 默认映射到 27018：宿主机常已装有本地 MongoDB 服务（占用 27017），
+      # 容器内部仍通过网络别名 mongodb:27017 连接，两者互不影响。
+      # 只绑定回环：数据库端口（弱口令风险）不应对局域网/公网开放
+      - "127.0.0.1:${MONGO_HOST_PORT:-27018}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-123456}
+      MONGO_INITDB_DATABASE: math_llm_tutor
+      # 可选：首次初始化时创建最小权限应用账号（见 docker/mongo/init/01-app-user.js）
+      MONGO_APP_USER: ${MONGO_APP_USER:-}
+      MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:-}
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - math_tutor_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  neo4j:
+    image: neo4j:5.15
+    container_name: math_tutor_neo4j
+    restart: unless-stopped
+    ports:
+      # 只绑定回环：Neo4j 用固定密码，不对局域网暴露
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-12345678}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_dbms_memory_pagecache_size: 256m
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+    networks:
+      - math_tutor_network
+    profiles:
+      - full
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: math_tutor_redis
+    restart: unless-stopped
+    ports:
+      # 只绑定回环：Redis 弱口令，不对局域网暴露
+      - "127.0.0.1:6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123456}
+    volumes:
+      - redis_data:/data
+    networks:
+      - math_tutor_network
+    healthcheck:
+      test: redis-cli -a ${REDIS_PASSWORD:-redis123456} ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  sympy-service:
+    build:
+      context: ./sympy-service
+      dockerfile: Dockerfile
+    container_name: math_tutor_sympy
+    restart: unless-stopped
+    # 只绑定到宿主机回环：SymPy 无沙箱历史，不能对整个局域网/公网暴露。
+    # 容器间调用走 math_tutor_network 的 sympy-service:8000，不受影响。
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WORKERS=4
+      # 单次计算超时（秒）：超时直接强杀子进程，避免一个请求占满 worker
+      - SYMPY_COMPUTE_TIMEOUT_SECONDS=${SYMPY_COMPUTE_TIMEOUT_SECONDS:-12}
+      # 内部共享密钥：计算端点要求 X-Internal-Token，后端已自动携带
+      - SYMPY_INTERNAL_TOKEN=${SYMPY_INTERNAL_TOKEN:-math_tutor_internal_sympy_token}
+    networks:
+      - math_tutor_network
+    healthcheck:
+      # 镜像基于 python:slim，没有 curl，用 python 自检，否则容器永远 unhealthy，
+      # 会让 depends_on: service_healthy 的 backend 无法启动。
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./nestjs-backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: math_tutor_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # 本地调机 .env 里的 AI key（SiliconFlow 等）全部透传给容器；
+    # 缺了它们智能体会静默降级到规则引擎（解题能跑但质量降级）。
+    env_file:
+      - ./nestjs-backend/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USER:-root}:${MONGO_ROOT_PASSWORD:-123456}@mongodb:27017/math_llm_tutor?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-math_llm_tutor_dev_jwt_secret_key_2024}
+      # 代码读取的是 JWT_EXPIRATION（JWT_EXPIRES_IN 是不生效的历史写法）
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-7d}
+      # 生产模式（NODE_ENV=production）下必须显式配置允许的跨域来源：
+      # 旧行为是未配置时“反射任意 Origin + credentials”，等于任何站点都能带用户
+      # 凭据调 API。后端现在缺少该项会拒绝启动，这里给出可被 .env 覆盖的默认值。
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080,http://localhost:3000,http://localhost:5173,http://127.0.0.1:8080}
+      # 全新数据卷时自动导入 datasets/math.json，开箱即有题库
+      - SEED_QUESTIONS=${SEED_QUESTIONS:-true}
+      - DATASETS_DIR=/app/datasets
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - KATCODER_API_KEY=${KATCODER_API_KEY}
+      - AI_API_BASE_URL=${AI_API_BASE_URL:-https://api.edgefn.net/v1}
+      - SYMPY_SERVICE_URL=http://sympy-service:8000
+      - SYMPY_INTERNAL_TOKEN=${SYMPY_INTERNAL_TOKEN:-math_tutor_internal_sympy_token}
+      # 客户端超时略大于服务端计算预算，以便拿到结构化 504 TIMEOUT 而不是断链
+      - SYMPY_TIMEOUT_MS=${SYMPY_TIMEOUT_MS:-20000}
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-12345678}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123456}@redis:6379
+    volumes:
+      # 题库/知识点映射数据以只读方式挂载，供启动时初始化题库使用
+      - ./datasets:/app/datasets:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      sympy-service:
+        condition: service_healthy
+    networks:
+      - math_tutor_network
+    healthcheck:
+      # 后端健康检查路由是 /health（没有 /api 前缀）；用 127.0.0.1 避免容器内 IPv6 解析问题
+      test: wget -q -O /dev/null http://127.0.0.1:3000/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./uniapp-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${API_BASE_URL:-http://localhost:3000}
+    container_name: math_tutor_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - math_tutor_network
+    healthcheck:
+      # nginx:alpine 没有 curl，用 busybox wget
+      test: wget -q -O /dev/null http://127.0.0.1/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mongodb_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  math_tutor_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

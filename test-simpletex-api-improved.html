@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleTex API测试（改进版）</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>SimpleTex API测试（改进版）</h1>
+    
+    <div class="test-section">
+        <h2>配置</h2>
+        <label>API URL: <input type="text" id="apiUrl" value="https://server.simpletex.cn/api/simpletex_ocr" size="50"></label><br>
+        <label>APP ID: <input type="text" id="appId" value="wPVKh4dOBZVVyILB5mwHhrbo" size="50"></label><br>
+        <label>APP Secret: <input type="text" id="appSecret" value="hSLjAK02Krmt9oVwM10SiIRGYEsKSTYD" size="50"></label><br>
+        <button onclick="testSignature()">测试签名生成</button>
+        <button onclick="testApiCall()">测试API调用</button>
+        <button onclick="testNetwork()">测试网络连接</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>签名测试</h2>
+        <div id="signatureResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>API调用测试</h2>
+        <input type="file" id="imageFile" accept="image/*">
+        <button onclick="testApiCall()">上传并测试</button>
+        <div id="apiResult" class="result"></div>
+    </div>
+
+    <script>
+        // 生成16位随机字符串
+        function generateRandomStr() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 16; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // 正确的MD5实现
+        function md5(message) {
+            function rotateLeft(n, s) {
+                return (n << s) | (n >>> (32 - s));
+            }
+
+            function addUnsigned(x, y) {
+                const lsw = (x & 0xFFFF) + (y & 0xFFFF);
+                const msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+                return (msw << 16) | (lsw & 0xFFFF);
+            }
+
+            function ft(t, b, c, d) {
+                if (t < 20) return (b & c) | ((~b) & d);
+                if (t < 40) return b ^ c ^ d;
+                if (t < 60) return (b & c) | (b & d) | (c & d);
+                return b ^ c ^ d;
+            }
+
+            function kt(t) {
+                return Math.floor(0x100000000 * Math.abs(Math.sin(t + 1)));
+            }
+
+            let x = [];
+            let messageLength = message.length;
+            let n = messageLength * 8;
+            let m = (n + 64) >>> 9 << 4;
+
+            for (let i = 0; i < m; i++) {
+                x[i] = 0;
+            }
+
+            for (let i = 0; i < messageLength; i++) {
+                x[i >> 2] |= message.charCodeAt(i) << ((i & 3) << 3);
+            }
+
+            x[n >> 5] |= 0x80 << ((n & 31));
+            x[m - 1] = n;
+
+            let a = 0x67452301;
+            let b = 0xEFCDAB89;
+            let c = 0x98BADCFE;
+            let d = 0x10325476;
+
+            for (let i = 0; i < x.length; i += 16) {
+                let olda = a;
+                let oldb = b;
+                let oldc = c;
+                let oldd = d;
+
+                for (let j = 0; j < 80; j++) {
+                    let g = (j < 16) ? j : ((j * 5 + 1) % 16);
+                    let temp = addUnsigned(addUnsigned(rotateLeft(a, 5), ft(j, b, c, d)), addUnsigned(x[i + g], kt(j)));
+                    a = d;
+                    d = c;
+                    c = b;
+                    b = temp;
+                }
+
+                a = addUnsigned(a, olda);
+                b = addUnsigned(b, oldb);
+                c = addUnsigned(c, oldc);
+                d = addUnsigned(d, oldd);
+            }
+
+            function toHex(n) {
+                const hexChars = "0123456789abcdef";
+                let result = "";
+                for (let j = 0; j < 4; j++) {
+                    result += hexChars.charAt((n >> (j * 8 + 4)) & 0x0F);
+                    result += hexChars.charAt((n >> (j * 8)) & 0x0F);
+                }
+                return result;
+            }
+
+            return toHex(a) + toHex(b) + toHex(c) + toHex(d);
+        }
+
+        // 生成签名
+        function generateSignature(data, appId, appSecret) {
+            const randomStr = generateRandomStr();
+            const timestamp = Math.floor(Date.now() / 1000).toString();
+
+            // 收集所有参数
+            const params = {
+                ...data,
+                'random-str': randomStr,
+                'timestamp': timestamp,
+                'app-id': appId
+            };
+
+            // 对key进行排序
+            const sortedKeys = Object.keys(params).sort();
+            
+            // 生成签名字符串
+            let signStr = '';
+            for (const key of sortedKeys) {
+                if (signStr) signStr += '&';
+                signStr += `${key}=${params[key]}`;
+            }
+            
+            // 添加secret
+            signStr += `&secret=${appSecret}`;
+            
+            // 生成MD5签名
+            const sign = md5(signStr);
+
+            // 构建header
+            const headers = {
+                'app-id': appId,
+                'random-str': randomStr,
+                'timestamp': timestamp,
+                'sign': sign
+            };
+
+            return { headers, signStr };
+        }
+
+        // 测试签名生成
+        function testSignature() {
+            const appId = document.getElementById('appId').value;
+            const appSecret = document.getElementById('appSecret').value;
+            const data = { rec_mode: 'auto' };
+
+            const { headers, signStr } = generateSignature(data, appId, appSecret);
+            
+            const resultDiv = document.getElementById('signatureResult');
+            resultDiv.innerHTML = `
+                <h3>签名测试结果</h3>
+                <p><strong>原始数据:</strong> ${JSON.stringify(data)}</p>
+                <p><strong>签名字符串:</strong> ${signStr}</p>
+                <p><strong>生成的Header:</strong></p>
+                <pre>${JSON.stringify(headers, null, 2)}</pre>
+            `;
+        }
+
+        // 测试网络连接
+        async function testNetwork() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const resultDiv = document.getElementById('apiResult');
+            
+            resultDiv.innerHTML = '<p>正在测试网络连接...</p>';
+            
+            try {
+                // 测试直接连接API服务器
+                const directResponse = await fetch(apiUrl, {
+                    method: 'HEAD',
+                    mode: 'no-cors' // 使用no-cors模式避免CORS错误
+                });
+                
+                resultDiv.innerHTML += '<p class="success">直接连接API服务器: 成功（状态未知，因为使用了no-cors模式）</p>';
+                
+                // 测试本地代理
+                const proxyTestUrl = `/api/proxy/${encodeURIComponent(apiUrl)}`;
+                
+                const proxyResponse = await fetch(proxyTestUrl, {
+                    method: 'HEAD',
+                    timeout: 10000
+                });
+                
+                resultDiv.innerHTML += `<p class="success">本地代理连接: ${proxyResponse.ok ? '成功' : '失败'}</p>`;
+                resultDiv.innerHTML += `<p>代理响应状态: ${proxyResponse.status} ${proxyResponse.statusText}</p>`;
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="error">网络测试失败: ${error.message}</p>`;
+                console.error('网络测试错误:', error);
+            }
+        }
+
+        // 测试API调用
+        async function testApiCall() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const appId = document.getElementById('appId').value;
+            const appSecret = document.getElementById('appSecret').value;
+            const fileInput = document.getElementById('imageFile');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('请选择一个图片文件');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('rec_mode', 'auto');
+
+            const { headers, signStr } = generateSignature({ rec_mode: 'auto' }, appId, appSecret);
+            
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = `
+                <p>正在调用API...</p>
+                <p>API URL: ${apiUrl}</p>
+                <p>使用本地代理: 是</p>
+                <p>Headers: ${JSON.stringify(headers)}</p>
+                <p>Sign String: ${signStr}</p>
+                <p>File: ${file.name} (${file.size} bytes)</p>
+                <p>浏览器: ${navigator.userAgent}</p>
+                <p>当前URL: ${window.location.href}</p>
+            `;
+
+            try {
+                console.log('开始API调用', { 
+                    apiUrl, 
+                    headers, 
+                    file: file.name, 
+                    fileSize: file.size,
+                    browser: navigator.userAgent,
+                    currentUrl: window.location.href
+                });
+                
+                // 使用本地代理
+                const requestUrl = `/api/proxy/${encodeURIComponent(apiUrl)}`;
+                console.log('使用本地代理:', requestUrl);
+                
+                // 确保不设置Content-Type头，让浏览器自动处理
+                const fetchHeaders = { ...headers };
+                // 移除可能的Content-Type头，避免冲突
+                delete fetchHeaders['Content-Type'];
+                
+                console.log('请求配置:', {
+                    url: requestUrl,
+                    method: 'POST',
+                    headers: fetchHeaders,
+                    body: formData,
+                    credentials: 'omit',
+                    mode: 'cors'
+                });
+                
+                // 添加请求超时处理
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+                
+                const response = await fetch(requestUrl, {
+                    method: 'POST',
+                    headers: fetchHeaders,
+                    body: formData,
+                    credentials: 'omit',
+                    mode: 'cors',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+
+                console.log('API响应状态:', response.status, response.statusText);
+                console.log('API响应头:', Object.fromEntries(response.headers.entries()));
+                
+                // 先获取响应文本，再尝试解析JSON
+                const responseText = await response.text();
+                console.log('API响应文本:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('API响应数据:', data);
+                } catch (jsonError) {
+                    console.error('JSON解析错误:', jsonError);
+                    throw new Error(`API返回的不是有效JSON: ${responseText.substring(0, 200)}...`);
+                }
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <h3>API调用结果</h3>
+                        <p class="success">调用成功!</p>
+                        <p>状态码: ${response.status} ${response.statusText}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>API调用结果</h3>
+                        <p class="error">调用失败: ${response.status} ${response.statusText}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                console.error('API调用错误:', error);
+                console.error('错误类型:', error.name);
+                console.error('错误堆栈:', error.stack);
+                
+                let errorMessage = error.message;
+                let errorSuggestion = '';
+                
+                if (error.name === 'AbortError') {
+                    errorMessage = '请求超时，请检查网络连接';
+                    errorSuggestion = '尝试检查网络连接';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '网络请求失败';
+                    errorSuggestion = '可能是网络连接问题或API服务器问题';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = '网络错误';
+                    errorSuggestion = '检查网络连接是否正常';
+                } else if (error.message.includes('JSON')) {
+                    errorMessage = 'API返回的不是有效JSON';
+                    errorSuggestion = '检查API服务器是否正常响应';
+                }
+                
+                resultDiv.innerHTML = `
+                    <h3>API调用结果</h3>
+                    <p class="error">错误: ${errorMessage}</p>
+                    <p>错误类型: ${error.name}</p>
+                    <p>错误详情: ${error.stack}</p>
+                    <p>可能的原因: ${errorSuggestion}</p>
+                    <p>请检查浏览器控制台获取更多详细信息</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

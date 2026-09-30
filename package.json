@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "echarts": "^6.0.0",
+    "form-data": "^4.0.5",
+    "mongoose": "^9.3.1",
+    "node-fetch": "^2.7.0"
+  },
+  "name": "math_llm_tutor",
+  "version": "1.0.0",
+  "description": "This project combines the strengths of multiple educational systems to create a specialized Math Education Platform powered by LLMs (Large Language Models) and Python's symbolic computation capabilities.",
+  "main": "local-server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "node self-check.cjs",
+    "self-check": "node self-check.cjs",
+    "self-check:docker": "node self-check.cjs --mode docker",
+    "self-check:local": "node self-check.cjs --mode local",
+    "self-check:full": "node self-check.cjs --full --with-frontend",
+    "reset:data": "node reset-test-data.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

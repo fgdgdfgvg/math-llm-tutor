@@ -1,0 +1,182 @@
+{
+  "module_name": "曲线积分与曲面积分",
+  "module_id": "curve_surface_integrals",
+  "description": "涵盖第一类曲线积分（对弧长）、第二类曲线积分（对坐标）、格林公式与积分与路径无关条件、第一类曲面积分（对面积）、第二类曲面积分（对坐标）、高斯公式与散度、斯托克斯公式与旋度",
+  "knowledge_points": [
+    {
+      "id": "arc_length_integral",
+      "name": "第一类曲线积分（对弧长的曲线积分）",
+      "description": "对弧长曲线积分的定义（物质曲线的质量），性质和计算方法（参数方程表示下化为定积分），应用（曲线弧长、质量、质心）",
+      "formulas": [
+        "\\int_L f(x,y)ds=\\lim_{\\lambda\\to0}\\sum_{i=1}^{n}f(\\xi_i,\\eta_i)\\Delta s_i",
+        "\\int_L f(x,y)ds=\\int_\\alpha^\\beta f(\\varphi(t),\\psi(t))\\sqrt{[\\varphi'(t)]^2+[\\psi'(t)]^2}dt"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["definite_integral", "parametric_curves", "arc_length_formula"],
+      "applications": ["曲线质量", "曲线质心", "曲线的转动惯量"],
+      "common_mistakes": ["弧微分ds的公式记忆错误", "参数范围（起点到终点）的确定", "被积函数代入参变量时的符号"],
+      "exercise_types": ["计算对弧长的曲线积分", "求曲线形构件的质量", "利用对称性简化"],
+      "latex_templates": [
+        "\\int_L f(x,y)\\,\\mathrm{d}s",
+        "\\int_L \\mathrm{d}s=L\\ (\\text{曲线弧长})"
+      ]
+    },
+    {
+      "id": "coordinate_line_integral",
+      "name": "第二类曲线积分（对坐标的曲线积分）",
+      "description": "对坐标曲线积分的定义（变力沿曲线作功），性质和计算方法（参数方程和直角坐标方程下化为定积分），两类曲线积分的联系",
+      "formulas": [
+        "\\int_L P(x,y)dx+Q(x,y)dy=\\int_\\alpha^\\beta[P(\\varphi(t),\\psi(t))\\varphi'(t)+Q(\\varphi(t),\\psi(t))\\psi'(t)]dt",
+        "\\int_L Pdx+Qdy=\\int_L(P\\cos\\alpha+Q\\cos\\beta)ds"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["arc_length_integral", "parametric_curves", "vector_basic_concepts"],
+      "applications": ["变力作功", "环流量", "平面流速场的环量"],
+      "common_mistakes": ["积分方向（起点→终点）的确定和上下限对应关系", "方向改变时积分变号", "两类曲线积分转换时的方向余弦"],
+      "exercise_types": ["计算对坐标的曲线积分", "计算变力作功", "两类曲线积分的互化"],
+      "latex_templates": [
+        "\\int_L P\\,\\mathrm{d}x+Q\\,\\mathrm{d}y",
+        "W=\\int_L \\vec{F}\\cdot\\mathrm{d}\\vec{r}"
+      ]
+    },
+    {
+      "id": "greens_theorem",
+      "name": "格林公式",
+      "description": "格林公式的定理内容和证明，建立平面闭曲线上的曲线积分与二重积分的联系，应用：将曲线积分化为二重积分简化计算，求平面区域面积",
+      "formulas": [
+        "\\oint_L Pdx+Qdy=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dxdy",
+        "S_D=\\frac{1}{2}\\oint_L xdy-ydx\\ (\\text{用曲线积分求面积})"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["coordinate_line_integral", "double_integral_rectangular", "partial_derivatives"],
+      "applications": ["平面区域面积", "将复杂曲线积分化为二重积分", "流体力学中的环量计算"],
+      "common_mistakes": ["格林公式中偏导数∂Q/∂x-∂P/∂y的符号", "L必须是D的整个边界且方向是正向（逆时针）", "区域内有奇点时不能直接用格林公式"],
+      "exercise_types": ["用格林公式计算曲线积分", "用曲线积分求面积", "含奇点的曲线积分（挖洞法）"],
+      "latex_templates": [
+        "\\oint_L P\\mathrm{d}x+Q\\mathrm{d}y=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)\\mathrm{d}x\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "path_independence",
+      "name": "积分与路径无关的条件",
+      "description": "平面曲线积分∫_L Pdx+Qdy与路径无关的充要条件（∂P/∂y=∂Q/∂x在单连通区域内成立），全微分的原函数求法，势函数",
+      "formulas": [
+        "\\frac{\\partial P}{\\partial y}=\\frac{\\partial Q}{\\partial x}\\ (\\text{单连通区域D内})\\iff\\exists u\\text{使}du=Pdx+Qdy",
+        "u(x,y)=\\int_{x_0}^{x}P(x,y_0)dx+\\int_{y_0}^{y}Q(x,y)dy+C"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["greens_theorem", "total_differential", "partial_derivatives"],
+      "applications": ["保守力场（势函数）", "热力学中的状态函数", "复变函数基础"],
+      "common_mistakes": ["混淆必要条件（区域内∂P/∂y=∂Q/∂x成立）和充分条件（需要单连通区域）", "折线积分法求原函数时的路径选择"],
+      "exercise_types": ["判断积分是否与路径无关", "求全微分的原函数", "利用路径无关简化积分"],
+      "latex_templates": [
+        "\\frac{\\partial P}{\\partial y}=\\frac{\\partial Q}{\\partial x}\\Rightarrow\\exists u:du=P\\mathrm{d}x+Q\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "surface_area_integral",
+      "name": "第一类曲面积分（对面积的曲面积分）",
+      "description": "对面积曲面积分的定义（物质曲面的质量），计算方法（向坐标面投影化为二重积分），应用（曲面质量、质心、转动惯量）",
+      "formulas": [
+        "\\iint_\\Sigma f(x,y,z)dS=\\lim_{\\lambda\\to0}\\sum f(\\xi_i,\\eta_i,\\zeta_i)\\Delta S_i",
+        "\\iint_\\Sigma f dS=\\iint_{D_{xy}}f(x,y,z(x,y))\\sqrt{1+z_x^2+z_y^2}dxdy"
+      ],
+      "difficulty": "medium",
+      "prerequisites": ["double_integral_rectangular", "surface_area", "partial_derivatives"],
+      "applications": ["曲面形构件的质量", "曲面质心", "电荷总量"],
+      "common_mistakes": ["面积元素dS=\\sqrt{1+z_x^2+z_y^2}dxdy遗忘", "曲面投影方向选择不适合", "曲面的单值性条件"],
+      "exercise_types": ["计算对面积的曲面积分", "求曲面质量", "利用对称性化简"],
+      "latex_templates": [
+        "\\iint_\\Sigma f(x,y,z)\\,\\mathrm{d}S=\\iint_{D_{xy}}f(x,y,z(x,y))\\sqrt{1+z_x^2+z_y^2}\\,\\mathrm{d}x\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "coordinate_surface_integral",
+      "name": "第二类曲面积分（对坐标的曲面积分）",
+      "description": "对坐标曲面积分的定义（流向曲面一侧的流量），性质（与曲面侧有关），计算方法（向坐标面投影），两类曲面积分的联系",
+      "formulas": [
+        "\\iint_\\Sigma Pdydz+Qdzdx+Rdxdy",
+        "\\iint_\\Sigma Pdydz+Qdzdx+Rdxdy=\\iint_\\Sigma(P\\cos\\alpha+Q\\cos\\beta+R\\cos\\gamma)dS"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["surface_area_integral", "coordinate_line_integral", "vector_basic_concepts"],
+      "applications": ["流量计算", "电通量", "热通量"],
+      "common_mistakes": ["曲面的侧（上侧/下侧，前侧/后侧，左侧/右侧）与投影符号的关系", "向不同坐标面投影时的处理", "两类曲面积分转换时的方向余弦符号"],
+      "exercise_types": ["计算对坐标的曲面积分", "计算流量", "两类曲面积分的互化"],
+      "latex_templates": [
+        "\\iint_\\Sigma P\\,\\mathrm{d}y\\mathrm{d}z+Q\\,\\mathrm{d}z\\mathrm{d}x+R\\,\\mathrm{d}x\\mathrm{d}y"
+      ]
+    },
+    {
+      "id": "gauss_divergence_theorem",
+      "name": "高斯公式（散度定理）",
+      "description": "高斯公式的定理内容，建立闭曲面上的曲面积分与三重积分的联系（通量与散度的关系），应用：将曲面积分化为三重积分",
+      "formulas": [
+        "\\oiint_\\Sigma Pdydz+Qdzdx+Rdxdy=\\iiint_\\Omega\\left(\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}\\right)dV",
+        "\\operatorname{div}\\vec{F}=\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["coordinate_surface_integral", "triple_integral_rectangular", "partial_derivatives"],
+      "applications": ["高斯定理（电磁学）", "通量计算", "散度分析"],
+      "common_mistakes": ["散度表达式记错（∂P/∂x+∂Q/∂y+∂R/∂z）", "取闭曲面外侧为正方向", "区域内有奇点时不直接应用"],
+      "exercise_types": ["用高斯公式计算曲面积分", "计算散度", "含奇点的曲面积分"],
+      "latex_templates": [
+        "\\oiint_\\Sigma \\vec{F}\\cdot\\vec{n}\\,\\mathrm{d}S=\\iiint_\\Omega\\nabla\\cdot\\vec{F}\\,\\mathrm{d}V"
+      ]
+    },
+    {
+      "id": "stokes_curl_theorem",
+      "name": "斯托克斯公式（旋度定理）",
+      "description": "斯托克斯公式的定理内容，建立空间曲面的边界闭曲线上的曲线积分与该曲面上的曲面积分的联系，旋度的概念",
+      "formulas": [
+        "\\oint_\\Gamma Pdx+Qdy+Rdz=\\iint_\\Sigma\\begin{vmatrix} dydz & dzdx & dxdy \\\\ \\partial/\\partial x & \\partial/\\partial y & \\partial/\\partial z \\\\ P & Q & R \\end{vmatrix}",
+        "\\operatorname{rot}\\vec{F}=\\nabla\\times\\vec{F}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["gauss_divergence_theorem", "coordinate_line_integral", "cross_product"],
+      "applications": ["旋度场分析", "流体力学中的环量与涡量", "电磁场中的安培环路定理"],
+      "common_mistakes": ["斯托克斯公式行列式的展开符号", "曲面Σ的侧与曲线Γ的方向的右手定则对应", "曲面边界方向确定"],
+      "exercise_types": ["用斯托克斯公式计算空间曲线积分", "计算旋度", "空间曲线积分与曲面积分的转化"],
+      "latex_templates": [
+        "\\oint_\\Gamma \\vec{F}\\cdot\\mathrm{d}\\vec{r}=\\iint_\\Sigma(\\nabla\\times\\vec{F})\\cdot\\vec{n}\\,\\mathrm{d}S"
+      ]
+    },
+    {
+      "id": "field_theory_basics",
+      "name": "场论初步",
+      "description": "数量场的梯度（grad）、向量场的散度（div）和旋度（rot），有势场（保守场）、无源场（管量场）的判定，调和场的概念",
+      "formulas": [
+        "\\operatorname{grad}u=\\left(\\frac{\\partial u}{\\partial x},\\frac{\\partial u}{\\partial y},\\frac{\\partial u}{\\partial z}\\right)",
+        "\\operatorname{div}\\vec{F}=\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}",
+        "\\operatorname{rot}\\vec{F}=\\begin{vmatrix}\\vec{i}&\\vec{j}&\\vec{k}\\\\\\partial/\\partial x&\\partial/\\partial y&\\partial/\\partial z\\\\P&Q&R\\end{vmatrix}"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["gauss_divergence_theorem", "stokes_curl_theorem", "partial_derivatives"],
+      "applications": ["电磁场理论", "流体力学", "热传导分析"],
+      "common_mistakes": ["梯度、散度、旋度的定义和计算混淆", "有势场判定条件（rotF=0在单连通区域）", "div(rotF)=0和rot(gradu)=0的恒等式"],
+      "exercise_types": ["计算梯度、散度、旋度", "判定有势场和无源场", "证明场论恒等式"],
+      "latex_templates": [
+        "\\nabla=\\left(\\frac{\\partial}{\\partial x},\\frac{\\partial}{\\partial y},\\frac{\\partial}{\\partial z}\\right)",
+        "\\nabla\\cdot(\\nabla\\times\\vec{F})=0"
+      ]
+    },
+    {
+      "id": "curve_surface_integral_applications",
+      "name": "曲线曲面积分的综合应用",
+      "description": "利用曲线积分和曲面积分解决工程技术中的实际问题，包括流体力学计算、电磁场通量和环量、热传导通量等",
+      "formulas": [
+        "\\Phi=\\oiint_\\Sigma \\vec{E}\\cdot\\vec{n}dS\\ (\\text{电通量})",
+        "\\Gamma=\\oint_L \\vec{v}\\cdot d\\vec{r}\\ (\\text{速度环量})",
+        "Q=\\iint_\\Sigma\\vec{q}\\cdot\\vec{n}dS\\ (\\text{热流量})"
+      ],
+      "difficulty": "hard",
+      "prerequisites": ["gauss_divergence_theorem", "stokes_curl_theorem", "field_theory_basics"],
+      "applications": ["电场高斯定理", "流体环量计算", "热通量计算"],
+      "common_mistakes": ["方向（曲面侧）的物理意义理解不清", "法向量方向的选择"],
+      "exercise_types": ["综合应用题", "物理背景的积分计算", "工程问题建模"],
+      "latex_templates": [
+        "\\Phi=\\oiint_\\Sigma\\vec{F}\\cdot\\mathrm{d}\\vec{S}"
+      ]
+    }
+  ]
+}

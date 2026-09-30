@@ -1,0 +1,628 @@
+diff --git a/node_modules/vant/es/address-edit/AddressEdit.mjs b/node_modules/vant/es/address-edit/AddressEdit.mjs
+index 3b88a0f..135a8c6 100644
+--- a/node_modules/vant/es/address-edit/AddressEdit.mjs
++++ b/node_modules/vant/es/address-edit/AddressEdit.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode } from "vue";
++import { createVNode as _createVNode } from "vue";
+ import { ref, watch, computed, nextTick, reactive, defineComponent } from "vue";
+ import { extend, isObject, isMobile, truthProp, numericProp, makeArrayProp, makeNumericProp, createNamespace } from "../utils/index.mjs";
+ import { useExpose } from "../composables/use-expose.mjs";
+@@ -173,7 +173,7 @@ var stdin_default = defineComponent({
+       data.addressDetail = value;
+     };
+     const renderSetDefaultCell = () => {
+-      if (props.showSetDefault) {
++      if (props.showSetDefault && !hideBottomFields.value) {
+         const slots2 = {
+           "right-icon": () => _createVNode(Switch, {
+             "modelValue": data.isDefault,
+@@ -182,11 +182,11 @@ var stdin_default = defineComponent({
+             "onChange": (event) => emit("change-default", event)
+           }, null)
+         };
+-        return _withDirectives(_createVNode(Cell, {
++        return _createVNode(Cell, {
+           "center": true,
+           "title": t("defaultAddress"),
+           "class": bem("default")
+-        }, slots2), [[_vShow, !hideBottomFields.value]]);
++        }, slots2);
+       }
+     };
+     useExpose({
+diff --git a/node_modules/vant/es/card/Card.mjs b/node_modules/vant/es/card/Card.mjs
+index ff234f3..6c54551 100644
+--- a/node_modules/vant/es/card/Card.mjs
++++ b/node_modules/vant/es/card/Card.mjs
+@@ -1,4 +1,4 @@
+-import { createTextVNode as _createTextVNode, createVNode as _createVNode } from "vue";
++import { createVNode as _createVNode } from "vue";
+ import { defineComponent } from "vue";
+ import { isDef, numericProp, makeStringProp, createNamespace } from "../utils/index.mjs";
+ import { Tag } from "../tag/index.mjs";
+@@ -84,7 +84,7 @@ var stdin_default = defineComponent({
+         "class": bem("price-currency")
+       }, [props.currency]), _createVNode("span", {
+         "class": bem("price-integer")
+-      }, [priceArr[0]]), _createTextVNode("."), _createVNode("span", {
++      }, [priceArr[0]]), ".", _createVNode("span", {
+         "class": bem("price-decimal")
+       }, [priceArr[1]])]);
+     };
+diff --git a/node_modules/vant/es/collapse-item/CollapseItem.mjs b/node_modules/vant/es/collapse-item/CollapseItem.mjs
+index a7f1649..61cb925 100644
+--- a/node_modules/vant/es/collapse-item/CollapseItem.mjs
++++ b/node_modules/vant/es/collapse-item/CollapseItem.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode, mergeProps as _mergeProps } from "vue";
++import { createVNode as _createVNode, mergeProps as _mergeProps } from "vue";
+ import { ref, watch, computed, nextTick, defineComponent } from "vue";
+ import { cellSharedProps } from "../cell/Cell.mjs";
+ import { pick, extend, truthProp, numericProp, createNamespace } from "../utils/index.mjs";
+@@ -110,14 +110,16 @@ var stdin_default = defineComponent({
+     };
+     const renderContent = lazyRender(() => {
+       var _a;
+-      return _withDirectives(_createVNode("div", {
+-        "ref": wrapperRef,
+-        "class": bem("wrapper"),
+-        "onTransitionend": onTransitionEnd
+-      }, [_createVNode("div", {
+-        "ref": contentRef,
+-        "class": bem("content")
+-      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)])]), [[_vShow, show.value]]);
++      if (show.value) {
++        return _createVNode("div", {
++          "ref": wrapperRef,
++          "class": bem("wrapper"),
++          "onTransitionend": onTransitionEnd
++        }, [_createVNode("div", {
++          "ref": contentRef,
++          "class": bem("content")
++        }, [(_a = slots.default) == null ? void 0 : _a.call(slots)])]);
++      }
+     });
+     useExpose({
+       toggle,
+diff --git a/node_modules/vant/es/coupon-list/CouponList.mjs b/node_modules/vant/es/coupon-list/CouponList.mjs
+index df1294f..aa562f9 100644
+--- a/node_modules/vant/es/coupon-list/CouponList.mjs
++++ b/node_modules/vant/es/coupon-list/CouponList.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode } from "vue";
++import { createVNode as _createVNode } from "vue";
+ import { ref, watch, computed, nextTick, onMounted, defineComponent } from "vue";
+ import { truthProp, windowHeight, makeArrayProp, makeStringProp, makeNumberProp, createNamespace } from "../utils/index.mjs";
+ import { useRefs } from "../composables/use-refs.mjs";
+@@ -171,14 +171,14 @@ var stdin_default = defineComponent({
+       default: () => [renderCouponTab(), renderDisabledTab()]
+     }), _createVNode("div", {
+       "class": bem("bottom")
+-    }, [_withDirectives(_createVNode(Button, {
++    }, [props.showCloseButton && _createVNode(Button, {
+       "round": true,
+       "block": true,
+       "type": "danger",
+       "class": bem("close"),
+       "text": props.closeButtonText || t("close"),
+       "onClick": () => emit("change", -1)
+-    }, null), [[_vShow, props.showCloseButton]])])]);
++    }, null)])]);
+   }
+ });
+ export {
+diff --git a/node_modules/vant/es/dialog/Dialog.mjs b/node_modules/vant/es/dialog/Dialog.mjs
+index a7918d5..1ea8145 100644
+--- a/node_modules/vant/es/dialog/Dialog.mjs
++++ b/node_modules/vant/es/dialog/Dialog.mjs
+@@ -1,5 +1,5 @@
+ import { mergeProps as _mergeProps, createVNode as _createVNode } from "vue";
+-import { ref, reactive, withKeys, defineComponent } from "vue";
++import { ref, reactive, defineComponent } from "vue";
+ import { noop, pick, extend, addUnit, truthProp, isFunction, BORDER_TOP, BORDER_LEFT, unknownProp, numericProp, makeStringProp, callInterceptor, createNamespace } from "../utils/index.mjs";
+ import { popupSharedProps, popupSharedPropKeys } from "../popup/shared.mjs";
+ import { Popup } from "../popup/index.mjs";
+@@ -71,7 +71,7 @@ var stdin_default = defineComponent({
+     };
+     const onCancel = getActionHandler("cancel");
+     const onConfirm = getActionHandler("confirm");
+-    const onKeydown = withKeys((event) => {
++    const onKeydown = (event) => {
+       var _a, _b;
+       if (event.target !== ((_b = (_a = root.value) == null ? void 0 : _a.popupRef) == null ? void 0 : _b.value)) {
+         return;
+@@ -80,9 +80,11 @@ var stdin_default = defineComponent({
+         Enter: props.showConfirmButton ? onConfirm : noop,
+         Escape: props.showCancelButton ? onCancel : noop
+       };
+-      onEventType[event.key]();
++      if (event.key in onEventType) {
++        onEventType[event.key]();
++      }
+       emit("keydown", event);
+-    }, ["enter", "esc"]);
++    };
+     const renderTitle = () => {
+       const title = slots.title ? slots.title() : props.title;
+       if (title) {
+diff --git a/node_modules/vant/es/dropdown-item/DropdownItem.mjs b/node_modules/vant/es/dropdown-item/DropdownItem.mjs
+index ee7c28e..1f00077 100644
+--- a/node_modules/vant/es/dropdown-item/DropdownItem.mjs
++++ b/node_modules/vant/es/dropdown-item/DropdownItem.mjs
+@@ -1,5 +1,5 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode } from "vue";
+-import { reactive, Teleport, defineComponent } from "vue";
++import { createVNode as _createVNode } from "vue";
++import { reactive, defineComponent } from "vue";
+ import { truthProp, unknownProp, getZIndexStyle, createNamespace, makeArrayProp } from "../utils/index.mjs";
+ import { DROPDOWN_KEY } from "../dropdown-menu/DropdownMenu.mjs";
+ import { useParent } from "@vant/use";
+@@ -129,48 +129,45 @@ var stdin_default = defineComponent({
+       } else {
+         style.bottom = `${offset.value}px`;
+       }
+-      return _withDirectives(_createVNode("div", {
+-        "style": style,
+-        "class": bem([direction]),
+-        "onClick": onClickWrapper
+-      }, [_createVNode(Popup, {
+-        "show": state.showPopup,
+-        "onUpdate:show": ($event) => state.showPopup = $event,
+-        "role": "menu",
+-        "class": bem("content"),
+-        "overlay": overlay,
+-        "position": direction === "down" ? "top" : "bottom",
+-        "duration": state.transition ? duration : 0,
+-        "lazyRender": props.lazyRender,
+-        "overlayStyle": {
+-          position: "absolute"
+-        },
+-        "aria-labelledby": `${parent.id}-${index.value}`,
+-        "closeOnClickOverlay": closeOnClickOverlay,
+-        "onOpen": onOpen,
+-        "onClose": onClose,
+-        "onOpened": onOpened,
+-        "onClosed": onClosed
+-      }, {
+-        default: () => {
+-          var _a;
+-          return [props.options.map(renderOption), (_a = slots.default) == null ? void 0 : _a.call(slots)];
+-        }
+-      })]), [[_vShow, state.showWrapper]]);
++      if (state.showWrapper) {
++        return _createVNode("div", {
++          "style": style,
++          "class": bem([direction]),
++          "onClick": onClickWrapper
++        }, [_createVNode(Popup, {
++          "show": state.showPopup,
++          "onUpdate:show": ($event) => state.showPopup = $event,
++          "role": "menu",
++          "class": bem("content"),
++          "overlay": overlay,
++          "position": direction === "down" ? "top" : "bottom",
++          "duration": state.transition ? duration : 0,
++          "lazyRender": props.lazyRender,
++          "overlayStyle": {
++            position: "absolute"
++          },
++          "aria-labelledby": `${parent.id}-${index.value}`,
++          "closeOnClickOverlay": closeOnClickOverlay,
++          "onOpen": onOpen,
++          "onClose": onClose,
++          "onOpened": onOpened,
++          "onClosed": onClosed
++        }, {
++          default: () => {
++            var _a;
++            return [props.options.map(renderOption), (_a = slots.default) == null ? void 0 : _a.call(slots)];
++          }
++        })]);
++      }
+     };
++
+     useExpose({
+       state,
+       toggle,
+       renderTitle
+     });
++
+     return () => {
+-      if (props.teleport) {
+-        return _createVNode(Teleport, {
+-          "to": props.teleport
+-        }, {
+-          default: () => [renderContent()]
+-        });
+-      }
+       return renderContent();
+     };
+   }
+diff --git a/node_modules/vant/es/field/Field.mjs b/node_modules/vant/es/field/Field.mjs
+index 3435b14..2a61eb3 100644
+--- a/node_modules/vant/es/field/Field.mjs
++++ b/node_modules/vant/es/field/Field.mjs
+@@ -1,4 +1,4 @@
+-import { createTextVNode as _createTextVNode, mergeProps as _mergeProps, createVNode as _createVNode } from "vue";
++import { mergeProps as _mergeProps, createVNode as _createVNode } from "vue";
+ import { ref, watch, provide, computed, nextTick, reactive, onMounted, defineComponent } from "vue";
+ import { isDef, extend, addUnit, toArray, FORM_KEY, numericProp, unknownProp, resetScroll, formatNumber, preventDefault, makeStringProp, makeNumericProp, createNamespace } from "../utils/index.mjs";
+ import { cutString, runSyncRule, endComposing, mapInputType, isEmptyValue, startComposing, getRuleMessage, resizeTextarea, getStringLength, runRuleValidator } from "./utils.mjs";
+@@ -397,7 +397,7 @@ var stdin_default = defineComponent({
+           "class": bem("word-limit")
+         }, [_createVNode("span", {
+           "class": bem("word-num")
+-        }, [count]), _createTextVNode("/"), props.maxlength]);
++        }, [count]), "/", props.maxlength]);
+       }
+     };
+     const renderMessage = () => {
+diff --git a/node_modules/vant/es/index-bar/IndexBar.mjs b/node_modules/vant/es/index-bar/IndexBar.mjs
+index 9e2cd4b..4674056 100644
+--- a/node_modules/vant/es/index-bar/IndexBar.mjs
++++ b/node_modules/vant/es/index-bar/IndexBar.mjs
+@@ -1,5 +1,5 @@
+ import { createVNode as _createVNode } from "vue";
+-import { ref, watch, computed, nextTick, Teleport, onMounted, defineComponent } from "vue";
++import { ref, watch, computed, nextTick, onMounted, defineComponent } from "vue";
+ import { isDef, isHidden, truthProp, numericProp, getScrollTop, preventDefault, makeNumberProp, createNamespace, getRootScrollTop, setRootScrollTop } from "../utils/index.mjs";
+ import { useRect, useChildren, useScrollParent, useEventListener } from "@vant/use";
+ import { useTouch } from "../composables/use-touch.mjs";
+@@ -212,11 +212,7 @@ var stdin_default = defineComponent({
+       return _createVNode("div", {
+         "ref": root,
+         "class": bem()
+-      }, [props.teleport ? _createVNode(Teleport, {
+-        "to": props.teleport
+-      }, {
+-        default: () => [renderSidebar()]
+-      }) : renderSidebar(), (_a = slots.default) == null ? void 0 : _a.call(slots)]);
++      }, [renderSidebar(), (_a = slots.default) == null ? void 0 : _a.call(slots)]);
+     };
+   }
+ });
+diff --git a/node_modules/vant/es/notice-bar/NoticeBar.mjs b/node_modules/vant/es/notice-bar/NoticeBar.mjs
+index cf24a82..0f847dc 100644
+--- a/node_modules/vant/es/notice-bar/NoticeBar.mjs
++++ b/node_modules/vant/es/notice-bar/NoticeBar.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode } from "vue";
++import { createVNode as _createVNode } from "vue";
+ import { ref, watch, reactive, defineComponent } from "vue";
+ import { isDef, createNamespace, makeNumericProp } from "../utils/index.mjs";
+ import { raf, useRect, doubleRaf, useEventListener, onMountedOrActivated } from "@vant/use";
+@@ -147,16 +147,18 @@ var stdin_default = defineComponent({
+         wrapable,
+         background
+       } = props;
+-      return _withDirectives(_createVNode("div", {
+-        "role": "alert",
+-        "class": bem({
+-          wrapable
+-        }),
+-        "style": {
+-          color,
+-          background
+-        }
+-      }, [renderLeftIcon(), renderMarquee(), renderRightIcon()]), [[_vShow, state.show]]);
++      if (state.show) {
++        return _createVNode("div", {
++          "role": "alert",
++          "class": bem({
++            wrapable
++          }),
++          "style": {
++            color,
++            background
++          }
++        }, [renderLeftIcon(), renderMarquee(), renderRightIcon()]);
++      }
+     };
+   }
+ });
+diff --git a/node_modules/vant/es/number-keyboard/NumberKeyboard.mjs b/node_modules/vant/es/number-keyboard/NumberKeyboard.mjs
+index 07f315f..7f8fbe3 100644
+--- a/node_modules/vant/es/number-keyboard/NumberKeyboard.mjs
++++ b/node_modules/vant/es/number-keyboard/NumberKeyboard.mjs
+@@ -1,5 +1,5 @@
+-import { withDirectives as _withDirectives, mergeProps as _mergeProps, vShow as _vShow, createVNode as _createVNode } from "vue";
+-import { ref, watch, computed, Teleport, Transition, defineComponent } from "vue";
++import { mergeProps as _mergeProps, createVNode as _createVNode } from "vue";
++import { ref, watch, computed, defineComponent } from "vue";
+ import { truthProp, numericProp, getZIndexStyle, makeStringProp, makeNumericProp, stopPropagation, createNamespace, HAPTICS_FEEDBACK } from "../utils/index.mjs";
+ import { useClickAway } from "@vant/use";
+ import NumberKeyboardKey from "./NumberKeyboardKey.mjs";
+@@ -196,10 +196,11 @@ var stdin_default = defineComponent({
+     }
+     return () => {
+       const Title = renderTitle();
+-      const Content = _createVNode(Transition, {
+-        "name": props.transition ? "van-slide-up" : ""
+-      }, {
+-        default: () => [_withDirectives(_createVNode("div", _mergeProps({
++      const renderKeyboard = () => {
++        if (!props.show) {
++          return null;
++        }
++        return _createVNode("div", _mergeProps({
+           "ref": root,
+           "style": getZIndexStyle(props.zIndex),
+           "class": bem({
+@@ -210,17 +211,10 @@ var stdin_default = defineComponent({
+           "onTouchstartPassive": stopPropagation
+         }, attrs), [Title, _createVNode("div", {
+           "class": bem("body")
+-        }, [_createVNode("div", {
+-          "class": bem("keys")
+-        }, [renderKeys()]), renderSidebar()])]), [[_vShow, props.show]])]
+-      });
+-      if (props.teleport) {
+-        return _createVNode(Teleport, {
+-          "to": props.teleport
+-        }, {
+-          default: () => [Content]
+-        });
++        }, [renderKeys(), renderSidebar()])]);
+       }
++
++      const Content = renderKeyboard();
+       return Content;
+     };
+   }
+diff --git a/node_modules/vant/es/overlay/Overlay.mjs b/node_modules/vant/es/overlay/Overlay.mjs
+index f54fbd4..d27551c 100644
+--- a/node_modules/vant/es/overlay/Overlay.mjs
++++ b/node_modules/vant/es/overlay/Overlay.mjs
+@@ -1,5 +1,5 @@
+-import { withDirectives as _withDirectives, createVNode as _createVNode, vShow as _vShow } from "vue";
+-import { ref, Transition, defineComponent } from "vue";
++import { createVNode as _createVNode } from "vue";
++import { ref, defineComponent } from "vue";
+ import { isDef, extend, truthProp, numericProp, unknownProp, preventDefault, createNamespace, getZIndexStyle } from "../utils/index.mjs";
+ import { useEventListener } from "@vant/use";
+ import { useLazyRender } from "../composables/use-lazy-render.mjs";
+@@ -32,21 +32,16 @@ var stdin_default = defineComponent({
+       if (isDef(props.duration)) {
+         style.animationDuration = `${props.duration}s`;
+       }
+-      return _withDirectives(_createVNode("div", {
++      return _createVNode("div", {
+         "ref": root,
+         "style": style,
+         "class": [bem(), props.className]
+-      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]), [[_vShow, props.show]]);
++      }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]);
+     });
+     useEventListener("touchmove", onTouchMove, {
+       target: root
+     });
+-    return () => _createVNode(Transition, {
+-      "name": "van-fade",
+-      "appear": true
+-    }, {
+-      default: renderOverlay
+-    });
++    return renderOverlay();
+   }
+ });
+ export {
+diff --git a/node_modules/vant/es/popup/Popup.mjs b/node_modules/vant/es/popup/Popup.mjs
+index 5897959..a031cbf 100644
+--- a/node_modules/vant/es/popup/Popup.mjs
++++ b/node_modules/vant/es/popup/Popup.mjs
+@@ -1,5 +1,5 @@
+-import { Fragment as _Fragment, withDirectives as _withDirectives, mergeProps as _mergeProps, vShow as _vShow, createVNode as _createVNode } from "vue";
+-import { ref, watch, provide, Teleport, nextTick, computed, onMounted, Transition, onActivated, onDeactivated, defineComponent } from "vue";
++import { Fragment as _Fragment, mergeProps as _mergeProps, createVNode as _createVNode } from "vue";
++import { ref, watch, provide, nextTick, computed, onMounted, onActivated, onDeactivated, defineComponent } from "vue";
+ import { popupSharedProps } from "./shared.mjs";
+ import { isDef, extend, makeStringProp, callInterceptor, createNamespace, HAPTICS_FEEDBACK } from "../utils/index.mjs";
+ import { useEventListener } from "@vant/use";
+@@ -115,7 +115,7 @@ var stdin_default = defineComponent({
+         safeAreaInsetTop,
+         safeAreaInsetBottom
+       } = props;
+-      return _withDirectives(_createVNode("div", _mergeProps({
++      return _createVNode("div", _mergeProps({
+         "ref": popupRef,
+         "style": style.value,
+         "role": "dialog",
+@@ -128,23 +128,10 @@ var stdin_default = defineComponent({
+           "van-safe-area-bottom": safeAreaInsetBottom
+         }],
+         "onKeydown": onKeydown
+-      }, attrs), [(_a = slots.default) == null ? void 0 : _a.call(slots), renderCloseIcon()]), [[_vShow, props.show]]);
++      }, attrs), [(_a = slots.default) == null ? void 0 : _a.call(slots), renderCloseIcon()]);
+     });
+     const renderTransition = () => {
+-      const {
+-        position,
+-        transition,
+-        transitionAppear
+-      } = props;
+-      const name2 = position === "center" ? "van-fade" : `van-popup-slide-${position}`;
+-      return _createVNode(Transition, {
+-        "name": transition || name2,
+-        "appear": transitionAppear,
+-        "onAfterEnter": onOpened,
+-        "onAfterLeave": onClosed
+-      }, {
+-        default: renderPopup
+-      });
++      return renderPopup();
+     };
+     watch(() => props.show, (show) => {
+       if (show && !opened) {
+@@ -190,13 +177,6 @@ var stdin_default = defineComponent({
+     });
+     provide(POPUP_TOGGLE_KEY, () => props.show);
+     return () => {
+-      if (props.teleport) {
+-        return _createVNode(Teleport, {
+-          "to": props.teleport
+-        }, {
+-          default: () => [renderOverlay(), renderTransition()]
+-        });
+-      }
+       return _createVNode(_Fragment, null, [renderOverlay(), renderTransition()]);
+     };
+   }
+diff --git a/node_modules/vant/es/stepper/Stepper.mjs b/node_modules/vant/es/stepper/Stepper.mjs
+index e4a1d30..77d9ff8 100644
+--- a/node_modules/vant/es/stepper/Stepper.mjs
++++ b/node_modules/vant/es/stepper/Stepper.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, createVNode as _createVNode, mergeProps as _mergeProps, vShow as _vShow } from "vue";
++import { createVNode as _createVNode, mergeProps as _mergeProps } from "vue";
+ import { ref, watch, computed, nextTick, defineComponent } from "vue";
+ import { isDef, addUnit, addNumber, truthProp, resetScroll, numericProp, formatNumber, getSizeStyle, preventDefault, createNamespace, callInterceptor, makeNumericProp, HAPTICS_FEEDBACK } from "../utils/index.mjs";
+ import { useCustomFieldValue } from "@vant/use";
+@@ -200,46 +200,58 @@ var stdin_default = defineComponent({
+       });
+     });
+     useCustomFieldValue(() => props.modelValue);
++    useCustomFieldValue(() => props.modelValue);
++    const Minus = () => {
++      if (props.showMinus) {
++        return _createVNode("button", _mergeProps({
++          "type": "button",
++          "style": buttonStyle.value,
++          "class": [bem("minus", {
++            disabled: minusDisabled.value
++          }), { [HAPTICS_FEEDBACK]: !minusDisabled.value }],
++          "aria-disabled": minusDisabled.value || void 0
++        }, createListeners("minus")), null);
++      }
++    };
++    const Input = () => {
++      if (props.showInput) {
++        return _createVNode("input", {
++          "ref": inputRef,
++          "type": props.integer ? "tel" : "text",
++          "role": "spinbutton",
++          "class": bem("input"),
++          "value": current.value,
++          "style": inputStyle.value,
++          "disabled": props.disabled || props.disableInput,
++          "readonly": false,
++          "inputmode": props.integer ? "numeric" : "decimal",
++          "placeholder": props.placeholder,
++          "aria-valuemax": props.max,
++          "aria-valuemin": props.min,
++          "aria-valuenow": current.value,
++          "onBlur": onBlur,
++          "onInput": onInput,
++          "onFocus": onFocus,
++          "onMousedown": onMousedown
++        }, null);
++      }
++    };
++    const Plus = () => {
++      if (props.showPlus) {
++        return _createVNode("button", _mergeProps({
++          "type": "button",
++          "style": buttonStyle.value,
++          "class": [bem("plus", {
++            disabled: plusDisabled.value
++          }), { [HAPTICS_FEEDBACK]: !plusDisabled.value }],
++          "aria-disabled": plusDisabled.value || void 0
++        }, createListeners("plus")), null);
++      }
++    };
+     return () => _createVNode("div", {
+       "role": "group",
+       "class": bem([props.theme])
+-    }, [_withDirectives(_createVNode("button", _mergeProps({
+-      "type": "button",
+-      "style": buttonStyle.value,
+-      "class": [bem("minus", {
+-        disabled: minusDisabled.value
+-      }), {
+-        [HAPTICS_FEEDBACK]: !minusDisabled.value
+-      }],
+-      "aria-disabled": minusDisabled.value || void 0
+-    }, createListeners("minus")), null), [[_vShow, props.showMinus]]), _withDirectives(_createVNode("input", {
+-      "ref": inputRef,
+-      "type": props.integer ? "tel" : "text",
+-      "role": "spinbutton",
+-      "class": bem("input"),
+-      "value": current.value,
+-      "style": inputStyle.value,
+-      "disabled": props.disabled,
+-      "readonly": props.disableInput,
+-      "inputmode": props.integer ? "numeric" : "decimal",
+-      "placeholder": props.placeholder,
+-      "aria-valuemax": props.max,
+-      "aria-valuemin": props.min,
+-      "aria-valuenow": current.value,
+-      "onBlur": onBlur,
+-      "onInput": onInput,
+-      "onFocus": onFocus,
+-      "onMousedown": onMousedown
+-    }, null), [[_vShow, props.showInput]]), _withDirectives(_createVNode("button", _mergeProps({
+-      "type": "button",
+-      "style": buttonStyle.value,
+-      "class": [bem("plus", {
+-        disabled: plusDisabled.value
+-      }), {
+-        [HAPTICS_FEEDBACK]: !plusDisabled.value
+-      }],
+-      "aria-disabled": plusDisabled.value || void 0
+-    }, createListeners("plus")), null), [[_vShow, props.showPlus]])]);
++    }, [Minus(), Input(), Plus()]);
+   }
+ });
+ export {
+diff --git a/node_modules/vant/es/tab/Tab.mjs b/node_modules/vant/es/tab/Tab.mjs
+index 3d32402..143163b 100644
+--- a/node_modules/vant/es/tab/Tab.mjs
++++ b/node_modules/vant/es/tab/Tab.mjs
+@@ -1,4 +1,4 @@
+-import { withDirectives as _withDirectives, vShow as _vShow, createVNode as _createVNode } from "vue";
++import { createVNode as _createVNode } from "vue";
+ import { ref, watch, provide, computed, nextTick, defineComponent } from "vue";
+ import { extend, truthProp, unknownProp, numericProp, createNamespace } from "../utils/index.mjs";
+ import { TABS_KEY } from "../tabs/Tabs.mjs";
+@@ -108,13 +108,13 @@ var stdin_default = defineComponent({
+       useExpose({
+         id
+       });
+-      return _withDirectives(_createVNode("div", {
++      return _createVNode("div", {
+         "id": id,
+         "role": "tabpanel",
+         "class": bem("panel"),
+         "tabindex": show ? 0 : -1,
+         "aria-labelledby": label
+-      }, [Content]), [[_vShow, show]]);
++      }, [Content]);
+     };
+   }
+ });
+diff --git a/node_modules/vant/es/tag/Tag.mjs b/node_modules/vant/es/tag/Tag.mjs
+index d702001..3fb3441 100644
+--- a/node_modules/vant/es/tag/Tag.mjs
++++ b/node_modules/vant/es/tag/Tag.mjs
+@@ -1,5 +1,5 @@
+ import { createVNode as _createVNode } from "vue";
+-import { Transition, defineComponent } from "vue";
++import { defineComponent } from "vue";
+ import { truthProp, makeStringProp, createNamespace, HAPTICS_FEEDBACK } from "../utils/index.mjs";
+ import { Icon } from "../icon/index.mjs";
+ const [name, bem] = createNamespace("tag");
+@@ -66,11 +66,9 @@ var stdin_default = defineComponent({
+         "class": bem([classes, type])
+       }, [(_a = slots.default) == null ? void 0 : _a.call(slots), CloseIcon]);
+     };
+-    return () => _createVNode(Transition, {
+-      "name": props.closeable ? "van-fade" : void 0
+-    }, {
+-      default: () => [props.show ? renderTag() : null]
+-    });
++    return () => {
++      return props.show ? renderTag() : null;
++    };
+   }
+ });
+ export {
