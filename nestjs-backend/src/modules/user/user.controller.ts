@@ -26,6 +26,7 @@ import { AdminCreateUserDto } from './dto/admin-create-user.dto';
 /** 保留用户名：避免仿冒与钓鱼（admin 已不再自动获得管理员角色，但仍会误导用户） */
 const RESERVED_USERNAMES = ['admin', 'administrator', 'root', 'system', 'superuser', 'support'];
 import { AuthService } from '../../core/auth/auth.service';
+import { LoginThrottleService } from '../../core/auth/login-throttle.service';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
 import { Roles } from '../../core/auth/decorators/roles.decorator';
 import { Public } from '../../core/auth/guards/global-auth.guard';
@@ -43,6 +44,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly loginThrottle: LoginThrottleService,
   ) {}
 
   @Public()
@@ -71,14 +73,23 @@ export class UserController {
   @ApiOperation({ summary: '用户登录', description: '使用用户名密码登录，返回JWT令牌' })
   @ApiResponse({ status: 200, description: '登录成功，返回JWT令牌' })
   @ApiResponse({ status: 401, description: '用户名或密码错误' })
-  async login(@Body() loginDto: LoginDto) {
-    const user = await this.userService.validateUser(
-      loginDto.username,
-      loginDto.password,
-    );
+  async login(@Body() loginDto: LoginDto, @Request() req: any) {
+    const username = loginDto.username?.trim();
+    // X-Forwarded-For 只有在配置了可信代理时才可信，这里仅用于辅助限流，
+    // 不作为任何鉴权依据；未配置 trust proxy 时取到的就是直连 IP。
+    const ip = req?.ip || req?.connection?.remoteAddress;
+
+    // 登录前先查锁定状态：被锁定时直接 429，连密码校验都不做
+    await this.loginThrottle.assertAllowed(username, ip);
+
+    const user = await this.userService.validateUser(username, loginDto.password);
     if (!user) {
+      await this.loginThrottle.recordFailure(username, ip);
+      // 统一文案：不区分“用户不存在”与“密码错误”，避免账号枚举
       throw new UnauthorizedException('用户名或密码错误');
     }
+
+    await this.loginThrottle.reset(username, ip);
     return this.authService.login(user);
   }
 

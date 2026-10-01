@@ -56,3 +56,4 @@ desktop.ini
 # ============ 一次性调试脚本 ============
 debug-signature.js
 test-api.ps1
+test-login.ps1

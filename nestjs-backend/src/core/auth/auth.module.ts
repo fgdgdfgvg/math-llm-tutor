@@ -7,6 +7,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TokenService } from './token.service';
+import { LoginThrottleService } from './login-throttle.service';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -17,15 +20,18 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET')!,
         signOptions: {
-          // 与 .env 的 JWT_EXPIRATION 保持一致（默认 7d），
-          // 否则前端会在 1 小时后无声掉线（token 过期 → 所有接口 401/403）
-          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '7d') as any,
+          // access token 默认缩短到 15 分钟：泄露后的影响窗口从 7 天降到 15 分钟，
+          // 续期由 /auth/refresh + 服务端存储的 refresh token 承担。
+          // 注意：TokenService 签发时会显式传 expiresIn，这里只是兜底默认值。
+          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '15m') as any,
         },
       }),
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService],
+  controllers: [AuthController],
+  providers: [AuthService, LocalStrategy, JwtStrategy, TokenService, LoginThrottleService],
+  // 导出 TokenService / LoginThrottleService：UserModule 的登录接口需要它们
+  exports: [AuthService, TokenService, LoginThrottleService],
 })
 export class AuthModule {}

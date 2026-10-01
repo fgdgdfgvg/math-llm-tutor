@@ -4,7 +4,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 interface UserPayload {
-  _id: string;
+  // 与 AuthService.validateUser 的返回保持一致：
+  // 用户标识可能来自 _id 或 id，两者都可能缺失（如 lean 查询结果形态不一致）
+  _id?: string;
+  id?: string;
   username: string;
   roles?: string[];
 }

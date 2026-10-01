@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
@@ -30,6 +30,8 @@ import { CollaborationModule } from './modules/collaboration/collaboration.modul
 import { CommonModule } from './common/common.module';
 import { GlobalAuthGuard } from './core/auth/guards/global-auth.guard';
 import { RateLimitGuard } from './common/guards/rate-limit.guard';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { TraceIdInterceptor } from './common/interceptors/trace-id.interceptor';
 import { HealthController } from './health.controller';
 import { resolveMongoUri } from './core/database/resolve-mongo-uri';
 import { ApiDocsController } from './api-docs.controller';
@@ -69,7 +71,9 @@ import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.sche
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET')!,
         signOptions: {
-          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '7d') as any,
+          // access token 默认 15 分钟（原为 7 天），配合 /auth/refresh 续期；
+          // 提升 JWT_EXPIRATION 可覆盖，但生产环境不建议超过 1 小时。
+          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '15m') as any,
         },
       }),
       inject: [ConfigService],
@@ -99,6 +103,18 @@ import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.sche
   controllers: [AppController, HealthController, ApiDocsController],
   providers: [
     AppService,
+    {
+      // 全局异常过滤器：统一 {code,statusCode,message,traceId} 信封，
+      // 生产环境不回传堆栈与内部细节。放在最外层兜住所有模块。
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    {
+      // traceId 需要包住后续所有逻辑（守卫、管道、业务），因此用 APP_INTERCEPTOR 注册，
+      // 先于 main.ts 里 useGlobalInterceptors 注册的转换器生效。
+      provide: APP_INTERCEPTOR,
+      useClass: TraceIdInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: RateLimitGuard,

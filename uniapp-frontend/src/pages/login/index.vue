@@ -111,10 +111,9 @@ const handleLogin = async () => {
 
   loginLoading.value = true;
   try {
-    console.log('Login request:', {
-      username: username.value.trim(),
-      password: password.value,
-    });
+    // 不要把 password 打进控制台日志：小程序/H5 的调试日志容易被截图或导出，
+    // 等同把明文凭据留在设备上。只记录用户名即可定位问题。
+    console.log('Login request:', { username: username.value.trim() });
     const response = await request({
       url: '/user/login',
       method: 'POST',
@@ -123,10 +122,10 @@ const handleLogin = async () => {
         password: password.value,
       },
     });
-    console.log('Login response:', response);
-    
+    // 不要把整个响应（含令牌）打进日志
     if (response.access_token) {
-      userStore.setToken(response.access_token);
+      // 必须成对保存：缺了 refresh token，15 分钟后就无法静默续期，只能重新登录
+      userStore.setTokens(response.access_token, response.refresh_token);
       if (response.user) {
         userStore.setUserInfo(response.user);
       }
@@ -160,10 +159,7 @@ const handleRegister = async () => {
 
   registerLoading.value = true;
   try {
-    console.log('Register request:', {
-      username: username.value.trim(),
-      password: password.value,
-    });
+    console.log('Register request:', { username: username.value.trim() });
     const registerResponse = await request({
       url: '/user/register',
       method: 'POST',
@@ -176,10 +172,7 @@ const handleRegister = async () => {
     
     showToast(t('login.registerSuccess'));
     
-    console.log('Login after register request:', {
-      username: username.value.trim(),
-      password: password.value,
-    });
+    console.log('Login after register request:', { username: username.value.trim() });
     const loginResponse = await request({
       url: '/user/login',
       method: 'POST',
@@ -188,10 +181,8 @@ const handleRegister = async () => {
         password: password.value,
       },
     });
-    console.log('Login after register response:', loginResponse);
-    
     if (loginResponse.access_token) {
-      userStore.setToken(loginResponse.access_token);
+      userStore.setTokens(loginResponse.access_token, loginResponse.refresh_token);
       if (loginResponse.user) {
         userStore.setUserInfo(loginResponse.user);
       }

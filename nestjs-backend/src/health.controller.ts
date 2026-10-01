@@ -7,6 +7,7 @@ import { Question } from './modules/questions/schemas/question.schema';
 import { Mistake } from './modules/questions/schemas/mistake.schema';
 import { Neo4jService } from './modules/knowledge/neo4j/neo4j.service';
 import { Public } from './core/auth/guards/global-auth.guard';
+import { describeErrorForLog } from './common/utils/redact';
 
 interface HealthStatus {
   status: string;
@@ -149,7 +150,7 @@ export class HealthController {
         mistakeCount,
       };
     } catch (error) {
-      this.logger.error('Error getting database stats:', error);
+      this.logger.error('Error getting database stats:', describeErrorForLog(error));
       return {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
@@ -162,7 +163,7 @@ export class HealthController {
       return { status: 'healthy' };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('MongoDB health check failed:', error);
+      this.logger.error('MongoDB health check failed:', describeErrorForLog(error));
       return { status: 'unhealthy', message };
     }
   }
@@ -192,7 +193,7 @@ export class HealthController {
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
           continue;
         }
-        this.logger.error('SymPy health check failed:', error);
+        this.logger.error('SymPy health check failed:', describeErrorForLog(error));
         return { status: 'unhealthy', message: '服务未启动或无法连接' };
       }
     }
@@ -219,7 +220,7 @@ export class HealthController {
       return { status: 'healthy' };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Neo4j health check failed:', error);
+      this.logger.error('Neo4j health check failed:', describeErrorForLog(error));
       return { status: 'unhealthy', message };
     }
   }

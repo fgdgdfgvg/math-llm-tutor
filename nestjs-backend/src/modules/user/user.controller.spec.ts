@@ -3,6 +3,7 @@ import { ConflictException, BadRequestException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { LoginThrottleService } from '../../core/auth/login-throttle.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
@@ -26,6 +27,20 @@ describe('UserController', () => {
       providers: [
         { provide: UserService, useValue: userService },
         { provide: AuthService, useValue: authService },
+        {
+          // 登录节流服务：单测里固定放行，避免测试之间的计数互相污染
+          provide: LoginThrottleService,
+          useValue: {
+            assertAllowed: jest.fn().mockResolvedValue(undefined),
+            recordFailure: jest.fn().mockResolvedValue(undefined),
+            reset: jest.fn().mockResolvedValue(undefined),
+            status: jest.fn().mockResolvedValue({
+              allowed: true,
+              remainingAttempts: 5,
+              retryAfterSeconds: 0,
+            }),
+          },
+        },
       ],
     }).compile();
 

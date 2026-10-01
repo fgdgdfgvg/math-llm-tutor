@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Neo4jService } from '../../modules/knowledge/neo4j/neo4j.service';
 import { HealthController } from '../../health.controller';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 export interface ServiceStatus {
   name: string;
@@ -71,7 +72,7 @@ export class RecoveryService implements OnModuleInit {
         }
       });
     } catch (error) {
-      this.logger.error('Error checking service status:', error);
+      this.logger.error('Error checking service status:', describeErrorForLog(error));
     }
   }
 
@@ -114,7 +115,7 @@ export class RecoveryService implements OnModuleInit {
       status.lastRecovery = new Date();
       this.logger.log(`Recovery attempt ${status.recoveryAttempts} for ${serviceName} completed`);
     } catch (error) {
-      this.logger.error(`Recovery failed for service ${serviceName}:`, error);
+      this.logger.error(`Recovery failed for service ${serviceName}:`, describeErrorForLog(error));
     }
   }
 
@@ -132,7 +133,7 @@ export class RecoveryService implements OnModuleInit {
       await this.neo4jService.runQuery('RETURN 1 as test');
       this.logger.log('Neo4j recovery successful');
     } catch (error) {
-      this.logger.error('Neo4j recovery failed:', error);
+      this.logger.error('Neo4j recovery failed:', describeErrorForLog(error));
       throw error;
     }
   }

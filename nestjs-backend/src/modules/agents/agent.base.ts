@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AgentInput, AgentOutput, AgentContext, AgentConfig } from './agent.types';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 // 智能体基类
 export abstract class BaseAgent {
@@ -39,7 +40,7 @@ export abstract class BaseAgent {
       return output;
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      this.logger.error(`智能体任务执行失败: ${this.config.name}`, error);
+      this.logger.error(`智能体任务执行失败: ${this.config.name}`, describeErrorForLog(error));
 
       // 构建错误输出
       const output: AgentOutput = {

@@ -6,6 +6,7 @@ import { UserProfilingService } from '../../common/services/user-profiling.servi
 import { LocalComputationService } from './local-computation/local-computation.service';
 import { AnswerEquivalenceService } from './answer-equivalence.service';
 import { SolutionVerificationService } from './solution-verification.service';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 @Injectable()
 export class AgentsService {
@@ -71,7 +72,7 @@ export class AgentsService {
 
       return result;
     } catch (error) {
-      this.logger.error('多智能体协作解题失败', error);
+      this.logger.error('多智能体协作解题失败', describeErrorForLog(error));
 
       this.orchestrator.progressEvents.next({
         type: 'agent_error',

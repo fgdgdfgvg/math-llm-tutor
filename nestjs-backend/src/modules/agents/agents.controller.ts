@@ -6,6 +6,7 @@ import { AgentsService } from './agents.service';
 import { MultiAgentResult } from './agent.types';
 import { AgentProgressEvent } from './agent.orchestrator';
 import { toUserFriendlyError } from '../../common/utils/error-messages';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 class SolveProblemDto {
   @IsString()
@@ -44,7 +45,7 @@ export class AgentsController {
     try {
       return await this.agentsService.solveProblem(solveProblemDto.problem);
     } catch (error) {
-      this.logger.error('解题请求失败', error);
+      this.logger.error('解题请求失败', describeErrorForLog(error));
       const friendly = toUserFriendlyError(error);
       throw new HttpException(friendly.message, friendly.statusCode);
     }

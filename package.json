@@ -19,6 +19,8 @@
     "self-check:docker": "node self-check.cjs --mode docker",
     "self-check:local": "node self-check.cjs --mode local",
     "self-check:full": "node self-check.cjs --full --with-frontend",
+    "secret:scan": "node scripts/secret-scan.cjs --scan",
+    "secret:redact": "node scripts/secret-scan.cjs --redact",
     "reset:data": "node reset-test-data.cjs"
   },
   "keywords": [],

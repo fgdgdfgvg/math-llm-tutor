@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { KnowledgeService } from '../knowledge/knowledge.service';
 import { IsOptional, IsString, IsIn } from 'class-validator';
+import { describeErrorForLog, describeHttpError } from '../../common/utils/redact';
 
 export class SolveProblemDto {
   @IsOptional()
@@ -156,15 +157,16 @@ ${knowledgeContext}
       };
     } catch (error) {
       const axiosError = error as AxiosError;
-      this.logger.error(
-        `Failed to call AI API: ${axiosError.message}`,
-        axiosError.stack,
-      );
+      // 旧实现打印 axiosError.stack 与整个 response.data：前者可能带局部变量快照，
+      // 后者会把上游原始报文（含回显的请求头）写进日志；
+      // 抛给客户端的 message 里也原样带了上游响应体 —— 属于信息泄露。
+      // 统一改为脱敏摘要上游只保留状态码与错误码。
+      this.logger.error(`Failed to call AI API: ${describeErrorForLog(axiosError)}`);
 
       if (axiosError.response) {
-        this.logger.error('Error response:', JSON.stringify(axiosError.response.data));
+        const summary = describeHttpError(axiosError);
         throw new InternalServerErrorException(
-          `AI服务返回错误: ${axiosError.response.status} - ${JSON.stringify(axiosError.response.data)}`
+          `AI服务返回错误${summary.status ? `（HTTP ${summary.status}）` : ''}${summary.upstreamCode ? ` [${summary.upstreamCode}]` : ''}`,
         );
       }
 

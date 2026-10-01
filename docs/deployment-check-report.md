@@ -83,7 +83,7 @@ import MathRenderer from '../../components/MathRenderer.vue';
 **步骤1：检查环境配置**
 ```env
 # .env
-KATCODER_API_KEY=sk-qjWGYibTPZN0JptqA5D4Bd5054D841AeA9210fAeB8F7F0B0
+KATCODER_API_KEY=<REDACTED-openai-style-key>
 AI_API_BASE_URL=https://api.edgefn.net/v1
 ```
 ✅ 配置正确
