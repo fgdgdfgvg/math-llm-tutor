@@ -19,6 +19,7 @@ NestJS + MongoDB + Neo4j + Vue3/UniApp 的高等数学 AI 辅导系统；核心�
 - 仓库已建 git（2026-10-01 baseline 提交），改动前先确认 git status 干净、完成后提交。
 - 本机 **Bash 不可用**（Git Bash shim 缺 coreutils），改用 node 绝对路径执行脚本：`C:/Users/欧阳晨/.workbuddy/binaries/node/versions/22.22.2-3/node.exe`
 - 后端验证三件套：tsc --noEmit → jest → `node self-check.cjs --mode local --full`；`nest build` 在沙箱中清 dist 会失败，用 tsc 替代。
+  **关键**：自检跑的是 `nestjs-backend/dist`，改完代码必须先 `tsc -p tsconfig.build.json`（emit，不加 --noEmit）重编译再起进程，否则验证的是旧代码（2026-10-01 踩过：33/35 通过但新接口 404）。
 - 认证约定：access 15min + refresh 30d（只存哈希、轮换+重用检测）；前端 401 单飞刷新；改 JWT 相关必须前后端同步。
 - 密钥卫生：`npm run secret:scan` 作为提交前门禁；日志一律经 `common/utils/redact.ts`，禁止整体打印 axios 错误对象。
 - 掌握度量纲曾混用（0~1 与 0~100），统一前需确认调用点。
