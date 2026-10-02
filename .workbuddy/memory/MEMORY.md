@@ -19,12 +19,28 @@ NestJS + MongoDB + Neo4j + Vue3/UniApp 的高等数学 AI 辅导系统；核心�
 ## 上线门禁与探针（2026-10-01 建立，改代码后必须全绿）
 - `npm run verify`（= `scripts/verify-all.cjs`）：后端 tsc + jest / 前端 vue-tsc / 密钥扫描 / 日志卫生扫描，**5 项全绿才可提交**。
 - `node self-check.cjs --mode local --full`：完整集成自检（38 项，需 Mongo/SymPy）；`scripts/auth-probe.cjs`：认证授权真实 HTTP 探针（`BASE_URL` 指定入口）。
-- CI：`.github/workflows/verify.yml`（静态门禁 + 真实 Mongo/Redis 的认证集成作业），与本地同一份脚本。
+- `npm run verify:probe`（= `scripts/deploy-probe.cjs`）：部署加固探针 15 项，自带进程与端口、无需外部依赖；覆盖限流来源不可伪造、安全响应头、CORS 拒绝语义、Swagger 收敛、存活/就绪探针语义。
+- CI：`.github/workflows/verify.yml`（静态门禁 + 前端真实生产构建 + 真实 Mongo/Redis 的认证集成 + 部署加固探针），与本地同一份脚本。
+- **评估结论与依据**：`docs/可部署性评估报告.md`（2026-10-02）。判定：已达到可部署工程原型；待办 PRE-1 前端构建在正常环境跑通一次、PRE-2 轮换 3 组历史密钥。
 - **健康探针语义**：`/health/live` 只表示进程存活、**不查任何依赖**（毫秒级，可作 liveness）；
   `/health/ready` 只判**关键依赖**（Mongo、已配置但不可达的 Redis），不就绪返回 503；
   SymPy/Neo4j 属可降级依赖**不查**。`/health`、`/health/detailed` 是人工排查用全量视图，**不要拿来做探针**（会同步查 SymPy，最坏 15s+）。
+  容器 HEALTHCHECK（compose 与 Dockerfile）一律打 `/health/live`。
 - **响应信封约定**：`TransformInterceptor` 的 `code` 必须与 HTTP 状态一致（≥400 透传，2xx 记 200）；新增"未就绪/非 2xx"接口时务必确认这一点。
 - **密钥扫描豁免策略**：只能往 `secret-scan.cjs` 的 `ALLOWLIST` 加"文件 + 规则"精确条目（针对测试夹具），**禁止按目录整体排除**；命中豁免会显式打印，新增豁免会出现在 diff 里。
+
+## 网络与部署约定（2026-10-02 建立，改这些地方前先读）
+- **前端一律走 nginx 同源反代 `/api/**`**（`VITE_API_BASE_URL=/api`），后端**没有** `setGlobalPrefix('api')`，
+  因此 nginx 必须用 `location /api/` + `proxy_pass http://backend:3000/`（尾斜杠**必须配对**）来剥前缀；
+  `/api/docs`（Swagger 自带前缀）必须用更长的 `^~` 前缀位置原样透传，否则被误剥成 404。
+- **后端端口只绑 `127.0.0.1`**（与 Mongo/Redis/Neo4j/SymPy 一致）。浏览器只访问 nginx:80。
+- **`TRUST_PROXY` 默认留空 = 完全不信任 `X-Forwarded-For`**（安全默认）。部署在 nginx 后必须显式开 `TRUST_PROXY=1`，
+  否则 `req.ip` 恒为网关地址、全站共用一个限流桶；而绝不能无条件采信该头（实测随机伪造可 40/40 绕过 LLM 限流）。
+  **任何从请求头取客户端 IP 的代码都要先问"这头能不能被客户端伪造"。**
+- **CORS 白名单必须包含 80 端口来源**（`http://localhost`、`http://127.0.0.1`）——前端容器发布在 `:80`；
+  漏了会出现"页面能打开、API 全挂"。CORS 拒绝要用 `AppError(FORBIDDEN)` 抛（→403），用裸 `Error` 会被归一化成 500 污染监控。
+- **生产环境默认不注册 Swagger**（`ENABLE_SWAGGER=true` 才开）。
+- 长任务超时链路必须一致：前端 axios 180s ≤ nginx `proxy_read_timeout` 300s，SymPy 预算 20s。
 
 ## 约定与注意事项
 - 仓库已建 git（2026-10-01 baseline 提交），改动前先确认 git status 干净、完成后提交。
