@@ -5,6 +5,7 @@ import { Question } from './schemas/question.schema';
 import { Mistake } from './schemas/mistake.schema';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 interface GetQuestionsQuery {
   knowledgePoint?: string;
@@ -26,7 +27,7 @@ export class QuestionsService {
     @InjectModel(Mistake.name) private mistakeModel: Model<Mistake>,
   ) {
     this.loadKnowledgeMapping().catch(error => {
-      this.logger.error('Failed to load knowledge mapping during initialization:', error);
+      this.logger.error('Failed to load knowledge mapping during initialization:', describeErrorForLog(error));
     });
   }
 
@@ -658,7 +659,7 @@ export class QuestionsService {
       // 前端会据此展示“暂无该知识点题目”，而不是把无关题目伪装成举一反三。
       return rotated;
     } catch (error) {
-      this.logger.error('Error in getSimilarQuestions:', error);
+      this.logger.error('Error in getSimilarQuestions:', describeErrorForLog(error));
       return [];
     }
   }
@@ -778,7 +779,7 @@ export class QuestionsService {
       this.logger.log(`Successfully found ${questions.length} special practice questions`);
       return questions;
     } catch (error) {
-      this.logger.error('Error getting special practice questions:', error);
+      this.logger.error('Error getting special practice questions:', describeErrorForLog(error));
       return [];
     }
   }

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config, { getApiUrl } from '@/config';
+import { clearSession } from '@/utils/session';
 
 const service = axios.create({
   baseURL: config.apiBaseUrl,
@@ -31,16 +32,57 @@ service.interceptors.request.use(
  */
 let refreshFlight: Promise<string> | null = null;
 
-function clearSession() {
-  uni.removeStorageSync('token');
-  uni.removeStorageSync('refreshToken');
-  uni.removeStorageSync('userInfo');
+/**
+ * 这些 URL 的 401 是"业务结论"而非"会话过期"，绝不能触发自动刷新：
+ * - 登录：401 = 密码错误。若走刷新→重放，用户会看到"登录已过期"而不是
+ *   "用户名或密码错误"，还会被误清会话（自检 P1-5 实证）。
+ * - 注册：同理。
+ * - 刷新/登出：它们自己就是会话管理端点，刷新它们没有意义。
+ */
+const SKIP_REFRESH_URLS = ['/user/login', '/user/register', '/auth/refresh', '/auth/logout'];
+
+function shouldSkipRefresh(url?: string): boolean {
+  if (!url) return false;
+  return SKIP_REFRESH_URLS.some((path) => url.includes(path));
 }
 
+/** 登出跳转幂等：一次过期引发的 N 个并发失败请求，只跳一次登录页（自检 P2-6） */
+let loggingOut = false;
+
 function forceLogout() {
+  if (loggingOut) return;
+  loggingOut = true;
+  cancelProactiveRefresh();
   clearSession();
   uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
-  uni.reLaunch({ url: '/pages/login/index' });
+  uni.reLaunch({
+    url: '/pages/login/index',
+    complete: () => {
+      // 页面栈切换完成后复位，允许下一次正常登录-过期流程
+      setTimeout(() => { loggingOut = false; }, 1000);
+    },
+  });
+}
+
+/** 提前刷新定时器：在 access token 过期前 60 秒静默续期，避免用户撞上 401（自检 P2-12） */
+let proactiveTimer: ReturnType<typeof setTimeout> | null = null;
+
+function cancelProactiveRefresh() {
+  if (proactiveTimer) {
+    clearTimeout(proactiveTimer);
+    proactiveTimer = null;
+  }
+}
+
+function scheduleProactiveRefresh(expiresInSeconds?: number) {
+  cancelProactiveRefresh();
+  if (!expiresInSeconds || expiresInSeconds <= 90) return;
+  proactiveTimer = setTimeout(() => {
+    proactiveTimer = null;
+    refreshAccessToken().catch(() => {
+      // 失败不处理：后续真实请求的 401 会走正常的强制登出流程
+    });
+  }, (expiresInSeconds - 60) * 1000);
 }
 
 async function refreshAccessToken(): Promise<string> {
@@ -58,6 +100,7 @@ async function refreshAccessToken(): Promise<string> {
       if (!pair?.access_token) throw new Error('refresh-failed');
       uni.setStorageSync('token', pair.access_token);
       if (pair.refresh_token) uni.setStorageSync('refreshToken', pair.refresh_token);
+      scheduleProactiveRefresh(pair.expires_in);
       return pair.access_token as string;
     })().finally(() => {
       refreshFlight = null;
@@ -81,6 +124,10 @@ service.interceptors.response.use(
   (response) => {
     const res = response.data;
     if (res.code === 200) {
+      // 登录/刷新成功会带回新的 access token：顺手启动"过期前提前续期"
+      if (res.data?.access_token && typeof res.data?.expires_in === 'number') {
+        scheduleProactiveRefresh(res.data.expires_in);
+      }
       return res.data;
     }
     if (res.statusCode && res.statusCode !== 200) {
@@ -104,8 +151,9 @@ service.interceptors.response.use(
 
     const original = error.config || {};
 
-    // 1) 401：先尝试用 refresh token 静默续期，成功则重放原请求
-    if (status === 401 && !original._retry && !original._isRefreshCall) {
+    // 1) 401：先尝试用 refresh token 静默续期，成功则重放原请求。
+    //    登录/注册/刷新等端点的 401 是业务结论，直接按失败处理（见上方注释）。
+    if (status === 401 && !original._retry && !original._isRefreshCall && !shouldSkipRefresh(original.url)) {
       original._retry = true;
       try {
         const newToken = await refreshAccessToken();
@@ -136,7 +184,7 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (status === 401) {
+    if (status === 401 && !shouldSkipRefresh(original.url)) {
       forceLogout();
     } else {
       uni.showToast({ title: message, icon: 'none' });
@@ -166,5 +214,5 @@ const request = <T = any>(config: RequestConfig): Promise<T> => {
   }) as Promise<T>;
 };
 
-export { getApiUrl };
+export { getApiUrl, cancelProactiveRefresh };
 export default request;

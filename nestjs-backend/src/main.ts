@@ -81,6 +81,9 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      // 每个属性只报第一条失败：空密码不会再叠报"密码过长"之类的荒谬提示（自检 P2-8），
+      // 同时不放宽"必填字段缺失必须报错"的既有语义（比 skipUndefinedProperties 更安全）
+      stopAtFirstError: true,
     }),
   );
   

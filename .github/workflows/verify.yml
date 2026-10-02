@@ -1,0 +1,145 @@
+name: verify
+
+# 把本地那套"交付门禁"搬到 CI：本地跑得通、CI 也必须跑得通。
+# 本地等价命令：
+#   node scripts/verify-all.cjs                       → static-gates 作业
+#   node self-check.cjs --mode local --full           → 需要完整外部依赖，CI 里只跑认证子集
+#   node scripts/auth-probe.cjs                       → auth-integration 作业
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+# 同一分支的旧流水线自动取消，避免排队堆积
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------- 静态门禁
+  static-gates:
+    name: 静态门禁（类型 / 单测 / 密钥 / 日志卫生）
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装后端依赖
+        working-directory: nestjs-backend
+        run: npm ci
+
+      - name: 安装前端依赖
+        working-directory: uniapp-frontend
+        run: npm ci
+
+      # 一条命令跑完后端 tsc / jest、前端 vue-tsc、密钥扫描、日志卫生扫描。
+      # 与本地完全同一份脚本，避免"本地绿、CI 红"的双份逻辑漂移。
+      - name: 运行统一门禁
+        run: node scripts/verify-all.cjs
+
+      # 单测失败时把 jest 报告带出来，省去本地复现
+      - name: 上传单测报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-report
+          if-no-files-found: ignore
+          path: nestjs-backend/coverage/
+
+  # ------------------------------------------------------- 认证授权集成验证
+  # 只验证认证/授权这条最容易回归、也最不依赖 AI 服务的链路：
+  # 起真实的 Mongo + Redis，跑真实 HTTP 请求，覆盖 RBAC 越权、refresh 轮换幂等、
+  # 令牌时效、登录锁定等。SymPy / Neo4j 相关的数学正确性由本地 self-check 覆盖
+  # （它们需要额外镜像，放进 CI 会让流水线又慢又脆）。
+  auth-integration:
+    name: 认证授权集成（RBAC / refresh / 令牌时效）
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: static-gates
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # 注意：这里的值都是 CI 专用占位符，不含任何真实密钥。
+      # 它们会经过 scripts/secret-scan.cjs 扫描，因此刻意写成一眼可辨的占位形式。
+      NODE_ENV: test
+      PORT: '3100'
+      MONGODB_URI: mongodb://127.0.0.1:27017/math_llm_tutor_ci
+      REDIS_URL: redis://127.0.0.1:6379
+      JWT_SECRET: your-ci-jwt-secret-placeholder
+      JWT_EXPIRATION: 15m
+      JWT_REFRESH_TTL: 30d
+      CORS_ORIGIN: http://localhost:5173
+      LOGIN_MAX_FAILURES: '5'
+      LOGIN_LOCK_SECONDS: '60'
+      SEED_QUESTIONS: 'false'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装后端依赖
+        working-directory: nestjs-backend
+        run: npm ci
+
+      # 必须先 emit 出 dist：跑的是 dist/main.js，不重新编译就会验证到旧代码。
+      # （本地踩过一次：自检 33/35 看起来通过，其实跑的是上一次的 dist。）
+      - name: 编译后端
+        working-directory: nestjs-backend
+        run: npx tsc -p tsconfig.build.json
+
+      - name: 启动后端
+        working-directory: nestjs-backend
+        run: |
+          node dist/main.js > /tmp/backend.log 2>&1 &
+          echo "backend pid=$!"
+
+      - name: 等待就绪探针通过
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:3100/health/ready > /dev/null; then
+              echo "后端已就绪（第 ${i} 次探测）"
+              curl -s http://127.0.0.1:3100/health/ready
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::后端在 120s 内未就绪"
+          echo "--- backend.log ---"
+          tail -80 /tmp/backend.log
+          exit 1
+
+      - name: 认证授权探针
+        run: node scripts/auth-probe.cjs
+        env:
+          BASE_URL: http://127.0.0.1:3100
+
+      - name: 失败时导出后端日志
+        if: failure()
+        run: tail -200 /tmp/backend.log

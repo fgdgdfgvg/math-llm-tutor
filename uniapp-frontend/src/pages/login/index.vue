@@ -132,11 +132,12 @@ const handleLogin = async () => {
       showToast(t('login.loginSuccess'));
       uni.redirectTo({ url: '/pages/index/index' });
     } else {
-      console.error('No access_token in response:', response);
+      // 不打印 response 整体：里面可能带着刚签发的令牌
+      console.error('登录响应缺少 access_token');
       showToast(t('login.loginFailed'));
     }
   } catch (error: any) {
-    console.error('Login failed:', error);
+    console.error('登录请求失败:', error?.message || error?.status || '未知错误');
     showToast(t('login.loginFailed'));
   } finally {
     loginLoading.value = false;
@@ -189,11 +190,11 @@ const handleRegister = async () => {
       showToast(t('login.loginSuccess'));
       uni.reLaunch({ url: '/pages/index/index' });
     } else {
-      console.error('No access_token in login response:', loginResponse);
+      console.error('注册后登录响应缺少 access_token');
       showToast(t('login.loginFailed'));
     }
   } catch (error: any) {
-    console.error('Registration failed:', error);
+    console.error('注册失败:', error?.message || error?.status || '未知错误');
     if (error.status === 409) {
       showToast(t('login.usernameExists'));
     } else {

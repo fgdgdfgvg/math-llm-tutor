@@ -68,6 +68,8 @@ export class TokenService {
   private readonly logger = new Logger(TokenService.name);
   private readonly accessTtlSeconds: number;
   private readonly refreshTtlSeconds: number;
+  /** refresh token 重放宽容窗口（秒）；0 表示严格模式（任何重放都视为泄露） */
+  private readonly graceSeconds: number;
 
   constructor(
     private readonly jwtService: JwtService,
@@ -80,7 +82,10 @@ export class TokenService {
     );
     this.refreshTtlSeconds = parseDurationToSeconds(
       this.configService.get<string>('JWT_REFRESH_TTL'),
-      7 * 24 * 3600,
+      30 * 24 * 3600,
+    );
+    this.graceSeconds = Number(
+      this.configService.get('REFRESH_REPLAY_GRACE_SECONDS') || 30,
     );
   }
 
@@ -120,6 +125,14 @@ export class TokenService {
 
   /**
    * 用 refresh token 换新的一对令牌。
+   *
+   * 宽容窗口设计（自检 P1-3）：多标签页/多设备/小程序多实例会天然并发刷新。
+   * 若把窗口内的重复请求一律判定为"令牌泄露"并吊销整族，合法用户会被踢下线。
+   * 因此：
+   * - 窗口内（默认 30s）的重复刷新是**幂等**的——直接返回当时签发的那一对令牌；
+   * - 窗口外旧值再次出现才判定为泄露，吊销整个令牌族。
+   * 轮换本身通过 setIfAbsent 加锁做单飞：并发请求中只有一个真正执行轮换，
+   * 其余等它把结果写进宽容窗口后取同一份。
    * 任何异常都以 401 抛出且不区分具体原因，避免给攻击者 probing 线索。
    */
   async rotate(refreshToken: string): Promise<TokenPair> {
@@ -128,10 +141,14 @@ export class TokenService {
     }
     const hash = this.hash(refreshToken);
 
-    // 重用检测：这个值只在 token 被使用过一次后才存在
+    // 1) 宽容窗口：窗口内的重复刷新返回当时签发的那一对（幂等）
+    const gracePair = await this.readGracePair(hash);
+    if (gracePair) return gracePair;
+
+    // 2) 重用检测（窗口外）：这个值只在 token 被使用过一次后才存在
     const reusedFamily = await this.cache.get(`${KEY_PREFIX}:used:${hash}`);
     if (reusedFamily) {
-      this.logger.warn(`检测到 refresh token 重用，吊销令牌族 ${reusedFamily}`);
+      this.logger.warn(`检测到 refresh token 重用（超出宽容窗口），吊销令牌族 ${reusedFamily}`);
       await this.revokeFamily(reusedFamily);
       throw new UnauthorizedAppError('登录已失效，请重新登录');
     }
@@ -141,26 +158,55 @@ export class TokenService {
       throw new UnauthorizedAppError('登录已失效，请重新登录');
     }
 
-    let record: RefreshRecord;
+    // 3) 并发单飞：只有一个请求真正执行轮换
+    const lockKey = `${KEY_PREFIX}:lock:${hash}`;
+    const acquired = await this.cache.setIfAbsent(lockKey, '1', 10);
+    if (!acquired) {
+      // 另一个请求正在轮换：等它把结果写进宽容窗口，拿到同一份令牌
+      const waited = await this.waitForGracePair(hash);
+      if (waited) return waited;
+      throw new UnauthorizedAppError('登录已失效，请重新登录');
+    }
+
     try {
-      record = JSON.parse(raw) as RefreshRecord;
-    } catch {
-      throw new UnauthorizedAppError('登录已失效，请重新登录');
+      // 拿到锁后再读一次：等待期间可能已被别的请求轮换过
+      const gracePairAfterLock = await this.readGracePair(hash);
+      if (gracePairAfterLock) return gracePairAfterLock;
+
+      const rawAfterLock = await this.cache.get(`${KEY_PREFIX}:${hash}`);
+      if (!rawAfterLock) {
+        throw new UnauthorizedAppError('登录已失效，请重新登录');
+      }
+
+      let record: RefreshRecord;
+      try {
+        record = JSON.parse(rawAfterLock) as RefreshRecord;
+      } catch {
+        throw new UnauthorizedAppError('登录已失效，请重新登录');
+      }
+
+      if (await this.isFamilyRevoked(record.familyId)) {
+        throw new UnauthorizedAppError('登录已失效，请重新登录');
+      }
+
+      // 旧值标记为已用（保留到到期为止，用于窗口外的重用检测），再签发新值
+      await this.cache.set(`${KEY_PREFIX}:used:${hash}`, record.familyId, this.refreshTtlSeconds);
+      await this.cache.delete(`${KEY_PREFIX}:${hash}`);
+      await this.removeFromUserIndex(record.userId, hash);
+
+      const pair = await this.issuePair(
+        { _id: record.userId, username: record.username, roles: record.roles },
+        record.familyId,
+      );
+
+      // 写进宽容窗口：窗口内同一旧值的重复请求返回这一对
+      if (this.graceSeconds > 0) {
+        await this.cache.set(`${KEY_PREFIX}:grace:${hash}`, JSON.stringify(pair), this.graceSeconds);
+      }
+      return pair;
+    } finally {
+      await this.cache.delete(lockKey);
     }
-
-    if (await this.isFamilyRevoked(record.familyId)) {
-      throw new UnauthorizedAppError('登录已失效，请重新登录');
-    }
-
-    // 旧值标记为已用（保留到到期为止，用于后续重用检测），再签发新值
-    await this.cache.set(`${KEY_PREFIX}:used:${hash}`, record.familyId, this.refreshTtlSeconds);
-    await this.cache.delete(`${KEY_PREFIX}:${hash}`);
-    await this.removeFromUserIndex(record.userId, hash);
-
-    return this.issuePair(
-      { _id: record.userId, username: record.username, roles: record.roles },
-      record.familyId,
-    );
   }
 
   /** 登出：吊销当前 refresh token 及其所属令牌族 */
@@ -223,6 +269,30 @@ export class TokenService {
     if (!familyId) return false;
     const value = await this.cache.get(`${KEY_PREFIX}:family:${familyId}`);
     return value === 'revoked';
+  }
+
+  /** 读宽容窗口里当时签发的令牌对；窗口未启用或已过期返回 null */
+  private async readGracePair(hash: string): Promise<TokenPair | null> {
+    if (this.graceSeconds <= 0) return null;
+    const raw = await this.cache.get(`${KEY_PREFIX}:grace:${hash}`);
+    if (!raw) return null;
+    try {
+      const pair = JSON.parse(raw) as TokenPair;
+      return pair?.access_token ? pair : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** 并发刷新时等待持锁方把结果写进宽容窗口（最多约 2 秒） */
+  private async waitForGracePair(hash: string): Promise<TokenPair | null> {
+    const deadline = Date.now() + 2000;
+    while (Date.now() < deadline) {
+      const pair = await this.readGracePair(hash);
+      if (pair) return pair;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return null;
   }
 
   private signAccess(payload: { username: string; sub: string; roles?: string[] }): string {

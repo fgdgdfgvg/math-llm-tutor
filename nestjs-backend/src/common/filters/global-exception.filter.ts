@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 import { AppError, InternalError, isAppError } from '../errors/app-error';
 import { ErrorCode, ERROR_DEFAULT_MESSAGE, ERROR_HTTP_STATUS } from '../errors/error-codes';
 import { redactSecrets } from '../utils/redact';
-import { getTraceId } from '../utils/request-context';
+import { getTraceId, newTraceId } from '../utils/request-context';
 
 export interface ErrorResponseBody {
   /** 稳定错误码，供前端做策略映射（重试/降级/提示） */
@@ -47,7 +47,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request & { traceId?: string }>();
     const res = ctx.getResponse<Response>();
 
-    const traceId = getTraceId() ?? req?.traceId ?? 'unknown';
+    // body 解析失败（非法 JSON）发生在 TraceIdInterceptor 建立上下文之前，
+    // 此时拿不到 traceId（自检 P2-7 曾返回 "unknown"）——兜底生成一个并回写响应头，
+    // 保证任何错误响应都可被用户报障时引用。
+    const traceId = getTraceId() ?? req?.traceId ?? newTraceId();
+    if (res && typeof (res as any).setHeader === 'function' && !(res as any).headersSent) {
+      (res as any).setHeader('X-Request-Id', traceId);
+    }
     const path = req?.originalUrl || req?.url;
     const isProduction = process.env.NODE_ENV === 'production';
 

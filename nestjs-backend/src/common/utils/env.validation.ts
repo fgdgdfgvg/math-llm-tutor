@@ -90,6 +90,19 @@ const WEAK_SECRETS = [
   'password',
 ];
 
+/** 支持 '900' / '15m' / '2h' / '7d' 的时长解析（秒） */
+function parseDurationToSeconds(raw: string | undefined): number | null {
+  if (!raw) return null;
+  const match = /^(\d+)\s*([smhd])?$/i.exec(String(raw).trim());
+  if (!match) return null;
+  const n = Number(match[1]);
+  const unit = (match[2] || 's').toLowerCase();
+  return n * (unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400);
+}
+
+/** access token 最长允许 1 小时；再长就失去了"短时效 + refresh 续期"的安全意义 */
+const MAX_ACCESS_TOKEN_SECONDS = 3600;
+
 /**
  * 启动期环境校验：
  *  - 必需项缺失 → 抛错（拒绝带病启动）；
@@ -120,6 +133,16 @@ export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
     const jwtSecret = process.env.JWT_SECRET as string;
     if (jwtSecret.length < 32) {
       throw new Error('生产环境的 JWT_SECRET 长度必须不少于 32 个字符');
+    }
+    // 硬校验：access token 不得超过 1 小时。代码注释里"生产不建议超过 1 小时"
+    // 此前没有任何代码保证（自检 P1-10），7d 的配置曾让"15 分钟短时效"
+    // 在实际运行中完全失效——这里把它变成拒绝启动的硬约束。
+    const accessTtl = parseDurationToSeconds(process.env.JWT_EXPIRATION);
+    if (accessTtl !== null && accessTtl > MAX_ACCESS_TOKEN_SECONDS) {
+      throw new Error(
+        `生产环境 JWT_EXPIRATION 不得超过 1 小时（当前配置 ${process.env.JWT_EXPIRATION}）。` +
+          '请使用短时效 access token + refresh token 续期，推荐 15m。',
+      );
     }
     // 弱口令/默认密钥只告警不阻断：它们属于“必须轮换”的部署卫生问题，
     // 而 CORS 全放行是真实可利用的漏洞（上面已硬性拦截）。

@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { getApiUrl } from '@/config';
+import { clearSession } from '@/utils/session';
+import request, { cancelProactiveRefresh } from '@/utils/request';
+import { useScenarioStore } from './scenario';
 
 interface UserInfo {
   id: string;
@@ -40,28 +43,27 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  /** 从后端拉取当前登录用户信息并落库 */
+  /**
+   * 从后端拉取当前登录用户信息并落库。
+   * 走统一的 request 客户端（而不是裸 uni.request）：这样 access token 过期时
+   * 能自动静默续期并重放，不会因为一次 401 就把用户信息拉取静默失败。
+   */
   const fetchProfile = async (): Promise<UserInfo | null> => {
     if (!token.value) return null;
     try {
-      const res = await uni.request({
-        url: getApiUrl('/user/profile'),
-        method: 'GET',
-        header: { Authorization: `Bearer ${token.value}` },
-      } as any);
-      const body: any = (res as any).data ?? res;
-      const profile = body?.code === 200 ? body.data : body;
-      if (profile?.username) {
+      const profile = await request<any>({ url: '/user/profile', method: 'GET' });
+      const payload = profile?.code === 200 ? profile.data : profile;
+      if (payload?.username) {
         setUserInfo({
-          id: String(profile.id || profile._id || profile.userId || ''),
-          username: profile.username,
-          roles: profile.roles,
-          createdAt: profile.createdAt,
+          id: String(payload.id || payload._id || payload.userId || ''),
+          username: payload.username,
+          roles: payload.roles,
+          createdAt: payload.createdAt,
         });
         return userInfo.value;
       }
     } catch (e) {
-      console.warn('[User] 拉取用户信息失败:', e);
+      console.warn('[User] 拉取用户信息失败:', (e as Error)?.message || e);
     }
     return null;
   };
@@ -121,14 +123,21 @@ export const useUserStore = defineStore('user', () => {
         } as any);
       }
     } catch (e) {
-      console.warn('[User] 服务端登出失败（已清理本地会话）:', e);
+      console.warn('[User] 服务端登出失败（已清理本地会话）:', (e as Error)?.message || '请求失败');
     }
+    // 取消"过期前提前续期"定时器，避免登出后后台又换回新令牌
+    cancelProactiveRefresh();
+    // 清内存状态
     token.value = '';
     refreshToken.value = '';
     userInfo.value = null;
-    uni.removeStorageSync('token');
-    uni.removeStorageSync('refreshToken');
-    uni.removeStorageSync('userInfo');
+    // 清本地会话（含按账号隔离的学习进度，见 utils/session.ts）
+    clearSession();
+    // 清其他 store 的用户域内存数据（自检 P2-9：换账号后上一用户数据残留）
+    const scenarioStore = useScenarioStore();
+    scenarioStore.activeScenario = null;
+    scenarioStore.scenarioProgress = {};
+    scenarioStore.diagnosisResult = null;
     uni.reLaunch({ url: '/pages/login/index' });
   };
 

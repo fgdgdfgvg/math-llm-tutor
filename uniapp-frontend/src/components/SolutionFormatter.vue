@@ -25,7 +25,7 @@
       <view v-else-if="block.type === 'code'" class="block-code">
         <view class="code-header">
           <text class="code-lang">{{ block.lang || '数学表达式' }}</text>
-          <text class="code-copy" @click="copyCode(block.content)">复制</text>
+          <text class="code-copy" @click="copyCode(block.content || '')">复制</text>
         </view>
         <view class="code-body">
           <text class="code-content">{{ block.content }}</text>

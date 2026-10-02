@@ -578,9 +578,34 @@ async function phaseStartDependencies() {
 
   const backendUp = await http('GET', `${BASE_URL}/health`, { timeoutMs: 5000 });
   if (backendUp.status === 200) {
-    record(`后端 ${BASE_URL} 已在运行`, true, { detail: '复用已在运行的后端（如需验证最新代码，请先停掉它再自检）', fatal: false });
-    if (opts.withFrontend && !opts.noStart) await ensureLocalFrontend();
-    return;
+    // 复用运行中的后端之前，先确认它跑的代码不是旧构建——
+    // 2026-10-01 教训：dist 陈旧时自检全部通过，但 /auth/refresh 等新接口其实 404，
+    // "33/35 通过"完全没有验证到新代码（见 docs/实现自检报告.md）。
+    const distMainCheck = path.join(BACKEND_DIR, 'dist', 'main.js');
+    const runningStale =
+      fs.existsSync(distMainCheck) &&
+      newestSourceMtime(path.join(BACKEND_DIR, 'src')) > fs.statSync(distMainCheck).mtimeMs;
+    if (runningStale) {
+      const ownedPid = loadPids().backend;
+      if (ownedPid) {
+        out(dim('检测到运行中的后端是旧构建且由本脚本启动，自动停止后重新构建…'));
+        killPid(ownedPid);
+        const pids = loadPids();
+        delete pids.backend;
+        savePids(pids);
+        // 不 return，继续走下面的构建 + 启动流程
+      } else {
+        record(`后端 ${BASE_URL} 在运行但构建产物落后于源码`, false, {
+          detail: '自检将验证的是旧代码，结论不可信',
+          hint: '请停掉当前后端（node self-check.cjs --stop 或手动 taskkill）后重跑，让它以最新构建启动',
+        });
+        throw new Abort('运行中的后端是旧构建，拒绝用旧代码出具自检结论');
+      }
+    } else {
+      record(`后端 ${BASE_URL} 已在运行`, true, { detail: '复用已在运行的后端（如需验证最新代码，请先停掉它再自检）', fatal: false });
+      if (opts.withFrontend && !opts.noStart) await ensureLocalFrontend();
+      return;
+    }
   }
 
   if (opts.noStart) {
@@ -598,7 +623,13 @@ async function phaseStartDependencies() {
   }
   if (stale || opts.build) {
     out(dim('构建后端（npm run build）…'));
-    const build = runShell('npm run build', BACKEND_DIR, 900_000);
+    let build = runShell('npm run build', BACKEND_DIR, 900_000);
+    if (build.code !== 0) {
+      // 兜底：nest build 在受限环境里清理 dist 会失败（EPERM），
+      // 直接调 tsc 输出到 dist 可以达到同样目的（与 CI 的构建一致性由 tsc 保证）。
+      out(dim('npm run build 失败，尝试 tsc 直接构建兜底…'));
+      build = runShell(`"${process.execPath}" node_modules/typescript/bin/tsc -p tsconfig.build.json`, BACKEND_DIR, 900_000);
+    }
     record('后端构建成功', build.code === 0, {
       detail: build.code === 0 ? '' : (build.err || build.out).split('\n').slice(-3).join(' | '),
       hint: '在 nestjs-backend 目录执行 npm run build 查看完整报错',
@@ -979,6 +1010,38 @@ async function phaseLearningLoop(knowledgePoints) {
   record('携带 JWT 能读到 /user/profile', profile.status === 200, {
     detail: `status=${profile.status} user=${unwrap(profile.json)?.username || unwrap(profile.json)?.user?.username || ''}`,
   });
+
+  // ── RBAC 回归（自检 P0）：student 必须被管理员接口拒绝 ──
+  if (token) {
+    const adminProbe = await http('GET', `${BASE_URL}/user/list?page=1&limit=1`, { token, timeoutMs: 15_000 });
+    record('普通用户调用管理员接口被拒绝（RBAC 生效）', adminProbe.status === 403, {
+      detail: `GET /user/list → ${adminProbe.status}（期望 403）`,
+      hint: '返回 200 说明 RolesGuard 未生效——这是 P0 越权，见 docs/实现自检报告.md',
+    });
+  }
+
+  // ── refresh token 轮换回归（第二轮认证改造）──
+  const refreshToken0 = loginData.refresh_token;
+  if (refreshToken0) {
+    const refreshed = await http('POST', `${BASE_URL}/auth/refresh`, { body: { refreshToken: refreshToken0 }, timeoutMs: 15_000 });
+    const refreshedData = unwrap(refreshed.json) || {};
+    record('refresh token 可换新令牌对（/auth/refresh）', refreshed.status === 200 && Boolean(refreshedData.access_token), {
+      detail: `status=${refreshed.status} expires_in=${refreshedData.expires_in}`,
+      hint: '404 说明后端跑的是旧构建——先 node self-check.cjs --stop 再重跑',
+    });
+    // 宽容窗口内重放同一旧值应幂等返回同一份（不是 401）
+    const replay = await http('POST', `${BASE_URL}/auth/refresh`, { body: { refreshToken: refreshToken0 }, timeoutMs: 15_000 });
+    const replayData = unwrap(replay.json) || {};
+    record('宽容窗口内的重复刷新幂等（多标签页不互踢）', replay.status === 200 && replayData.access_token === refreshedData.access_token, {
+      detail: `status=${replay.status}`,
+      hint: 'REFRESH_REPLAY_GRACE_SECONDS 默认 30s；窗口内重放不应判定为令牌泄露',
+    });
+  } else {
+    record('登录响应包含 refresh_token', false, {
+      detail: '未返回 refresh_token',
+      hint: '后端疑似旧构建（认证改造未生效）',
+    });
+  }
 
   let closedLoopOk = Boolean(token);
   let knowledgePoint = knowledgePoints.includes('极限计算') ? '极限计算' : knowledgePoints[0];

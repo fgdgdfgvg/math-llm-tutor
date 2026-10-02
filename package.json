@@ -20,7 +20,10 @@
     "self-check:local": "node self-check.cjs --mode local",
     "self-check:full": "node self-check.cjs --full --with-frontend",
     "secret:scan": "node scripts/secret-scan.cjs --scan",
+    "log:scan": "node scripts/log-hygiene-scan.cjs",
     "secret:redact": "node scripts/secret-scan.cjs --redact",
+    "verify": "node scripts/verify-all.cjs",
+    "auth:probe": "node scripts/auth-probe.cjs",
     "reset:data": "node reset-test-data.cjs"
   },
   "keywords": [],

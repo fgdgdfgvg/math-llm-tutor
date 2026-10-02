@@ -27,20 +27,24 @@ const i18n = createI18n({
 export default i18n;
 
 export const setLocale = (locale: string) => {
-  if (i18n.mode === 'legacy') {
-    i18n.global.locale = locale;
+  // composition 模式下 locale 是 WritableComputedRef，legacy 模式下是普通字符串。
+  // 用值本身的形状判断，比 i18n.mode 更直接（也让 TS 类型收窄生效）
+  const current = i18n.global.locale as unknown;
+  if (current && typeof current === 'object' && 'value' in (current as object)) {
+    (current as { value: string }).value = locale;
   } else {
-    (i18n.global.locale as unknown as { value: string }).value = locale;
+    (i18n.global as unknown as { locale: string }).locale = locale;
   }
   uni.setStorageSync('language', locale);
   document?.documentElement?.setAttribute('lang', locale);
 };
 
 export const getLocale = (): string => {
-  if (i18n.mode === 'legacy') {
-    return i18n.global.locale as string;
+  const current = i18n.global.locale as unknown;
+  if (current && typeof current === 'object' && 'value' in (current as object)) {
+    return (current as { value: string }).value;
   }
-  return (i18n.global.locale as unknown as { value: string }).value;
+  return current as string;
 };
 
 export const t = (key: string, params?: Record<string, unknown>): string => {

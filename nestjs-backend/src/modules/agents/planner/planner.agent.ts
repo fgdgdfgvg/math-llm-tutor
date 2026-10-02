@@ -7,6 +7,7 @@ import { KnowledgeService } from '../../knowledge/knowledge.service';
 import { AIModelsService } from '../ai-models.service';
 import { AIModelProvider } from '../ai-models.types';
 import { extractAiJson } from '../ai-json.utils';
+import { describeErrorForLog } from '../../../common/utils/redact';
 
 // 规划智能体
 export class PlannerAgent extends BaseAgent {
@@ -77,7 +78,7 @@ export class PlannerAgent extends BaseAgent {
       this.logger.warn('未匹配到知识点，生成基于问题类型的知识点');
       return this.generateKnowledgePointsByType(problemType, keywords, problem);
     } catch (error) {
-      this.logger.warn('提取知识点失败，生成基于规则的fallback', error);
+      this.logger.warn('提取知识点失败，生成基于规则的fallback', describeErrorForLog(error));
       const keywords = this.extractKeywords(problem);
       const problemType = this.classifyProblemType(problem);
       return this.generateKnowledgePointsByType(problemType, keywords, problem);

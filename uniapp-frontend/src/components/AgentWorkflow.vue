@@ -107,13 +107,13 @@
               <text class="detail-text">{{ steps.diagnostic.result.summary }}</text>
             </view>
             <view class="verification-bar">
-              <view class="verify-progress" :style="{ width: (steps.diagnostic.result.passedSteps / Math.max(steps.diagnostic.result.totalSteps, 1) * 100) + '%' }"></view>
-              <text class="verify-text">{{ steps.diagnostic.result.passedSteps }}/{{ steps.diagnostic.result.totalSteps }} 项通过</text>
+              <view class="verify-progress" :style="{ width: ((steps.diagnostic.result.passedSteps ?? 0) / Math.max(steps.diagnostic.result.totalSteps ?? 0, 1) * 100) + '%' }"></view>
+              <text class="verify-text">{{ steps.diagnostic.result.passedSteps ?? 0 }}/{{ steps.diagnostic.result.totalSteps ?? 0 }} 项通过</text>
             </view>
             <view class="confidence-display">
               <text class="conf-label">置信度:</text>
-              <text class="conf-value" :class="getConfidenceClass(steps.diagnostic.result.confidence)">
-                {{ Math.round(steps.diagnostic.result.confidence * 100) }}%
+              <text class="conf-value" :class="getConfidenceClass(steps.diagnostic.result.confidence ?? 0)">
+                {{ Math.round((steps.diagnostic.result.confidence ?? 0) * 100) }}%
               </text>
             </view>
           </view>
@@ -142,8 +142,8 @@
               <text class="detail-icon">📝</text>
               <text class="detail-text">{{ steps.feedback.result.summary }}</text>
             </view>
-            <view class="rating-badge" :class="'rating-' + steps.feedback.result.rating">
-              {{ getRatingText(steps.feedback.result.rating) }}
+            <view class="rating-badge" :class="'rating-' + (steps.feedback.result.rating || 'none')">
+              {{ getRatingText(steps.feedback.result.rating || '') }}
             </view>
             <view class="suggestions-list" v-if="steps.feedback.result.keySuggestions?.length">
               <text class="suggest-label">💡 核心建议:</text>

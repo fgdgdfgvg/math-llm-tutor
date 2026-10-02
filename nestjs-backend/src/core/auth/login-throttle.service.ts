@@ -58,12 +58,19 @@ export class LoginThrottleService {
     const lockKey = this.lockKey(username);
     const lockedRaw = await this.cache.get(lockKey);
     if (lockedRaw) {
-      // 锁定键的 TTL 就是剩余锁定时间，用 TTL 反推比另存时间戳更准
-      const retryAfterSeconds = Number(lockedRaw) || this.lockSeconds;
+      // 锁定值存的是到期时间戳，剩余时间随时间真实递减（此前返回固定锁定时长，
+      // 注释声称"用 TTL 反推"但实现并非如此——自检 P2-19）
+      const until = Number(lockedRaw);
+      const retryAfterSeconds = Number.isFinite(until)
+        ? Math.max(1, Math.ceil((until - Date.now()) / 1000))
+        : this.lockSeconds;
       return { allowed: false, remainingAttempts: 0, retryAfterSeconds };
     }
 
-    const failures = await this.currentFailures(username, ip);
+    // 阻断判定只看账号维度：注释里"按 IP 锁定会让共享出口 IP 的同网段用户互相误伤"
+    // 的设计意图，此前被 `max(byUser, byIp)` 破坏——IP 计数达到阈值同样会把无关用户挡下
+    // （login-throttle 单测暴露）。IP 计数仍然记录，作为观察信号，但不参与阻断。
+    const failures = await this.userFailures(username);
     return {
       allowed: failures < this.maxFailures,
       remainingAttempts: Math.max(0, this.maxFailures - failures),
@@ -71,13 +78,14 @@ export class LoginThrottleService {
     };
   }
 
-  /** 记录一次失败；达到阈值时置锁定键（其 TTL 即剩余锁定秒数） */
+  /** 记录一次失败；达到阈值时置锁定键（值为到期时间戳，键 TTL 即锁定时长） */
   async recordFailure(username: string, ip?: string): Promise<void> {
     const failures = await this.bump(this.failKey('u', username));
     if (ip) await this.bump(this.failKey('ip', ip));
 
     if (failures >= this.maxFailures) {
-      await this.cache.set(this.lockKey(username), String(this.lockSeconds), this.lockSeconds);
+      const until = Date.now() + this.lockSeconds * 1000;
+      await this.cache.set(this.lockKey(username), String(until), this.lockSeconds);
       this.logger.warn(`账号 ${username} 登录失败 ${failures} 次，已锁定 ${this.lockSeconds}s`);
     }
   }
@@ -89,10 +97,8 @@ export class LoginThrottleService {
     await this.cache.delete(this.lockKey(username));
   }
 
-  private async currentFailures(username: string, ip?: string): Promise<number> {
-    const byUser = Number((await this.cache.get(this.failKey('u', username))) || 0);
-    const byIp = ip ? Number((await this.cache.get(this.failKey('ip', ip))) || 0) : 0;
-    return Math.max(byUser, byIp);
+  private async userFailures(username: string): Promise<number> {
+    return Number((await this.cache.get(this.failKey('u', username))) || 0);
   }
 
   private async bump(key: string): Promise<number> {

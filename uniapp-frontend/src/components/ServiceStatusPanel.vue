@@ -103,17 +103,23 @@ const checkAllServicesHealth = async (): Promise<void> => {
     
     const responseData = response.data as {
       code: number;
+      status?: string;
+      services?: Record<string, { status: string; message?: string }>;
       data?: {
         status: string;
         services?: Record<string, { status: string; message?: string }>;
       };
     };
+
+    // 兼容两种信封：TransformInterceptor 包装的 {code,data} 与裸的 {status,services}
+    const data: { status?: string; services?: Record<string, { status: string; message?: string }> } =
+      responseData.data || responseData;
     
-    const data = responseData.data || responseData;
-    
-    if (data.services) {
+    // 提成局部常量：闭包里 TS 无法保持对可选属性的收窄
+    const serviceMap = data.services;
+    if (serviceMap) {
       services.value.forEach(service => {
-        const serviceData = data.services[service.key];
+        const serviceData = serviceMap[service.key];
         if (serviceData) {
           service.healthy = serviceData.status === 'healthy';
         }

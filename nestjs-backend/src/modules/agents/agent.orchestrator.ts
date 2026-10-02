@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
+import { describeErrorForLog } from '../../common/utils/redact';
 import { AgentInput, AgentOutput, AgentOrchestratorConfig, MultiAgentResult, AgentExecution, AgentDetailResults, AgentContext } from './agent.types';
 import { BaseAgent } from './agent.base';
 import { StateManager } from './state-manager.service';
@@ -149,7 +150,7 @@ export class AgentOrchestrator {
       return result;
     } catch (error) {
       const totalExecutionTime = Date.now() - startTime;
-      this.logger.error('多智能体协作流程执行失败', error);
+      this.logger.error('多智能体协作流程执行失败', describeErrorForLog(error));
 
       // 生成降级输出
       const fallbackOutput = this.outputStandardizer.generateFallbackOutput(input.problem);

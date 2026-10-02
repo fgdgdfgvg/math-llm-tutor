@@ -29,6 +29,7 @@ import { InteractiveLearningModule } from './modules/interactive-learning/intera
 import { CollaborationModule } from './modules/collaboration/collaboration.module';
 import { CommonModule } from './common/common.module';
 import { GlobalAuthGuard } from './core/auth/guards/global-auth.guard';
+import { RolesGuard } from './core/auth/guards/roles.guard';
 import { RateLimitGuard } from './common/guards/rate-limit.guard';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { TraceIdInterceptor } from './common/interceptors/trace-id.interceptor';
@@ -122,6 +123,12 @@ import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.sche
     {
       provide: APP_GUARD,
       useClass: GlobalAuthGuard,
+    },
+    {
+      // 必须排在 GlobalAuthGuard 之后：先完成 JWT 认证（写入 req.user），再做角色校验。
+      // 它补上的是自检 P0 发现的缺口——@Roles() 此前没有任何守卫在执行。
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

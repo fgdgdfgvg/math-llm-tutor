@@ -3,6 +3,7 @@ import { KnowledgeService } from '../knowledge/knowledge.service';
 import { LearningService } from '../learning/learning.service';
 import { QuestionsService } from '../questions/questions.service';
 import { KnowledgePointMappingService } from '../knowledge/knowledge-point-mapping.service';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 export interface RecommendationItem {
   conceptId: string;
@@ -106,7 +107,7 @@ export class RecommendationService {
         .sort((a, b) => b.priority - a.priority)
         .slice(0, 10); // 只返回前10个推荐
     } catch (error) {
-      this.logger.error('Error generating personalized recommendations:', error);
+      this.logger.error('Error generating personalized recommendations:', describeErrorForLog(error));
       return [];
     }
   }
@@ -175,7 +176,7 @@ export class RecommendationService {
         .sort((a, b) => b.priority - a.priority)
         .slice(0, Math.max(1, Math.min(limit, 50)));
     } catch (error) {
-      this.logger.error('Error generating problem recommendations:', error);
+      this.logger.error('Error generating problem recommendations:', describeErrorForLog(error));
       return [];
     }
   }
@@ -212,7 +213,7 @@ export class RecommendationService {
         targetMastery: 0.8
       };
     } catch (error) {
-      this.logger.error('Error generating learning path:', error);
+      this.logger.error('Error generating learning path:', describeErrorForLog(error));
       throw error;
     }
   }
@@ -236,7 +237,7 @@ export class RecommendationService {
         return 'easy';
       }
     } catch (error) {
-      this.logger.error('Error adjusting difficulty:', error);
+      this.logger.error('Error adjusting difficulty:', describeErrorForLog(error));
       return 'medium'; // 默认难度
     }
   }

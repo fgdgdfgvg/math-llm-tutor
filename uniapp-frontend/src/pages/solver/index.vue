@@ -206,7 +206,7 @@
             <text class="desc-content">{{ diagnosisResult.errorDescription }}</text>
           </view>
           
-          <view class="knowledge-gaps" v-if="diagnosisResult.knowledgeGaps?.length > 0">
+          <view class="knowledge-gaps" v-if="(diagnosisResult.knowledgeGaps?.length || 0) > 0">
             <text class="gap-title">🎯 知识缺口：</text>
             <view class="gap-list">
               <text v-for="(gap, index) in diagnosisResult.knowledgeGaps" :key="index" class="gap-item">
@@ -215,7 +215,7 @@
             </view>
           </view>
           
-          <view class="suggestions" v-if="diagnosisResult.suggestions?.length > 0">
+          <view class="suggestions" v-if="(diagnosisResult.suggestions?.length || 0) > 0">
             <text class="suggestion-title">💡 改进建议：</text>
             <view class="suggestion-list">
               <text v-for="(suggestion, index) in diagnosisResult.suggestions" :key="index" class="suggestion-item">
@@ -280,7 +280,7 @@
           <text class="feedback-content">{{ feedback.correctApproach }}</text>
         </view>
         
-        <view class="feedback-practice" v-if="feedback.practiceSuggestions?.length > 0">
+        <view class="feedback-practice" v-if="(feedback.practiceSuggestions?.length || 0) > 0">
           <text class="feedback-title">🎯 练习建议</text>
           <view class="practice-list">
             <text v-for="(suggestion, index) in feedback.practiceSuggestions" :key="index" class="practice-item">
@@ -343,6 +343,8 @@ interface DiagnosisResult {
   errorDescription?: string;
   knowledgeGaps?: string[];
   suggestions?: string[];
+  /** 答对时的鼓励语（后端可能不返回） */
+  encouragement?: string;
   metrics?: {
     accuracy: number;
     completeness: number;
@@ -399,11 +401,19 @@ const currentSolution = ref<any>(null);
 
 // 智能体工作流相关
 const workflowStatus = ref<'idle' | 'running' | 'completed' | 'failed'>('idle');
-const workflowSteps = ref({
-  planner: { status: 'pending' as const, result: null, duration: 0 },
-  solver: { status: 'pending' as const, result: null, duration: 0 },
-  diagnostic: { status: 'pending' as const, result: null, duration: 0 },
-  feedback: { status: 'pending' as const, result: null, duration: 0 },
+type StepState = 'pending' | 'in_progress' | 'completed' | 'failed';
+interface WorkflowStepState {
+  status: StepState;
+  result: any;
+  duration: number;
+}
+// 显式标注 StepState：此前 status 用 'pending' as const 推断成字面量类型，
+// 后续赋值 'in_progress'/'completed' 直接编译失败（vue-tsc 既有债务）
+const workflowSteps = ref<Record<'planner' | 'solver' | 'diagnostic' | 'feedback', WorkflowStepState>>({
+  planner: { status: 'pending', result: null, duration: 0 },
+  solver: { status: 'pending', result: null, duration: 0 },
+  diagnostic: { status: 'pending', result: null, duration: 0 },
+  feedback: { status: 'pending', result: null, duration: 0 },
 });
 const workflowDuration = ref(0);
 
@@ -930,7 +940,8 @@ onMounted(async () => {
   // 处理路由参数
   const pages = getCurrentPages();
   const currentPage = pages[pages.length - 1];
-  const options = currentPage.options;
+  // uni-app 类型里 PageInstance 没有 options 字段，运行时实际存在——显式收窄
+  const options = ((currentPage as any)?.options || {}) as Record<string, string>;
   
   if (options.mode === 'practice' && options.questionId) {
     await loadQuestionById(options.questionId);
@@ -1061,7 +1072,13 @@ const toggleVoiceInput = async () => {
     uni.stopRecord({
       success: (res) => {
         isRecording.value = false;
-        sendVoiceToServer(res.tempFilePath);
+        // uni-app 的 StopRecordSuccessCallbackResult 类型未声明 tempFilePath，运行时存在
+        const filePath = (res as { tempFilePath?: string })?.tempFilePath;
+        if (filePath) {
+          sendVoiceToServer(filePath);
+        } else {
+          uni.showToast({ title: '未获取到录音文件', icon: 'none' });
+        }
       },
       fail: (error) => {
         console.error('停止录音失败:', error);

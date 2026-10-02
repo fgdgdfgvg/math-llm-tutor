@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { describeErrorForLog } from '../../common/utils/redact';
 
 @Injectable()
 export class FormulaRendererService {
@@ -70,7 +71,7 @@ export class FormulaRendererService {
       // 这样即使运行环境禁止出网，也不会把一个可用的公式地址误判成 400。
       return this.renderWithCodecogs(processedFormula, options);
     } catch (error) {
-      this.logger.error('公式渲染失败:', error);
+      this.logger.error('公式渲染失败:', describeErrorForLog(error));
       throw new BadRequestException('公式渲染失败，请检查公式格式');
     }
   }

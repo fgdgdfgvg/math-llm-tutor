@@ -143,6 +143,33 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * 原子性的 set-if-absent（Redis `SET NX EX`）。
+   * 用途：分布式锁与幂等标记——refresh token 轮换的并发单飞依赖它。
+   * 返回 true 表示写入成功（此前不存在），false 表示已存在。
+   */
+  async setIfAbsent(key: string, value: string, ttlSeconds?: number): Promise<boolean> {
+    const ttl = ttlSeconds ?? this.defaultTTL;
+
+    if (this.isConnected) {
+      try {
+        const result = await this.client.set(key, value, { EX: ttl, NX: true });
+        if (result === 'OK') return true;
+        return false;
+      } catch (error: any) {
+        this.logger.warn(`Redis SETNX失败: ${error.message}`);
+        // 失败时落到内存兜底判断，保证单进程下语义仍然成立
+      }
+    }
+
+    const existing = this.fallbackCache.get(key);
+    if (existing && Date.now() <= existing.expiresAt) {
+      return false;
+    }
+    this.fallbackCache.set(key, { value, expiresAt: Date.now() + ttl * 1000 });
+    return true;
+  }
+
   async delete(key: string): Promise<void> {
     if (this.isConnected) {
       try {
@@ -203,6 +230,15 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
 
   isAvailable(): boolean {
     return this.isConnected || this.fallbackCache.size >= 0;
+  }
+
+  /**
+   * 是否真的连上了 Redis。
+   * 健康检查需要区分两种"可用"：真连上 Redis（多实例安全），
+   * 还是降级到进程内内存（refresh token / 限流状态只在本实例有效）。
+   */
+  isRedisConnected(): boolean {
+    return this.isConnected;
   }
 
   private startFallbackCleanup(): void {

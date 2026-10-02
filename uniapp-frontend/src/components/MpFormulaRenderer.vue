@@ -23,6 +23,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 
+// H5 构建下由打包器提供 CJS require（见 renderH5 内的说明）
+declare const require: (m: string) => any;
+
 interface MathBlock {
   type: 'text' | 'math-image' | 'math-text';
   content: string;
@@ -100,7 +103,9 @@ const renderH5 = (text: string): string => {
   if (!text) return '';
   
   try {
-    const katex = require('katex');
+    // H5 端按需加载 katex：uniapp/Vite 的 H5 构建支持 CJS require 语法，
+    // 但 @types/node 不在本工程里，用局部声明告诉 TS 这个全局存在（修复 TS2591）
+    const katex = (require as (m: string) => any)('katex');
     
     const latexPatterns = [
       { pattern: /\$\$([\s\S]*?)\$\$/g, displayMode: true },

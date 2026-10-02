@@ -122,8 +122,13 @@ services:
       - PORT=3000
       - MONGODB_URI=mongodb://${MONGO_ROOT_USER:-root}:${MONGO_ROOT_PASSWORD:-123456}@mongodb:27017/math_llm_tutor?authSource=admin
       - JWT_SECRET=${JWT_SECRET:-math_llm_tutor_dev_jwt_secret_key_2024}
-      # 代码读取的是 JWT_EXPIRATION（JWT_EXPIRES_IN 是不生效的历史写法）
-      - JWT_EXPIRATION=${JWT_EXPIRATION:-7d}
+      # 代码读取的是 JWT_EXPIRATION（JWT_EXPIRES_IN 是不生效的历史写法）。
+      # 短时效 access + 服务端可吊销 refresh 续期；生产启动期拒绝 > 1h 的值。
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-15m}
+      - JWT_REFRESH_TTL=${JWT_REFRESH_TTL:-30d}
+      - REFRESH_REPLAY_GRACE_SECONDS=${REFRESH_REPLAY_GRACE_SECONDS:-30}
+      - LOGIN_MAX_FAILURES=${LOGIN_MAX_FAILURES:-5}
+      - LOGIN_LOCK_SECONDS=${LOGIN_LOCK_SECONDS:-900}
       # 生产模式（NODE_ENV=production）下必须显式配置允许的跨域来源：
       # 旧行为是未配置时“反射任意 Origin + credentials”，等于任何站点都能带用户
       # 凭据调 API。后端现在缺少该项会拒绝启动，这里给出可被 .env 覆盖的默认值。
@@ -155,8 +160,12 @@ services:
     networks:
       - math_tutor_network
     healthcheck:
-      # 后端健康检查路由是 /health（没有 /api 前缀）；用 127.0.0.1 避免容器内 IPv6 解析问题
-      test: wget -q -O /dev/null http://127.0.0.1:3000/health || exit 1
+      # 用 /health/live（纯进程存活，毫秒级返回）而不是 /health：
+      # /health 会同步探测 Mongo + SymPy（3 次重试 × 5s）+ Neo4j，最坏 15s+，
+      # 超过下面的 timeout，SymPy 一慢就会被误判为"容器已死"进而反复重启。
+      # 依赖是否就绪由 /health/ready（503 摘流量）与 /health（全量视图）负责。
+      # 用 127.0.0.1 避免容器内 IPv6 解析问题。
+      test: wget -q -O /dev/null http://127.0.0.1:3000/health/live || exit 1
       interval: 30s
       timeout: 10s
       retries: 3

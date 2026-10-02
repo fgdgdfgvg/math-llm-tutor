@@ -70,8 +70,11 @@ export const interactiveLearningApi = {
 };
 
 export const authApi = {
+  // 后端的登录路由是 /user/login（不是 /auth/login）——此前调错路径导致登录 404。
+  // 注意：access token 现在只有 15 分钟，本前端未实现 refresh 续期，
+  // 过期后需重新登录（续期能力见 uniapp-frontend 的实现）。
   login: (username: string, password: string) =>
-    request<{ access_token: string; user: { id: string; username: string } }>('/auth/login', {
+    request<{ access_token: string; user: { id: string; username: string } }>('/user/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),

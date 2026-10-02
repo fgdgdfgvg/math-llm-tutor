@@ -40,9 +40,16 @@ export class GlobalAuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret,
       });
-      
-      // 将用户信息添加到请求对象
-      request.user = payload;
+
+      // 与 JwtStrategy.validate 的产物保持同一结构（自检 P0-2）：
+      // 此前这里直接放原始 payload（无 userId），JwtAuthGuard 放 {userId, username}
+      // （无 roles），下游 req.user 的形状取决于用了哪个守卫，行为不可预期。
+      request.user = {
+        sub: payload.sub,
+        userId: payload.sub,
+        username: payload.username,
+        roles: payload.roles,
+      };
     } catch (error) {
       throw new UnauthorizedException('无效的认证令牌');
     }
