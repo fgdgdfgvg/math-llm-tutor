@@ -112,7 +112,11 @@ services:
     container_name: math_tutor_backend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      # 只绑定回环，与 Mongo/Redis/Neo4j/SymPy 的做法保持一致：
+      # 浏览器一律经 nginx（:80）同源反代访问 /api/**，不需要也不应直连后端端口。
+      # 这样既保留本机调试/查看 Swagger 的便利，又不把 API 暴露给局域网；
+      # 同时它也是下面 TRUST_PROXY 能安全开启的前提（只有本机与容器网络能触达）。
+      - "127.0.0.1:3000:3000"
     # 本地调机 .env 里的 AI key（SiliconFlow 等）全部透传给容器；
     # 缺了它们智能体会静默降级到规则引擎（解题能跑但质量降级）。
     env_file:
@@ -132,7 +136,13 @@ services:
       # 生产模式（NODE_ENV=production）下必须显式配置允许的跨域来源：
       # 旧行为是未配置时“反射任意 Origin + credentials”，等于任何站点都能带用户
       # 凭据调 API。后端现在缺少该项会拒绝启动，这里给出可被 .env 覆盖的默认值。
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080,http://localhost:3000,http://localhost:5173,http://127.0.0.1:8080}
+      # 已包含 80 端口来源（前端容器发布在 80）：默认同源反代下其实用不到 CORS，
+      # 但直连后端端口的场景（本机调试、旧版前端）必须有它，否则一律被拒。
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost,http://127.0.0.1,http://localhost:8080,http://localhost:3000,http://localhost:5173,http://127.0.0.1:8080}
+      # nginx 是后端唯一的上游，必须信任它注入的 X-Forwarded-For，否则 req.ip
+      # 恒为 nginx 容器地址，全站用户会被算作同一个限流来源。
+      # 能安全开启的前提是后端端口只绑回环（见上面的 ports 注释）。
+      - TRUST_PROXY=${TRUST_PROXY:-1}
       # 全新数据卷时自动导入 datasets/math.json，开箱即有题库
       - SEED_QUESTIONS=${SEED_QUESTIONS:-true}
       - DATASETS_DIR=/app/datasets
@@ -176,13 +186,17 @@ services:
       context: ./uniapp-frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE_URL=${API_BASE_URL:-http://localhost:3000}
+        # 走 nginx 同源反代：浏览器请求 http://<host>/api/**，nginx 去掉 /api 前缀转给后端。
+        # 好处：前端不需要知道后端地址、不产生跨域、后端端口也不必对浏览器暴露。
+        # 若确需直连后端（例如把前端单独部署到别的域），用 API_BASE_URL 覆盖成绝对地址。
+        - VITE_API_BASE_URL=${API_BASE_URL:-/api}
     container_name: math_tutor_frontend
     restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - math_tutor_network
     healthcheck:

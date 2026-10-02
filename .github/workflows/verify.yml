@@ -37,6 +37,21 @@ jobs:
         working-directory: uniapp-frontend
         run: npm ci
 
+      # 类型检查过了 ≠ 构建得过（类型、别名解析、插件、资源引用是两套判定）。
+      # 前端镜像靠 `npm run build:h5` 产出 dist/build/h5，构建失败的话镜像必然失败，
+      # 因此把真实构建纳入门禁。放在 CI 而不是本地 verify-all：完整构建耗时较长。
+      - name: 前端生产构建（H5）
+        working-directory: uniapp-frontend
+        env:
+          VITE_API_BASE_URL: /api
+        run: npm run build:h5
+
+      - name: 校验前端构建产物存在
+        run: |
+          test -f uniapp-frontend/dist/build/h5/index.html \
+            || { echo "::error::未产出 dist/build/h5/index.html，前端镜像会构建失败"; exit 1; }
+          du -sh uniapp-frontend/dist/build/h5
+
       # 一条命令跑完后端 tsc / jest、前端 vue-tsc、密钥扫描、日志卫生扫描。
       # 与本地完全同一份脚本，避免"本地绿、CI 红"的双份逻辑漂移。
       - name: 运行统一门禁
@@ -139,6 +154,11 @@ jobs:
         run: node scripts/auth-probe.cjs
         env:
           BASE_URL: http://127.0.0.1:3100
+
+      # 部署加固探针自带进程（自选 3121+ 端口），验证限流来源不可伪造、
+      # 安全响应头、CORS 拒绝语义、Swagger 收敛、探针语义等"上线后才暴露"的行为。
+      - name: 部署加固探针
+        run: node scripts/deploy-probe.cjs
 
       - name: 失败时导出后端日志
         if: failure()

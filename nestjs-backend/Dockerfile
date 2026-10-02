@@ -33,8 +33,11 @@ USER nestjs
 EXPOSE 3000
 
 # 用 127.0.0.1：容器内 localhost 会优先解析成 ::1，而 Node 只监听 IPv4，
-# 用 localhost 做健康检查会一直是 Connection refused
+# 用 localhost 做健康检查会一直是 Connection refused。
+# 打 /health/live（纯进程存活，毫秒级）而不是 /health：后者会同步探测 Mongo +
+# SymPy（3 次重试 × 5s）+ Neo4j，最坏 15s+，超过下面的 timeout，会把可降级的
+# 依赖抖动误判成"容器已死"。依赖就绪与否请用 /health/ready（不就绪返回 503）。
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health/live || exit 1
 
 CMD ["node", "dist/main.js"]

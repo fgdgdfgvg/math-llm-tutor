@@ -14,6 +14,17 @@ NestJS + MongoDB + Neo4j + Vue3/UniApp 的高等数学 AI 辅导系统；核心�
 
 > 截至 2026-10-01：条目 1~4 的代码侧均已落地（见 docs/改进实施进度.md 与 docs/方案复盘与第二轮实施报告.md）；
 > 仅剩"服务商后台轮换 3 组泄露密钥"需人工执行。条目 5 与巨型文件拆分、SSE 任务化为剩余 P1/P2。
+> 自检报告 20 项亦全部闭环（提交 577f03a），系统状态：可部署工程原型。
+
+## 上线门禁与探针（2026-10-01 建立，改代码后必须全绿）
+- `npm run verify`（= `scripts/verify-all.cjs`）：后端 tsc + jest / 前端 vue-tsc / 密钥扫描 / 日志卫生扫描，**5 项全绿才可提交**。
+- `node self-check.cjs --mode local --full`：完整集成自检（38 项，需 Mongo/SymPy）；`scripts/auth-probe.cjs`：认证授权真实 HTTP 探针（`BASE_URL` 指定入口）。
+- CI：`.github/workflows/verify.yml`（静态门禁 + 真实 Mongo/Redis 的认证集成作业），与本地同一份脚本。
+- **健康探针语义**：`/health/live` 只表示进程存活、**不查任何依赖**（毫秒级，可作 liveness）；
+  `/health/ready` 只判**关键依赖**（Mongo、已配置但不可达的 Redis），不就绪返回 503；
+  SymPy/Neo4j 属可降级依赖**不查**。`/health`、`/health/detailed` 是人工排查用全量视图，**不要拿来做探针**（会同步查 SymPy，最坏 15s+）。
+- **响应信封约定**：`TransformInterceptor` 的 `code` 必须与 HTTP 状态一致（≥400 透传，2xx 记 200）；新增"未就绪/非 2xx"接口时务必确认这一点。
+- **密钥扫描豁免策略**：只能往 `secret-scan.cjs` 的 `ALLOWLIST` 加"文件 + 规则"精确条目（针对测试夹具），**禁止按目录整体排除**；命中豁免会显式打印，新增豁免会出现在 diff 里。
 
 ## 约定与注意事项
 - 仓库已建 git（2026-10-01 baseline 提交），改动前先确认 git status 干净、完成后提交。

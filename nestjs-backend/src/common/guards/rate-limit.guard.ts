@@ -78,11 +78,19 @@ export class RateLimitGuard implements CanActivate, OnModuleDestroy {
     return true;
   }
 
+  /**
+   * 取客户端来源地址用于限流分桶。
+   *
+   * **必须用 `request.ip`，绝不能直接读 `x-forwarded-for` 头。**
+   * 该头是客户端可任意伪造的，直接采信等于让攻击者每次换一个假 IP 就能拿到
+   * 全新的配额桶。实测：固定伪造值时第 21 次触发 429，但每次换一个伪造值时
+   * 连打 40 次全部放行（0 次 429），LLM 成本防护完全失效。
+   *
+   * Express 的 `req.ip` 会依据 `app.set('trust proxy', ...)` 决定是否采信该头
+   * （见 main.ts 的 TRUST_PROXY 配置）：默认不信任，取 socket 地址——这是安全默认；
+   * 部署在 nginx/网关之后时再由运维显式开启，否则全部请求会被算成网关同一个来源。
+   */
   private getClientIp(request: Request): string {
-    const forwarded = request.headers['x-forwarded-for'];
-    if (typeof forwarded === 'string') {
-      return forwarded.split(',')[0].trim();
-    }
     return request.ip || request.socket?.remoteAddress || 'unknown';
   }
 

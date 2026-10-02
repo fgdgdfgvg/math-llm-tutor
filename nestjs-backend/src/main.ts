@@ -1,9 +1,13 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { json, urlencoded } from 'express';
 import { loadEnvFileFallback, validateServerEnv } from './common/utils/env.validation';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { securityHeaders } from './common/middleware/security-headers.middleware';
+import { AppError } from './common/errors/app-error';
+import { ErrorCode } from './common/errors/error-codes';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -14,9 +18,28 @@ async function bootstrap() {
   loadEnvFileFallback(['JWT_SECRET', 'MONGODB_URI', 'CORS_ORIGIN', 'REDIS_PASSWORD']);
   validateServerEnv();
 
-  const app = await NestFactory.create(AppModule);
-  
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   const isProduction = process.env.NODE_ENV === 'production';
+
+  /**
+   * 反向代理信任配置（安全敏感，默认关闭）。
+   *
+   * Express 默认**不信任** X-Forwarded-For，`req.ip` 取 socket 地址——这是安全默认：
+   * 该头客户端可任意伪造，无条件采信等于取消限流（实测随机伪造该头可让 LLM 限流
+   * 40/40 全部放行，见 common/guards/rate-limit.guard.ts 的说明）。
+   *
+   * 部署在 nginx / 网关之后时才应显式开启，值语义与 Express 的 trust proxy 一致：
+   *   TRUST_PROXY=1                 → 信任最近一跳（本项目 compose 里 nginx 反代的场景）
+   *   TRUST_PROXY=loopback,linklocal → 只信任本地/链路本地代理
+   *   留空（默认）                   → 完全不信任，req.ip = socket 地址
+   */
+  const trustProxy = process.env.TRUST_PROXY?.trim();
+  if (trustProxy) {
+    const value: string | number = /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy;
+    app.set('trust proxy', value);
+    logger.log(`已启用反向代理信任（trust proxy = ${value}），req.ip 将按该策略解析 X-Forwarded-For`);
+  }
 
   const corsOrigin = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()).filter(Boolean)
@@ -60,9 +83,12 @@ async function bootstrap() {
         callback(null, true);
         return;
       }
-      // 不以错误消息回显具体 origin，避免把白名单探测当成信息泄露渠道
+      // 不以错误消息回显具体 origin，避免把白名单探测当成信息泄露渠道。
+      // 用 AppError(FORBIDDEN) 而不是裸 Error：裸 Error 会被全局过滤器归一化为
+      // 500 InternalError，把一个"客户端来源不被允许"的正常拒绝记成服务端故障，
+      // 污染错误日志与 5xx 监控（CORS 拒绝本就不该是 5xx）。
       logger.warn(`CORS 拒绝来源: ${origin}`);
-      callback(new Error('CORS policy: origin not allowed'));
+      callback(new AppError(ErrorCode.FORBIDDEN, '请求来源不在允许列表中'));
     },
     credentials: true,
     methods: corsMethods,
@@ -70,6 +96,10 @@ async function bootstrap() {
     maxAge: 86400,
   });
   
+  // 安全响应头（零依赖最小集）：nosniff / 防嵌入 / Referrer-Policy，生产另加 HSTS。
+  // 放在最前面，保证错误响应（含 CORS 拒绝、校验失败）也带上这些头。
+  app.use(securityHeaders(isProduction));
+
   app.use(json({ limit: '1mb' }));
   app.use(urlencoded({ extended: true, limit: '1mb' }));
 
@@ -140,26 +170,35 @@ Authorization: Bearer <your_token>
     .addTag('health', '健康检查接口')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [],
-    ignoreGlobalPrefix: false,
-  });
+  /**
+   * API 文档默认只在非生产环境注册。
+   * Swagger 会完整枚举全部端点（含管理端），对公网等于一份现成的攻击面清单；
+   * 内网部署确需开放时用 ENABLE_SWAGGER=true 显式打开。
+   */
+  const enableSwagger = process.env.ENABLE_SWAGGER === 'true' || !isProduction;
 
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-      filter: true,
-      showExtensions: true,
-      showCommonExtensions: true,
-    },
-    customCss: `
+  if (enableSwagger) {
+    const document = SwaggerModule.createDocument(app, config, {
+      extraModels: [],
+      ignoreGlobalPrefix: false,
+    });
+
+    SwaggerModule.setup('api/docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+      },
+      customCss: `
       .swagger-ui .topbar { display: none }
       .swagger-ui .info .title { font-size: 28px; }
       .swagger-ui .opblock-tag { font-size: 18px; }
     `,
-    customSiteTitle: 'Math AI Tutor API Docs',
-  });
+      customSiteTitle: 'Math AI Tutor API Docs',
+    });
+  }
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port, '0.0.0.0');
@@ -177,6 +216,10 @@ Authorization: Bearer <your_token>
   httpServer.headersTimeout = httpServer.keepAliveTimeout + 5_000;
 
   logger.log(`Application is running on: http://localhost:${port}`);
-  logger.log(`Swagger documentation: http://localhost:${port}/api/docs`);
+  if (enableSwagger) {
+    logger.log(`Swagger documentation: http://localhost:${port}/api/docs`);
+  } else {
+    logger.log('Swagger 文档未注册（生产环境默认关闭，可用 ENABLE_SWAGGER=true 打开）');
+  }
 }
 bootstrap();
