@@ -42,6 +42,22 @@ NestJS + MongoDB + Neo4j + Vue3/UniApp 的高等数学 AI 辅导系统；核心�
 - **生产环境默认不注册 Swagger**（`ENABLE_SWAGGER=true` 才开）。
 - 长任务超时链路必须一致：前端 axios 180s ≤ nginx `proxy_read_timeout` 300s，SymPy 预算 20s。
 
+## 本机环境坑（踩过，别重复）
+- **Bash 工具不可用于执行命令**：本机 `bash` 转发到 `wsl.exe`，而 wsl.exe 在安全策略黑名单里
+  （`bash -n` 也不行）。一律用 `node` 绝对路径执行脚本：
+  `C:/Users/欧阳晨/.workbuddy/binaries/node/versions/22.22.2-3/node.exe`；coreutils（head/tail/grep）全缺。
+- **不要把复杂脚本塞进 `node -e`**：反引号、`$`、多层引号会破坏 shell 解析（本项目已踩 2 次）。
+  写成 `.cjs` 文件再执行；一次性脚本放 `.self-check/`（已 gitignore）。
+- **平台输出层会对疑似凭据脱敏替换**：终端里看到的"随机密钥串"可能是脱敏产物。
+  判定某串是否为真实凭据必须写脚本做相等性比对，不能凭肉眼。
+- Shell 脚本语法校验用 `npm run check:sh`（`scripts/sh-structure-check.cjs`，结构断言）。
+
+## 掌握度量纲（已核查，勿再"顺手统一"）
+- `learning.service.ts` 的 `correctRate` 是 **0–100**（`*100`），`masteryLevel` 是 **0–1**。
+- `assessment.service.ts` 在边界把 `masteryLevel` 转成 0–100 后自洽，**不是缺陷**。
+- 前端 `utils/math/graph.ts` 的 `toPercentMastery()` 用 `0 < v <= 1 → v*100` 猜测量纲，
+  属已知的展示层兜底；正解是在 API 契约层统一并显式标注（尚未做，B3）。
+
 ## 约定与注意事项
 - 仓库已建 git（2026-10-01 baseline 提交），改动前先确认 git status 干净、完成后提交。
 - 本机 **Bash 不可用**（Git Bash shim 缺 coreutils），改用 node 绝对路径执行脚本：`C:/Users/欧阳晨/.workbuddy/binaries/node/versions/22.22.2-3/node.exe`
