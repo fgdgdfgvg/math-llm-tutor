@@ -31,7 +31,7 @@ check_command() {
     fi
 }
 
-echo "[1/7] 检查运行环境..."
+echo "[1/8] 检查运行环境..."
 echo ""
 
 if ! check_command node; then
@@ -46,6 +46,14 @@ if ! check_command python3; then
     exit 1
 fi
 
+
+# Docker v2 用 `docker compose`（无连字符），v1 用 `docker-compose`；两者择优，避免脚本在只装了 v2 的机器上直接失败
+DOCKER_COMPOSE=""
+if docker compose version >/dev/null 2>&1; then
+    DOCKER_COMPOSE="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+fi
 DOCKER_AVAILABLE=0
 if check_command docker; then
     DOCKER_AVAILABLE=1
@@ -61,7 +69,7 @@ if [ $DOCKER_AVAILABLE -eq 1 ]; then
 fi
 echo ""
 
-echo "[2/7] 检查配置文件..."
+echo "[2/8] 检查配置文件..."
 echo ""
 
 if [ ! -f "$PROJECT_ROOT/nestjs-backend/.env" ]; then
@@ -78,7 +86,7 @@ else
 fi
 echo ""
 
-echo "[3/7] 安装/更新依赖..."
+echo "[3/8] 安装/更新依赖..."
 echo ""
 
 echo "正在检查 NestJS 后端依赖..."
@@ -127,7 +135,7 @@ deactivate
 print_success "Python 依赖已就绪"
 echo ""
 
-echo "[4/7] 启动 Docker 服务..."
+echo "[4/8] 启动 Docker 服务..."
 echo ""
 
 if [ $DOCKER_AVAILABLE -eq 1 ]; then
@@ -138,7 +146,7 @@ if [ $DOCKER_AVAILABLE -eq 1 ]; then
     if ! docker ps --filter "name=math_tutor_mongodb" --format "{{.Names}}" 2>/dev/null | grep -q "math_tutor_mongodb"; then
         echo "正在启动 MongoDB 容器..."
         cd "$PROJECT_ROOT"
-        docker-compose up -d mongodb
+        "$DOCKER_COMPOSE" up -d mongodb
     else
         echo "MongoDB 容器已在运行"
     fi
@@ -146,7 +154,7 @@ if [ $DOCKER_AVAILABLE -eq 1 ]; then
     if ! docker ps --filter "name=math_tutor_redis" --format "{{.Names}}" 2>/dev/null | grep -q "math_tutor_redis"; then
         echo "正在启动 Redis 容器..."
         cd "$PROJECT_ROOT"
-        docker-compose up -d redis
+        "$DOCKER_COMPOSE" up -d redis
     else
         echo "Redis 容器已在运行"
     fi
@@ -219,10 +227,10 @@ else
     print_warning "SymPy 服务启动中，请稍后检查"
 fi
 
-if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health/live 2>/dev/null | grep -q "^200$"; then
     print_success "NestJS 后端服务运行正常"
 else
-    print_warning "NestJS 后端服务启动中，请稍后检查"
+    print_warning "NestJS 后端服务未就绪（/health/live 未返回 200），请查看 /tmp/nestjs-backend.log"
 fi
 
 if curl -s http://localhost:5173 > /dev/null 2>&1; then
@@ -253,7 +261,7 @@ echo "║  后端 API:     http://localhost:3000                         ║"
 echo "║  SymPy 服务:   http://localhost:8000                         ║"
 echo "║  公式渲染服务: http://localhost:8080                         ║"
 echo "║  API 文档:     http://localhost:3000/api/docs                ║"
-echo "║  MongoDB:      mongodb://root:123456@localhost:27017         ║"
+    echo "  MongoDB:      mongodb://<user>:<password>@<host>:27017/<database>  (口令见 .env，不在横幅中显示)"
 echo "║  Redis:        redis://localhost:6379                        ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
 echo "║  使用 scripts/stop-all.sh 停止所有服务                       ║"

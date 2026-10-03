@@ -25,7 +25,8 @@
     "verify": "node scripts/verify-all.cjs",
     "verify:probe": "node scripts/deploy-probe.cjs",
     "auth:probe": "node scripts/auth-probe.cjs",
-    "reset:data": "node reset-test-data.cjs"
+    "reset:data": "node reset-test-data.cjs",
+    "check:sh": "node scripts/sh-structure-check.cjs"
   },
   "keywords": [],
   "author": "",
