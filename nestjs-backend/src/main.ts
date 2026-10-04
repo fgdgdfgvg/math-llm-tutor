@@ -6,6 +6,7 @@ import { json, urlencoded } from 'express';
 import { loadEnvFileFallback, validateServerEnv } from './common/utils/env.validation';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { securityHeaders } from './common/middleware/security-headers.middleware';
+import { gzipCompression } from './common/middleware/compression.middleware';
 import { AppError } from './common/errors/app-error';
 import { ErrorCode } from './common/errors/error-codes';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -99,6 +100,10 @@ async function bootstrap() {
   // 安全响应头（零依赖最小集）：nosniff / 防嵌入 / Referrer-Policy，生产另加 HSTS。
   // 放在最前面，保证错误响应（含 CORS 拒绝、校验失败）也带上这些头。
   app.use(securityHeaders(isProduction));
+
+  // 响应压缩（零依赖 zlib）。必须早于所有会写响应体的中间件；
+  // 内部已跳过 text/event-stream，因此不会破坏 /agents/solve/stream 的 SSE 推送。
+  app.use(gzipCompression());
 
   app.use(json({ limit: '1mb' }));
   app.use(urlencoded({ extended: true, limit: '1mb' }));

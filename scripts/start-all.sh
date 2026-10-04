@@ -73,12 +73,18 @@ echo "[2/8] 检查配置文件..."
 echo ""
 
 if [ ! -f "$PROJECT_ROOT/nestjs-backend/.env" ]; then
-    print_warning "未找到 .env 配置文件，正在创建默认配置..."
-    if [ -f "$PROJECT_ROOT/.env.docker" ]; then
-        cp "$PROJECT_ROOT/.env.docker" "$PROJECT_ROOT/nestjs-backend/.env"
-        print_success "已创建默认 .env 配置文件"
+    print_warning "未找到 .env 配置文件，正在从 .env.example 生成..."
+    # 单一事实来源用 .env.example（已入库、随代码走）。
+    # 旧实现在这里复制 .env.docker，但该文件被 .gitignore 的 `.env.*` 规则排除，
+    # 根本不会随仓库分发 → 全新机器必然走"创建默认配置失败"分支退出；
+    # 而且它当时只含 10 个键，缺 MONGODB_URI / CORS_ORIGIN / JWT_EXPIRATION 等必需项，
+    # 即便复制成功，后端也会在启动期校验直接拒绝启动。
+    if [ -f "$PROJECT_ROOT/nestjs-backend/.env.example" ]; then
+        cp "$PROJECT_ROOT/nestjs-backend/.env.example" "$PROJECT_ROOT/nestjs-backend/.env"
+        print_success "已生成 nestjs-backend/.env（占位值，需按下方提示补全后重启）"
+        print_warning "必填项：JWT_SECRET（≥32位随机）、MONGODB_URI、CORS_ORIGIN（生产必填）"
     else
-        print_error "创建默认配置失败，请手动创建 .env 文件"
+        print_error "缺少 nestjs-backend/.env.example，请手动创建 .env 后重试"
         exit 1
     fi
 else
@@ -221,7 +227,7 @@ echo ""
 echo "正在检查服务健康状态 (等待服务启动)..."
 sleep 10
 
-if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health 2>/dev/null | grep -q "^200$"; then
     print_success "SymPy 服务运行正常"
 else
     print_warning "SymPy 服务启动中，请稍后检查"
@@ -233,13 +239,13 @@ else
     print_warning "NestJS 后端服务未就绪（/health/live 未返回 200），请查看 /tmp/nestjs-backend.log"
 fi
 
-if curl -s http://localhost:5173 > /dev/null 2>&1; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 2>/dev/null | grep -q "^200$"; then
     print_success "前端 H5 服务运行正常"
 else
     print_warning "前端 H5 服务启动中，请稍后检查"
 fi
 
-if curl -s http://localhost:8080/health > /dev/null 2>&1; then
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health 2>/dev/null | grep -q "^200$"; then
     print_success "公式渲染服务运行正常"
 else
     print_warning "公式渲染服务启动中，请稍后检查"
