@@ -39,6 +39,23 @@ neo4j-data/
 lean_workspace/
 tmp/
 
+# ============ AI 工具痕迹（不入库） ============
+.trae/
+.freebuff/
+
+# ============ 个人论文稿（含个人信息，不入库） ============
+paper/*.docx
+
+# ============ 一次性调试脚本（不入库） ============
+test-*.ps1
+test_*.py
+restart_*.py
+debug-signature.js
+
+# ============ 评测产物（原始逐题数据可复现，不入库；摘要报告单独放行） ============
+results/*
+!results/eval-summary.md
+
 # ============ 编辑器与系统 ============
 .vscode/*
 !.vscode/extensions.json
@@ -53,8 +70,3 @@ desktop.ini
 *.dmg
 *.iso
 *.zip
-
-# ============ 一次性调试脚本 ============
-debug-signature.js
-test-api.ps1
-test-login.ps1

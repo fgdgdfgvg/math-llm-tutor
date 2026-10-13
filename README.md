@@ -129,7 +129,26 @@ CI（`.github/workflows/verify.yml`）与本地同一份脚本，避免"本地�
 
 ---
 
-## 六、健康探针
+## 六、基准评测（可复现）
+
+`datasets/benchmark-dataset.json` 是 500 题标准基准集（`高等数学LLM基准测试集_v2`，覆盖 11 个高数领域）。`scripts/benchmark-eval.cjs` 对其中的**符号可解计算子集**做真实求解评测：
+
+```bash
+# 先起 SymPy 服务
+cd python-sympy-service && python main.py   # 默认 127.0.0.1:8000
+
+# 评测（默认全量符号可解子集，可 --limit N 抽样 / --domain 某域）
+node scripts/benchmark-eval.cjs
+# 产物：results/eval-summary.md（摘要）+ results/eval-raw.json（逐题原始数据）
+```
+
+评测链路：**题面 LaTeX 解析 → LaTeX→SymPy 转换 → 符号求解（limit/derivative/integral）→ 数值等价 + 符号等价（`simplify(a-b)==0`）双重判定**。逐题原始数据全量落盘，结果可复现。当前评测范围与结论见 [`results/eval-summary.md`](./results/eval-summary.md)。
+
+> 说明：本评测只覆盖"有确定性符号答案"的计算子集，证明题/选择题/含 `+C` 的不定积分需扩展求解器接入；未接入的题显式记为 `unsupported`，不纳入准确率统计，避免虚报。
+
+---
+
+## 七、健康探针
 
 | 端点 | 用途 | 依赖 | 期望 |
 |---|---|---|---|
@@ -141,7 +160,7 @@ CI（`.github/workflows/verify.yml`）与本地同一份脚本，避免"本地�
 
 ---
 
-## 七、安全基线
+## 八、安全基线
 
 - 短时效 access（15m）+ 服务端 refresh（30d，仅存 SHA-256，用一次即轮换 + 重用检测）
 - 登录失败锁定（账号维度，共享 IP 不连坐）
@@ -155,17 +174,18 @@ CI（`.github/workflows/verify.yml`）与本地同一份脚本，避免"本地�
 
 ---
 
-## 八、已知限制
+## 九、已知限制
 
 1. **多实例必须配 Redis**：未配置时降级为进程内内存，多实例会不一致。
 2. **长任务同步返回**：多智能体求解为串行同步调用（数十秒），尚未任务化 + SSE；生产建议网关超时 ≥60s。
 3. **前端生产构建未在本机验证**：由 CI 的 `build:h5` 门禁覆盖。
 4. **`math-tutor-prototype/` 为旧版前端**：未接入 refresh token，建议正式交付前移除或改造。
 5. **3 组历史明文密钥需到服务商后台轮换**（代码侧已脱敏并加门禁，但已泄露的密钥必须作废）。
+6. **评测仅覆盖符号可解子集**：基准评测目前覆盖极限/导数/积分等符号计算，微分方程/级数求解器与 LLM 基线对照（A/B）尚未接入。
 
 ---
 
-## 九、文档索引
+## 十、文档索引
 
 - [`docs/可部署性评估报告.md`](./docs/可部署性评估报告.md) — 7 维度评估结论与依据
 - [`docs/部署就绪清单.md`](./docs/部署就绪清单.md) — 组件 / 端口 / 环境变量 / 门禁 / 安全基线
