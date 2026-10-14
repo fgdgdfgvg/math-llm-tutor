@@ -52,10 +52,12 @@ test_*.py
 restart_*.py
 debug-signature.js
 
-# ============ 评测产物（原始逐题数据可复现，不入库；摘要报告单独放行） ============
+# ============ 评测产物（逐题原始数据可复现，全部入库作为可核查证据） ============
 results/*
 !results/eval-summary.md
 !results/ablation-summary.md
+!results/eval-raw.json
+!results/ablation-raw.json
 
 # ============ 编辑器与系统 ============
 .vscode/*

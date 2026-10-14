@@ -1,0 +1,960 @@
+{
+  "generated_at": "2026-10-14T15:41:23.615Z",
+  "sympy_url": "http://127.0.0.1:8000",
+  "backend_url": "http://127.0.0.1:3100",
+  "benchmark": {
+    "file": "datasets/benchmark-dataset.json",
+    "total": 500,
+    "subset": 44,
+    "evaluated": 44
+  },
+  "strategy_a": {
+    "name": "纯符号直解（LaTeX→SymPy 服务）",
+    "evaluated": 27,
+    "solved": 21,
+    "correct": 21,
+    "placeholder": 0,
+    "solveRate": 0.7778,
+    "accuracyOnSolved": 1,
+    "avgMs": 35
+  },
+  "strategy_b": {
+    "name": "多智能体流水线（POST /agents/solve）",
+    "evaluated": 27,
+    "solved": 27,
+    "correct": 0,
+    "placeholder": 8,
+    "solveRate": 1,
+    "accuracyOnSolved": 0,
+    "avgMs": 4018
+  },
+  "by_domain": {
+    "极限与连续": {
+      "total": 7,
+      "aSolved": 7,
+      "aCorrect": 7,
+      "bSolved": 7,
+      "bCorrect": 0,
+      "bPlaceholder": 2
+    },
+    "导数与微分": {
+      "total": 20,
+      "aSolved": 11,
+      "aCorrect": 11,
+      "bSolved": 20,
+      "bCorrect": 0,
+      "bPlaceholder": 11
+    },
+    "积分计算": {
+      "total": 17,
+      "aSolved": 3,
+      "aCorrect": 3,
+      "bSolved": 17,
+      "bCorrect": 0,
+      "bPlaceholder": 8
+    }
+  },
+  "rows": [
+    {
+      "id": "极008",
+      "domain": "极限与连续",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{9x^2+7x-8}{8x^2-7x+2}$",
+      "expected": "1.125",
+      "baseline": {
+        "status": "solved",
+        "actual": "9/8",
+        "equivalent": true,
+        "ms": 52
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3786,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极009",
+      "domain": "极限与连续",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(9x)}{x^2}$",
+      "expected": "40.5",
+      "baseline": {
+        "status": "solved",
+        "actual": "81/2",
+        "equivalent": true,
+        "ms": 417
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 5051,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极011",
+      "domain": "极限与连续",
+      "difficulty": "medium",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(23x)}{11x}$",
+      "expected": "2.090909090909091",
+      "baseline": {
+        "status": "solved",
+        "actual": "23/11",
+        "equivalent": true,
+        "ms": 8
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3643,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极013",
+      "domain": "极限与连续",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to \\infty} \\frac{14x^2+12x-13}{13x^2-12x+2}$",
+      "expected": "1.0769230769230769",
+      "baseline": {
+        "status": "solved",
+        "actual": "14/13",
+        "equivalent": true,
+        "ms": 7
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3721,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极016",
+      "domain": "极限与连续",
+      "difficulty": "medium",
+      "problem": "求极限 $\\lim_{x \\to 0} \\frac{\\sin(33x)}{16x}$",
+      "expected": "2.0625",
+      "baseline": {
+        "status": "solved",
+        "actual": "33/16",
+        "equivalent": true,
+        "ms": 12
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3705,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极017",
+      "domain": "极限与连续",
+      "difficulty": "easy",
+      "problem": "求 $\\lim_{x \\to 17} \\frac{x^2-289}{x-17}$",
+      "expected": "34",
+      "baseline": {
+        "status": "solved",
+        "actual": "34",
+        "equivalent": true,
+        "ms": 7
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3705,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "极019",
+      "domain": "极限与连续",
+      "difficulty": "medium",
+      "problem": "求 $\\lim_{x \\to 0} \\frac{1-\\cos(19x)}{x^2}$",
+      "expected": "180.5",
+      "baseline": {
+        "status": "solved",
+        "actual": "361/2",
+        "equivalent": true,
+        "ms": 7
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4001,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "导061",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{2} - 1x + 0$ 的导数",
+      "expected": "2x^1-1",
+      "baseline": {
+        "status": "solved",
+        "actual": "2*x - 1",
+        "equivalent": true,
+        "ms": 16
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3807,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导063",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{3x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "expected": "y-0=e^{3}(x-1)",
+      "baseline": {
+        "status": "unsupported",
+        "error": "需在某点求值或几何含义",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "x ∈ R（恒等式，无穷多解）",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3782,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导064",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{5} - 4x + 3$ 的导数",
+      "expected": "5x^4-4",
+      "baseline": {
+        "status": "solved",
+        "actual": "5*x**4 - 4",
+        "equivalent": true,
+        "ms": 11
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3845,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导065",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(5x)$ 的二阶导数",
+      "expected": "-25\\sin(5x)",
+      "baseline": {
+        "status": "solved",
+        "actual": "-25*sin(5*x)",
+        "equivalent": true,
+        "ms": 11
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "\\cos(5x) · (5x)'",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3796,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导067",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{8} - 7x + 6$ 的导数",
+      "expected": "8x^7-7",
+      "baseline": {
+        "status": "solved",
+        "actual": "8*x**7 - 7",
+        "equivalent": true,
+        "ms": 10
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3728,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导068",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(8x)$ 的二阶导数",
+      "expected": "-64\\sin(8x)",
+      "baseline": {
+        "status": "solved",
+        "actual": "-64*sin(8*x)",
+        "equivalent": true,
+        "ms": 30
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "\\cos(8x) · (8x)'",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3907,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导070",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{11} - 10x + 9$ 的导数",
+      "expected": "11x^10-10",
+      "baseline": {
+        "status": "solved",
+        "actual": "11*x**10 - 10",
+        "equivalent": true,
+        "ms": 14
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3954,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导071",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(11x)$ 的二阶导数",
+      "expected": "-121\\sin(11x)",
+      "baseline": {
+        "status": "solved",
+        "actual": "-121*sin(11*x)",
+        "equivalent": true,
+        "ms": 12
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "\\cos(11x) · (11x)'",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3806,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导072",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{12x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "expected": "y-0=e^{12}(x-1)",
+      "baseline": {
+        "status": "unsupported",
+        "error": "需在某点求值或几何含义",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "x ∈ R（恒等式，无穷多解）",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3897,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导073",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{14} - 13x + 12$ 的导数",
+      "expected": "14x^13-13",
+      "baseline": {
+        "status": "solved",
+        "actual": "14*x**13 - 13",
+        "equivalent": true,
+        "ms": 13
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3731,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导074",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(14x)$ 的二阶导数",
+      "expected": "-196\\sin(14x)",
+      "baseline": {
+        "status": "solved",
+        "actual": "-196*sin(14*x)",
+        "equivalent": true,
+        "ms": 11
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "\\cos(14x) · (14x)'",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4070,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导076",
+      "domain": "导数与微分",
+      "difficulty": "easy",
+      "problem": "求 $y = x^{17} - 16x + 15$ 的导数",
+      "expected": "17x^16-16",
+      "baseline": {
+        "status": "solved",
+        "actual": "17*x**16 - 16",
+        "equivalent": true,
+        "ms": 9
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3818,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导077",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = \\sin(17x)$ 的二阶导数",
+      "expected": "-289\\sin(17x)",
+      "baseline": {
+        "status": "solved",
+        "actual": "-289*sin(17*x)",
+        "equivalent": true,
+        "ms": 16
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "\\cos(17x) · (17x)'",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4818,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导078",
+      "domain": "导数与微分",
+      "difficulty": "medium",
+      "problem": "求 $y = e^{18x} \\ln x$ 在 $x=1$ 处的切线方程",
+      "expected": "y-0=e^{18}(x-1)",
+      "baseline": {
+        "status": "unsupported",
+        "error": "需在某点求值或几何含义",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "x ∈ R（恒等式，无穷多解）",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4655,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导107",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及微分计算和三角函数求导的数学计算",
+      "expected": "标准解答参考（链式法则、微分计算相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3756,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导108",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及反三角函数求导和隐函数求导的数学计算",
+      "expected": "标准解答参考（指数函数求导、反三角函数求导相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 1
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3719,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导110",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及隐函数求导和导数几何意义的数学计算",
+      "expected": "标准解答参考（参数方程求导、隐函数求导相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3892,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导112",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在导数与微分中，关于链式法则和参数方程求导的计算求解",
+      "expected": "标准解答参考（链式法则、参数方程求导相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3753,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导113",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在导数与微分中，关于隐函数求导和商法则的计算求解",
+      "expected": "标准解答参考（隐函数求导、商法则相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3846,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "导114",
+      "domain": "导数与微分",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 导数与微分中涉及导数几何意义和对数求导法的数学计算",
+      "expected": "标准解答参考（商法则、导数几何意义相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取求导表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "(求导法的数学计算)'/求导法的数学计算",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4055,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积120",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{6} x \\cos x dx$",
+      "expected": "\\frac{1}{7}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 9
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4238,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积122",
+      "domain": "积分计算",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{8} dx$",
+      "expected": "\\frac{x^{9}}{9}+C",
+      "baseline": {
+        "status": "solved",
+        "actual": "x**9/9 + C",
+        "equivalent": true,
+        "ms": 49
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3845,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积123",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{9} x \\cos x dx$",
+      "expected": "\\frac{1}{10}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 7
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3909,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积125",
+      "domain": "积分计算",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{11} dx$",
+      "expected": "\\frac{x^{12}}{12}+C",
+      "baseline": {
+        "status": "solved",
+        "actual": "x**12/12 + C",
+        "equivalent": true,
+        "ms": 14
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3765,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积126",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{12} x \\cos x dx$",
+      "expected": "\\frac{1}{13}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 7
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3793,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积129",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{15} x \\cos x dx$",
+      "expected": "\\frac{1}{16}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 4
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 3865,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积131",
+      "domain": "积分计算",
+      "difficulty": "easy",
+      "problem": "计算 $\\int x^{17} dx$",
+      "expected": "\\frac{x^{18}}{18}+C",
+      "baseline": {
+        "status": "solved",
+        "actual": "x**18/18 + C",
+        "equivalent": true,
+        "ms": 11
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4615,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积132",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{18} x \\cos x dx$",
+      "expected": "\\frac{1}{19}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 5
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 5259,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积135",
+      "domain": "积分计算",
+      "difficulty": "medium",
+      "problem": "计算 $\\int_0^{\\pi/2} \\sin^{21} x \\cos x dx$",
+      "expected": "\\frac{1}{22}",
+      "baseline": {
+        "status": "error",
+        "error": "Cannot parse expression: 表达式包含不允许的字符（容器语法）",
+        "ms": 6
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "已整理结论",
+        "equivalent": false,
+        "isPlaceholder": false,
+        "ms": 4311,
+        "stepCount": 4
+      }
+    },
+    {
+      "id": "积168",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用分部积分法和对称性技巧方法求解积分计算中的相关问题",
+      "expected": "标准解答参考（分部积分法、对称性技巧相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3916,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积172",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在积分计算中，关于有理函数积分和分部积分法的计算求解",
+      "expected": "标准解答参考（有理函数积分、分部积分法相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3911,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积173",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 在积分计算中，关于换元积分法和三角函数积分的计算求解",
+      "expected": "标准解答参考（换元积分法、三角函数积分相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3745,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积175",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 使用分部积分法和不定积分方法求解积分计算中的相关问题",
+      "expected": "标准解答参考（分部积分法、不定积分相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3965,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积176",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及定积分和弧长计算的数学计算",
+      "expected": "标准解答参考（定积分、定积分相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 4192,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积177",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及体积计算和定积分的数学计算",
+      "expected": "标准解答参考（几何应用、体积计算相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3889,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积178",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及不定积分和面积计算的数学计算",
+      "expected": "标准解答参考（弧长计算、不定积分相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3748,
+        "stepCount": 5
+      }
+    },
+    {
+      "id": "积179",
+      "domain": "积分计算",
+      "difficulty": "hard",
+      "problem": "（困难）[计算题] 积分计算中涉及面积计算和三角函数积分的数学计算",
+      "expected": "标准解答参考（体积计算、面积计算相关）",
+      "baseline": {
+        "status": "unsupported",
+        "error": "无法提取积分表达式",
+        "ms": 0
+      },
+      "candidate": {
+        "status": "solved",
+        "actual": "未能得出确定结果，请检查题目或重试",
+        "equivalent": false,
+        "isPlaceholder": true,
+        "ms": 3735,
+        "stepCount": 5
+      }
+    }
+  ]
+}

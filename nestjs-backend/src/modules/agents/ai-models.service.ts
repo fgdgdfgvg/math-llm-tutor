@@ -25,13 +25,15 @@ export class AIModelsService {
   }
 
   private initializeModelConfigs(): void {
-    // DeepSeek → SiliconFlow DeepSeek-V3（DeepSeek余额不足，走SiliconFlow）
+    // DeepSeek 官方 API（api.deepseek.com）。model 名由环境变量覆盖，
+    // 默认 deepseek-chat（官方通用对话），可改 deepseek-reasoner（推理）或
+    // SiliconFlow 命名（deepseek-ai/DeepSeek-V3）以适配第三方网关。
     const deepSeekConfig: AIModelConfig = {
       provider: AIModelProvider.DEEPSEEK,
       apiKey: this.configService.get<string>('AI_DEEPSEEK_API_KEY') || this.configService.get<string>('DEEPSEEK_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_DEEPSEEK_BASE_URL') || this.configService.get<string>('DEEPSEEK_BASE_URL') || '',
-      model: 'deepseek-ai/DeepSeek-V3',
-      timeout: 30000,
+      baseUrl: this.configService.get<string>('AI_DEEPSEEK_BASE_URL') || this.configService.get<string>('DEEPSEEK_BASE_URL') || 'https://api.deepseek.com/v1',
+      model: this.configService.get<string>('AI_DEEPSEEK_MODEL') || this.configService.get<string>('DEEPSEEK_MODEL') || 'deepseek-chat',
+      timeout: 60000,
       maxRetries: 2,
     };
     this.modelConfigs.set(AIModelProvider.DEEPSEEK, deepSeekConfig);
@@ -69,10 +71,11 @@ export class AIModelsService {
     };
     this.modelConfigs.set(AIModelProvider.MODELSCOPE, modelScopeConfig);
 
-    // Qwen → SiliconFlow Qwen2.5-32B（实测可用，求解智能体）
+    // Qwen → 求解智能体。key 依次回退：HF_TOKEN → AI_GPT_API_KEY → AI_DEEPSEEK_API_KEY
+    // （最后一个回退让"只配一个 DeepSeek key"即可激活 solver 的真实 LLM 兜底）
     const qwenConfig: AIModelConfig = {
       provider: AIModelProvider.QWEN,
-      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || '',
+      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || this.configService.get<string>('AI_DEEPSEEK_API_KEY') || '',
       baseUrl: 'https://api.siliconflow.cn/v1',
       model: 'Qwen/Qwen2.5-32B-Instruct',
       timeout: 45000,
@@ -91,10 +94,10 @@ export class AIModelsService {
     };
     this.modelConfigs.set(AIModelProvider.GLM, glmConfig);
 
-    // HuggingFace → SiliconFlow DeepSeek-V3（实测可用，规划智能体备选）
+    // HuggingFace → 规划智能体。key 依次回退：HF_TOKEN → AI_GPT_API_KEY → AI_DEEPSEEK_API_KEY
     const huggingFaceConfig: AIModelConfig = {
       provider: AIModelProvider.HUGGINGFACE,
-      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || '',
+      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || this.configService.get<string>('AI_DEEPSEEK_API_KEY') || '',
       baseUrl: 'https://api.siliconflow.cn/v1',
       model: 'deepseek-ai/DeepSeek-V3',
       timeout: 60000,

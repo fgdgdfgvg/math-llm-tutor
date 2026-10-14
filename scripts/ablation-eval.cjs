@@ -38,6 +38,11 @@ const REQ_TIMEOUT_MS = parseInt(process.env.ABLATION_TIMEOUT_MS || '150000', 10)
 // 命中 429 时按 Retry-After 语义指数退避重试（最多 4 次）。
 const REQ_DELAY_MS = parseInt(process.env.ABLATION_DELAY_MS || '1200', 10);
 
+// 策略 B 的 LLM 形态标注：后端是否配置了真实 AI key，直接决定多智能体是"真实 LLM 推理"
+// 还是"降级为本地规则引擎"。重跑消融时用 ABLATION_LLM_MODE 显式标注，让结果可区分。
+// 取值：'llm'（已配 key，真实 LLM）/ 'degraded'（未配 key，降级形态，默认）。
+const LLM_MODE = process.env.ABLATION_LLM_MODE || 'degraded';
+
 // ---- CLI 参数 ----
 const args = process.argv.slice(2);
 const opt = {};
@@ -296,6 +301,7 @@ async function solveMultiAgent(q) {
   const raw = {
     generated_at: new Date().toISOString(),
     sympy_url: SYMPY_URL, backend_url: BACKEND_URL,
+    llm_mode: LLM_MODE, // 'llm' | 'degraded'：策略 B 是否走真实 LLM 的关键标注
     benchmark: { file: 'datasets/benchmark-dataset.json', total: bench.questions.length, subset: solvable.length, evaluated: rows.length },
     strategy_a: { name: '纯符号直解（LaTeX→SymPy 服务）', ...summaryA },
     strategy_b: { name: '多智能体流水线（POST /agents/solve）', ...summaryB },
@@ -305,6 +311,7 @@ async function solveMultiAgent(q) {
   fs.writeFileSync(path.join(OUT_DIR, 'ablation-raw.json'), JSON.stringify(raw, null, 2), 'utf8');
 
   // ---- markdown 摘要 ----
+  const llmLabel = LLM_MODE === 'llm' ? '真实 LLM（已配置 AI key）' : '降级形态（未配置 AI key，规则引擎兜底）';
   const L = [];
   L.push('# A/B 消融评测：多智能体流水线 vs 纯符号直解');
   L.push('');
@@ -312,6 +319,7 @@ async function solveMultiAgent(q) {
   L.push(`- 数据集: datasets/benchmark-dataset.json（总 ${bench.questions.length} 题，本次子集 ${rows.length} 题）`);
   L.push(`- 策略A: ${raw.strategy_a.name} @ ${SYMPY_URL}`);
   L.push(`- 策略B: ${raw.strategy_b.name} @ ${BACKEND_URL}`);
+  L.push(`- **策略 B LLM 形态: ${llmLabel}**（用 ABLATION_LLM_MODE=llm|degraded 显式标注，避免混淆两种形态的结果）`);
   L.push('');
   L.push('## 总体对比（公平口径：剔除 baseline 无法提取表达式的题目）');
   L.push('');
