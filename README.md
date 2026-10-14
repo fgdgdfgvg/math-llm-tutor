@@ -50,7 +50,56 @@ math_llm_tutor/
 
 ---
 
-## 三、快速开始
+## 三、系统架构
+
+```mermaid
+flowchart TB
+  subgraph Client["客户端"]
+    H5["uni-app 前端<br/>H5 / 小程序 / App（:80）"]
+  end
+
+  subgraph Edge["接入层"]
+    NGINX["nginx<br/>同源反代 /api/**"]
+  end
+
+  subgraph Backend["nestjs-backend（仅绑 127.0.0.1）"]
+    CTRL["Controllers<br/>全局 Guard：JWT / RBAC / 限流 / 信封"]
+    AGENTS["多智能体编排<br/>planner → solver → diagnostic → feedback"]
+    SVC["业务模块<br/>user / math / learning / knowledge …"]
+  end
+
+  subgraph Ext["外部服务（全部可降级，不阻断核心链路）"]
+    SYM["python-sympy-service :8000<br/>符号计算（内部令牌鉴权）"]
+    AI["外部 LLM API（可选）<br/>缺失时智能体降级为本地规则引擎"]
+    NEO4J[("Neo4j :7687<br/>知识图谱")]
+  end
+
+  subgraph Data["数据层"]
+    MONGO[("MongoDB<br/>题库 / 用户 / 错题")]
+    REDIS[("Redis<br/>refresh token / 限流 / 缓存")]
+  end
+
+  H5 --> NGINX
+  NGINX -->|"proxy_pass /api/（剥前缀）"| CTRL
+  CTRL --> AGENTS
+  CTRL --> SVC
+  AGENTS -->|"符号计算优先"| SYM
+  AGENTS -->|"LLM 兜底"| AI
+  SVC --> MONGO
+  SVC --> REDIS
+  SVC -->|"10 次重试失败 → 内存 fallback（31 概念种子）"| NEO4J
+```
+
+设计要点：
+
+- **符号计算优先、LLM 兜底**：solver 先走 SymPy 符号求解，失败/不可用时才降级到 LLM 或本地规则引擎（`solver.agent.ts`），保证无 API key 时核心解题链路仍可用。
+- **多智能体编排**：`AgentOrchestrator` 按 planner → solver → diagnostic → feedback 顺序执行，diagnostic 用参考解对 solver 产出做规则/AI 双重校验。
+- **所有外部依赖可降级**：SymPy 不可达 → 规则引擎；LLM key 缺失 → 规则模板；Neo4j 不可达 → 内存知识图谱；Redis 缺失 → 进程内缓存（仅单实例）。
+- **安全默认**：后端只绑 `127.0.0.1`，浏览器只触达 nginx；`TRUST_PROXY` 默认关闭（不信任 `X-Forwarded-For`）。
+
+---
+
+## 四、快速开始
 
 ### 前置条件
 
@@ -95,7 +144,7 @@ python main.py                     # http://localhost:8000
 
 ---
 
-## 四、环境变量
+## 五、环境变量
 
 完整清单见 [`.env.example`](./.env.example)（根级，compose 用）与 [`nestjs-backend/.env.example`](./nestjs-backend/.env.example)（后端进程用）。**只提交 `.env.example`，真实 `.env` 已在 `.gitignore` 中，不要提交真实密钥。**
 
@@ -114,7 +163,7 @@ python main.py                     # http://localhost:8000
 
 ---
 
-## 五、验证门禁（提交 / 部署前必跑）
+## 六、验证门禁（提交 / 部署前必跑）
 
 ```bash
 npm run verify          # 5 项全绿才可交付：
@@ -146,9 +195,23 @@ node scripts/benchmark-eval.cjs
 
 > 说明：本评测只覆盖"有确定性符号答案"的计算子集，证明题/选择题/含 `+C` 的不定积分需扩展求解器接入；未接入的题显式记为 `unsupported`，不纳入准确率统计，避免虚报。
 
+### A/B 消融：多智能体流水线 vs 纯符号直解
+
+`scripts/ablation-eval.cjs` 在**同一题面子集**上对照两条链路：策略 A 纯符号直解（本评测链路）vs 策略 B 线上 `POST /agents/solve` 多智能体端点（planner→solver→diagnostic→feedback，含编排开销），用同一判定器比对标准答案并记录逐题耗时：
+
+```bash
+# 需 SymPy 服务（:8000）与后端（默认 :3100，可用 BACKEND_URL 覆盖）同时可用
+node scripts/ablation-eval.cjs
+# 产物：results/ablation-summary.md（摘要）+ results/ablation-raw.json（逐题原始数据）
+
+# 注意：后端 /agents/* 端点限流 20 次/5 分钟/IP，脚本默认 16s 间隔 + 429 指数退避
+```
+
+消融的价值：隔离"符号计算内核"与"多智能体编排层"的贡献——若 B 低于 A，瓶颈在题面解析/编排而非符号内核。当前结论见 [`results/ablation-summary.md`](./results/ablation-summary.md)。
+
 ---
 
-## 七、健康探针
+## 八、健康探针
 
 | 端点 | 用途 | 依赖 | 期望 |
 |---|---|---|---|
@@ -174,14 +237,14 @@ node scripts/benchmark-eval.cjs
 
 ---
 
-## 九、已知限制
+## 十、已知限制
 
 1. **多实例必须配 Redis**：未配置时降级为进程内内存，多实例会不一致。
 2. **长任务同步返回**：多智能体求解为串行同步调用（数十秒），尚未任务化 + SSE；生产建议网关超时 ≥60s。
 3. **前端生产构建未在本机验证**：由 CI 的 `build:h5` 门禁覆盖。
 4. **`math-tutor-prototype/` 为旧版前端**：未接入 refresh token，建议正式交付前移除或改造。
 5. **3 组历史明文密钥需到服务商后台轮换**（代码侧已脱敏并加门禁，但已泄露的密钥必须作废）。
-6. **评测仅覆盖符号可解子集**：基准评测目前覆盖极限/导数/积分等符号计算，微分方程/级数求解器与 LLM 基线对照（A/B）尚未接入。
+6. **评测覆盖范围有限**：基准评测目前覆盖极限/导数/积分等符号计算；A/B 消融已接入（`scripts/ablation-eval.cjs`），当前结论暴露多智能体链路在 LaTeX 题面解析上的真实缺口（详见 `results/ablation-summary.md`），修复 solver 本地路径的 LaTeX 转换是下一步 P1。
 
 ---
 
@@ -191,6 +254,7 @@ node scripts/benchmark-eval.cjs
 - [`docs/部署就绪清单.md`](./docs/部署就绪清单.md) — 组件 / 端口 / 环境变量 / 门禁 / 安全基线
 - [`docs/目标对照与缺陷清单.md`](./docs/目标对照与缺陷清单.md) — 目标 vs 实现分级缺陷清单
 - [`docs/系统代码审阅与改进方案.md`](./docs/系统代码审阅与改进方案.md) — 系统性短板与改造方向
+- [`docs/Neo4j取舍论证.md`](./docs/Neo4j取舍论证.md) — 知识图谱选型理由、实测现状与取舍建议
 - [`docs/改进实施进度.md`](./docs/改进实施进度.md) — 改进实施进度
 - [`docs/方案复盘与第二轮实施报告.md`](./docs/方案复盘与第二轮实施报告.md) — 第二轮复盘
 - [`docs/实现自检报告.md`](./docs/实现自检报告.md) — 20 项自检发现

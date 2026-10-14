@@ -465,6 +465,9 @@ export class SolverAgent extends BaseAgent {
     const placeholderKeywords = [
       '需逐项应用', '需部分分式', '取决于', '无法自动识别',
       '无法自动提取', '无法从', '未能', '请补充', '待补充', '暂无法',
+      // 无信息泛化文本（A/B 消融实测：LaTeX 题面降级时 finalAnswer 全是这类输出，
+      // 与 `（极限值）` 一样是"没有答案"的信号，绝不应原样透传给前端/错题本）
+      '已整理结论', '整理如下', '综上所述，已完成',
     ];
     return placeholderKeywords.some((keyword) => text.includes(keyword));
   }
