@@ -374,11 +374,13 @@ export class HallucinationGuardService {
     let match;
     while ((match = theoremPattern.exec(stepContent)) !== null) {
       const claimedTheorem = match[1];
-      const lowerClaimed = claimedTheorem.toLowerCase();
 
+      // 只有当 claimed 是某个已知定理名/别名的子串时才视为"存在"。
+      // 注意：不能反向用 lowerClaimed.includes(alias) 判断——那会把"量子中值定理"
+      // （因包含别名"中值定理"）这类虚构名误判为真实定理，绕过虚构定理检测。
       const exists = [...this.theoremMap.values()].some(t =>
         t.name.includes(claimedTheorem) ||
-        t.aliases.some(a => a.includes(claimedTheorem) || lowerClaimed.includes(a)),
+        t.aliases.some(a => a.includes(claimedTheorem)),
       );
 
       if (!exists && this.isLikelyFakeTheoremName(claimedTheorem)) {
