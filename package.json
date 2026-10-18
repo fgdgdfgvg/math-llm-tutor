@@ -9,7 +9,6 @@
   "name": "math_llm_tutor",
   "version": "1.0.0",
   "description": "高等数学智能教育系统 — NestJS + MongoDB + Neo4j + Vue3/UniApp，多智能体 + SymPy 符号计算的分步辅导与掌握度诊断平台。",
-  "main": "local-server.js",
   "directories": {
     "doc": "docs"
   },

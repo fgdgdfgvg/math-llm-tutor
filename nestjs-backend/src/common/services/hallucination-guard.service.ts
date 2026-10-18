@@ -63,7 +63,7 @@ const THEOREM_DATABASE: TheoremRecord[] = [
   },
   {
     name: '拉格朗日中值定理 (Lagrange Mean Value Theorem)',
-    aliases: ['lagrange', '拉格朗日', '中值定理'],
+    aliases: ['lagrange', '拉格朗日', '中值定理', '微分中值定理'],
     statement: '若f∈C[a,b]∩D(a,b)，则∃ξ∈(a,b): f\'(ξ)=[f(b)-f(a)]/(b-a)',
     conditions: [
       'f在[a,b]上连续',
@@ -217,7 +217,8 @@ const THEOREM_DATABASE: TheoremRecord[] = [
   // --- 极限理论 (8) ---
   { name: '夹逼定理 (Squeeze Theorem)', aliases: ['夹逼', 'squeeze', '迫敛定理'], statement: '若g(x)≤f(x)≤h(x)且lim g(x)=lim h(x)=L，则lim f(x)=L', conditions: ['g(x)≤f(x)≤h(x)邻域内成立', 'lim g,lim h存在且相等'], conclusion: 'lim f(x)=L', category: 'limit', commonMisuses: ['未验证不等式', '上下界极限不等时误用'] },
   { name: '单调有界定理', aliases: ['单调有界', '单调收敛'], statement: '单调有界数列必有极限', conditions: ['数列单调', '数列有界'], conclusion: '数列收敛', category: 'limit', commonMisuses: ['忽略单调性验证', '对非单调数列使用'] },
-  { name: '零点定理 (IVT)', aliases: ['零点定理', '根的存在定理', 'Bolzano'], statement: '若f∈C[a,b]且f(a)f(b)<0，则∃c∈(a,b):f(c)=0', conditions: ['f连续', 'f(a)与f(b)异号'], conclusion: '区间内存在至少一个零点', category: 'limit', commonMisuses: ['不验证连续性', '同号时仍断言有零点'] },
+  { name: '零点定理 (IVT)', aliases: ['零点定理', '零点存在定理', '根的存在定理', 'Bolzano'], statement: '若f∈C[a,b]且f(a)f(b)<0，则∃c∈(a,b):f(c)=0', conditions: ['f连续', 'f(a)与f(b)异号'], conclusion: '区间内存在至少一个零点', category: 'limit', commonMisuses: ['不验证连续性', '同号时仍断言有零点'] },
+  { name: '介值定理 (Intermediate Value Theorem)', aliases: ['介值定理', '介值性', '中间值定理'], statement: '若f∈C[a,b]且μ介于f(a)与f(b)之间，则∃c∈[a,b]:f(c)=μ', conditions: ['f在[a,b]连续', 'μ介于f(a)与f(b)之间'], conclusion: '∃c∈[a,b]使f(c)=μ', category: 'limit', commonMisuses: ['不验证连续性', 'μ不在f(a)与f(b)之间时误用'] },
   { name: '海涅定理 (Heine)', aliases: ['海涅', '归结原则'], statement: 'lim f(x)=L ⟺ 任意x_n→a且x_n≠a有lim f(x_n)=L', conditions: ['函数极限存在'], conclusion: '函数极限与数列极限等价', category: 'limit', commonMisuses: ['仅用一个数列断言函数极限', '忽略x_n≠a'] },
   { name: '保号性定理', aliases: ['保号性', '保持符号'], statement: '若lim f=A≠0，则附近f保持A的符号', conditions: ['极限存在且非零'], conclusion: '局部保号', category: 'limit', commonMisuses: ['极限为零时误用', '局部与整体混淆'] },
   { name: 'Stolz定理', aliases: ['stolz', '施笃兹', '数列洛必达'], statement: '{b_n}严格单调→∞且lim Δa/Δb存在，则lim a_n/b_n=该极限', conditions: ['{b_n}严格单调→∞', '极限存在'], conclusion: 'lim a_n/b_n=lim Δa/Δb', category: 'limit', commonMisuses: ['忘记严格单调', '当成洛必达乱用'] },
@@ -624,6 +625,7 @@ export class HallucinationGuardService {
       '洛必达法则', '牛顿-莱布尼茨公式', '格林公式', '隐函数定理',
       '积分中值定理', '夹逼定理', '单调有界定理', '零点定理',
       '极值定理', '费马引理', '达布定理', '海涅定理', '保号性',
+      '微分中值定理', '介值定理', '零点存在定理',
     ];
     return !realTheorems.some(r => name.includes(r) || r.includes(name));
   }

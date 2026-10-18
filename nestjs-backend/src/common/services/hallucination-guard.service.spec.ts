@@ -27,6 +27,23 @@ describe('HallucinationGuardService 幻觉防控', () => {
       expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
     });
 
+    // 回归：删除 lowerClaimed.includes(alias) 后，以下三个合法上位概念曾被误判为虚构定理。
+    // 它们现已被补入 THEOREM_DATABASE（事实源），必须稳定不误判。
+    it('回归：引用"微分中值定理"（拉格朗日上位概念）→ 不判虚构', () => {
+      const issues = guard.verifyTheoremUsage('根据微分中值定理，存在 ξ 使 f\'(ξ) 等于平均变化率');
+      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+    });
+
+    it('回归：引用"介值定理"（连续函数介值性）→ 不判虚构', () => {
+      const issues = guard.verifyTheoremUsage('由介值定理，连续函数必取到端点值之间的任意值');
+      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+    });
+
+    it('回归：引用"零点存在定理"（零点定理别称）→ 不判虚构', () => {
+      const issues = guard.verifyTheoremUsage('利用零点存在定理证明方程在区间内有根');
+      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+    });
+
     it('空步骤不产生任何 issue', () => {
       expect(guard.verifyTheoremUsage('')).toHaveLength(0);
       expect(guard.verifyTheoremUsage('这是一个普通的代数计算步骤')).toHaveLength(0);

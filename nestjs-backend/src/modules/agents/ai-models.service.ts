@@ -71,13 +71,14 @@ export class AIModelsService {
     };
     this.modelConfigs.set(AIModelProvider.MODELSCOPE, modelScopeConfig);
 
-    // Qwen → 求解智能体。key 依次回退：HF_TOKEN → AI_GPT_API_KEY → AI_DEEPSEEK_API_KEY
-    // （最后一个回退让"只配一个 DeepSeek key"即可激活 solver 的真实 LLM 兜底）
+    // Qwen → 求解智能体。独立凭据：AI_QWEN_API_KEY / QWEN_API_KEY / HF_TOKEN（SiliconFlow 通用 token）。
+    // 注意：不得借用 AI_DEEPSEEK_API_KEY——DeepSeek 官方 key 只能发往 api.deepseek.com，
+    // 此处 baseUrl 默认 SiliconFlow，借用会把 DeepSeek 密钥泄露给第三方网关。
     const qwenConfig: AIModelConfig = {
       provider: AIModelProvider.QWEN,
-      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || this.configService.get<string>('AI_DEEPSEEK_API_KEY') || '',
-      baseUrl: 'https://api.siliconflow.cn/v1',
-      model: 'Qwen/Qwen2.5-32B-Instruct',
+      apiKey: this.configService.get<string>('AI_QWEN_API_KEY') || this.configService.get<string>('QWEN_API_KEY') || this.configService.get<string>('HF_TOKEN') || '',
+      baseUrl: this.configService.get<string>('AI_QWEN_BASE_URL') || this.configService.get<string>('QWEN_BASE_URL') || 'https://api.siliconflow.cn/v1',
+      model: this.configService.get<string>('AI_QWEN_MODEL') || 'Qwen/Qwen2.5-32B-Instruct',
       timeout: 45000,
       maxRetries: 3,
     };
@@ -94,12 +95,13 @@ export class AIModelsService {
     };
     this.modelConfigs.set(AIModelProvider.GLM, glmConfig);
 
-    // HuggingFace → 规划智能体。key 依次回退：HF_TOKEN → AI_GPT_API_KEY → AI_DEEPSEEK_API_KEY
+    // HuggingFace → 规划智能体。独立凭据：AI_HUGGINGFACE_API_KEY / HF_TOKEN。
+    // 不得借用 AI_DEEPSEEK_API_KEY（同上，防 DeepSeek 官方 key 发往第三方）。
     const huggingFaceConfig: AIModelConfig = {
       provider: AIModelProvider.HUGGINGFACE,
-      apiKey: this.configService.get<string>('HF_TOKEN') || this.configService.get<string>('AI_GPT_API_KEY') || this.configService.get<string>('AI_DEEPSEEK_API_KEY') || '',
-      baseUrl: 'https://api.siliconflow.cn/v1',
-      model: 'deepseek-ai/DeepSeek-V3',
+      apiKey: this.configService.get<string>('AI_HUGGINGFACE_API_KEY') || this.configService.get<string>('HUGGINGFACE_API_KEY') || this.configService.get<string>('HF_TOKEN') || '',
+      baseUrl: this.configService.get<string>('AI_HUGGINGFACE_BASE_URL') || this.configService.get<string>('HUGGINGFACE_BASE_URL') || 'https://api.siliconflow.cn/v1',
+      model: this.configService.get<string>('AI_HUGGINGFACE_MODEL') || 'deepseek-ai/DeepSeek-V3',
       timeout: 60000,
       maxRetries: 3,
     };
