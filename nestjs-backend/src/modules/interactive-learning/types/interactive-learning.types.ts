@@ -1,9 +1,19 @@
-import { KnowledgeNode, KnowledgeRelation, KnowledgeRelationType } from '../../knowledge/interfaces/knowledge.interfaces';
+import {
+  KnowledgeNode,
+  KnowledgeRelation,
+  KnowledgeRelationType,
+} from '../../knowledge/interfaces/knowledge.interfaces';
 
 export interface ScenarioContext {
   id: string;
-  knowledgeArea: 'limits' | 'derivatives' | 'integrals' | 'series'
-                | 'differential_equations' | 'multivariable' | 'vector_calculus';
+  knowledgeArea:
+    | 'limits'
+    | 'derivatives'
+    | 'integrals'
+    | 'series'
+    | 'differential_equations'
+    | 'multivariable'
+    | 'vector_calculus';
   userLevel: number;
   taskUrgency: boolean;
   currentPhase: string;
@@ -81,8 +91,14 @@ export interface VisualizationProtocol {
 }
 
 export interface VisualizationParams {
-  type: 'dynamic_graph' | 'riemann_sum' | 'tangent_line' | 'slope_field'
-       | 'surface_3d' | 'series_partial_sum' | 'vector_field';
+  type:
+    | 'dynamic_graph'
+    | 'riemann_sum'
+    | 'tangent_line'
+    | 'slope_field'
+    | 'surface_3d'
+    | 'series_partial_sum'
+    | 'vector_field';
   data: Record<string, any>;
   config: {
     width?: number;
@@ -175,10 +191,21 @@ export interface InteractiveTask {
   phaseId: string;
   title: string;
   description: string;
-  type: 'exploration' | 'guided_practice' | 'challenge' | 'application' | 'assessment';
+  type:
+    | 'exploration'
+    | 'guided_practice'
+    | 'challenge'
+    | 'application'
+    | 'assessment';
 
-  interactionMode: 'drag_drop' | 'input' | 'choice' | 'slider'
-                   | 'graph_interaction' | 'multi_step' | 'proof_builder';
+  interactionMode:
+    | 'drag_drop'
+    | 'input'
+    | 'choice'
+    | 'slider'
+    | 'graph_interaction'
+    | 'multi_step'
+    | 'proof_builder';
 
   content: {
     text?: string;
@@ -277,7 +304,11 @@ export interface ParameterConfig {
   };
 
   visibility?: {
-    showIf?: { param: string; condition: 'equals' | 'greater' | 'less'; value: any };
+    showIf?: {
+      param: string;
+      condition: 'equals' | 'greater' | 'less';
+      value: any;
+    };
   };
 }
 

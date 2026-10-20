@@ -1,4 +1,8 @@
-import { KnowledgeNode, KnowledgeRelation, KnowledgeRelationType } from '../../knowledge/interfaces/knowledge.interfaces';
+import {
+  KnowledgeNode,
+  KnowledgeRelation,
+  KnowledgeRelationType,
+} from '../../knowledge/interfaces/knowledge.interfaces';
 import {
   DynamicKnowledgeNode,
   DynamicKnowledgeRelation,
@@ -19,7 +23,10 @@ export interface ILearningStatsProvider {
   getUserLearningHistory(userId: string, limit?: number): Promise<any[]>;
   getUserMasteryLevel(userId: string, conceptId: string): Promise<number>;
   getUserRecentErrors(userId: string, limit?: number): Promise<any[]>;
-  getUserAverageAccuracy(userId: string, timeRange?: { start: Date; end: Date }): Promise<number>;
+  getUserAverageAccuracy(
+    userId: string,
+    timeRange?: { start: Date; end: Date },
+  ): Promise<number>;
   getUserLearningVelocity(userId: string): Promise<number>;
   isServiceHealthy(): boolean;
 }

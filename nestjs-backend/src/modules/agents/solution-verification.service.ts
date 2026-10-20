@@ -76,11 +76,20 @@ export class SolutionVerificationService {
     claimedDerivative: string,
     variable = 'x',
   ): VerificationCheck {
-    const exact = this.trySymbolicDerivative(sourceExpr, claimedDerivative, variable);
+    const exact = this.trySymbolicDerivative(
+      sourceExpr,
+      claimedDerivative,
+      variable,
+    );
     if (exact) {
       return exact;
     }
-    return this.numericDerivativeCheck(sourceExpr, claimedDerivative, variable, 'derivative');
+    return this.numericDerivativeCheck(
+      sourceExpr,
+      claimedDerivative,
+      variable,
+      'derivative',
+    );
   }
 
   /**
@@ -93,7 +102,11 @@ export class SolutionVerificationService {
     variable = 'x',
   ): VerificationCheck {
     const antiderivative = this.stripIntegrationConstant(claimedAntiderivative);
-    const exact = this.trySymbolicAntiderivative(integrand, antiderivative, variable);
+    const exact = this.trySymbolicAntiderivative(
+      integrand,
+      antiderivative,
+      variable,
+    );
     if (exact) {
       return exact;
     }
@@ -122,14 +135,18 @@ export class SolutionVerificationService {
     const a = this.evaluateConstant(lower);
     const b = this.evaluateConstant(upper);
     if (!f || !claimed || a === null || b === null || !(b > a)) {
-      return this.unknown('integral', '定积分验证所需条件不足（无法解析被积函数/上下限/答案）');
+      return this.unknown(
+        'integral',
+        '定积分验证所需条件不足（无法解析被积函数/上下限/答案）',
+      );
     }
     const claimedNumber = claimed(0);
     const reference = this.simpson(f, a, b, 2000);
     if (!Number.isFinite(reference) || !Number.isFinite(claimedNumber)) {
       return this.unknown('integral', '被积函数或答案在积分区间上无有限取值');
     }
-    const error = Math.abs(reference - claimedNumber) / Math.max(1, Math.abs(reference));
+    const error =
+      Math.abs(reference - claimedNumber) / Math.max(1, Math.abs(reference));
     const passed = error <= DEFINITE_INTEGRAL_TOLERANCE;
     return {
       kind: 'integral',
@@ -157,7 +174,9 @@ export class SolutionVerificationService {
       return [this.unknown('equation', '方程无法解析为可求值形式')];
     }
 
-    const candidates = solutions.flatMap((s) => this.extractSolutionValues(s, variable));
+    const candidates = solutions.flatMap((s) =>
+      this.extractSolutionValues(s, variable),
+    );
     if (candidates.length === 0) {
       return [this.unknown('equation', '未能从答案中解析出可验证的数值解')];
     }
@@ -166,7 +185,8 @@ export class SolutionVerificationService {
     for (const { label, value } of candidates) {
       const r = residual(value);
       const scale = this.residualScale(equation, value, variable);
-      const passed = Number.isFinite(r) && Math.abs(r) <= EQUATION_TOLERANCE * scale;
+      const passed =
+        Number.isFinite(r) && Math.abs(r) <= EQUATION_TOLERANCE * scale;
       checks.push({
         kind: 'equation',
         method: 'numeric',
@@ -197,12 +217,21 @@ export class SolutionVerificationService {
     }
 
     const claimedText = claimed.trim();
-    const claimsNonexistent = /不存在|dne|does\s*not\s*exist/i.test(claimedText);
-    const claimsInfinity = /^[+]?(oo|∞|inf(inity)?)$/i.test(claimedText.replace(/\s/g, ''));
-    const claimsNegativeInfinity = /^[-−](oo|∞|inf(inity)?)$/i.test(claimedText.replace(/\s/g, ''));
+    const claimsNonexistent = /不存在|dne|does\s*not\s*exist/i.test(
+      claimedText,
+    );
+    const claimsInfinity = /^[+]?(oo|∞|inf(inity)?)$/i.test(
+      claimedText.replace(/\s/g, ''),
+    );
+    const claimsNegativeInfinity = /^[-−](oo|∞|inf(inity)?)$/i.test(
+      claimedText.replace(/\s/g, ''),
+    );
     const claimedEvaluator = compileEvaluator(claimedText, variable);
     const claimedNumber =
-      !claimsNonexistent && !claimsInfinity && !claimsNegativeInfinity && claimedEvaluator
+      !claimsNonexistent &&
+      !claimsInfinity &&
+      !claimsNegativeInfinity &&
+      claimedEvaluator
         ? claimedEvaluator(0)
         : null;
 
@@ -213,7 +242,11 @@ export class SolutionVerificationService {
 
     // 有限点才分左右侧；趋于无穷时按单一序列处理
     const sides: Array<'+' | '-'> =
-      Math.abs(target) === Infinity ? ['+'] : direction === '+-' ? ['-', '+'] : [direction];
+      Math.abs(target) === Infinity
+        ? ['+']
+        : direction === '+-'
+          ? ['-', '+']
+          : [direction];
     const observations: Array<{ side: '+' | '-'; values: number[] }> = [];
     for (const side of sides) {
       const values: number[] = [];
@@ -235,7 +268,9 @@ export class SolutionVerificationService {
         // 必须同号且绝对值单调增长
         return (
           finite.every((v) => Math.sign(v) === sign) &&
-          finite.every((v, i) => i === 0 || Math.abs(v) >= Math.abs(finite[i - 1]))
+          finite.every(
+            (v, i) => i === 0 || Math.abs(v) >= Math.abs(finite[i - 1]),
+          )
         );
       });
       return {
@@ -259,9 +294,10 @@ export class SolutionVerificationService {
       }
       const leftLast = left.values[left.values.length - 1];
       const rightLast = right.values[right.values.length - 1];
-      const divergeInSign = Number.isFinite(leftLast) && Number.isFinite(rightLast)
-        ? Math.abs(leftLast - rightLast) > LIMIT_TOLERANCE
-        : false;
+      const divergeInSign =
+        Number.isFinite(leftLast) && Number.isFinite(rightLast)
+          ? Math.abs(leftLast - rightLast) > LIMIT_TOLERANCE
+          : false;
       const unbounded =
         !Number.isFinite(leftLast) || !Number.isFinite(rightLast)
           ? Math.max(Math.abs(leftLast), Math.abs(rightLast)) > 1e3
@@ -286,13 +322,16 @@ export class SolutionVerificationService {
       const last = values[values.length - 1];
       return {
         last,
-        error: Math.abs(last - claimedNumber) / Math.max(1, Math.abs(claimedNumber)),
+        error:
+          Math.abs(last - claimedNumber) / Math.max(1, Math.abs(claimedNumber)),
       };
     });
     const passed = tails.every(
       (t) => Number.isFinite(t.last) && t.error <= LIMIT_TOLERANCE,
     );
-    const maxError = Math.max(...tails.map((t) => (Number.isFinite(t.error) ? t.error : Infinity)));
+    const maxError = Math.max(
+      ...tails.map((t) => (Number.isFinite(t.error) ? t.error : Infinity)),
+    );
     return {
       kind: 'limit',
       method: 'numeric',
@@ -309,7 +348,11 @@ export class SolutionVerificationService {
    * 按题面文本推断题型并验证（尽力而为：推断不出题型时返回空 checks，
    * 调用方据此显示“未做数值验证”而不是显示“验证通过”）。
    */
-  verifyByProblemText(problem: string, answer: string, variable = 'x'): VerificationReport {
+  verifyByProblemText(
+    problem: string,
+    answer: string,
+    variable = 'x',
+  ): VerificationReport {
     const text = problem || '';
     const expr = this.extractExpression(text);
     const check: VerificationCheck | null = (() => {
@@ -318,18 +361,33 @@ export class SolutionVerificationService {
         return this.verifyDerivative(expr, answer, variable);
       }
       if (/积分|∫|int(egral)?\b/i.test(text)) {
-        const definite = text.match(/[从由]\s*([^\s到至]+)\s*[到至]\s*([^\s]+)\s*积分/);
+        const definite = text.match(
+          /[从由]\s*([^\s到至]+)\s*[到至]\s*([^\s]+)\s*积分/,
+        );
         if (definite) {
-          return this.verifyDefiniteIntegral(expr, definite[1], definite[2], answer, variable);
+          return this.verifyDefiniteIntegral(
+            expr,
+            definite[1],
+            definite[2],
+            answer,
+            variable,
+          );
         }
         return this.verifyIndefiniteIntegral(expr, answer, variable);
       }
       if (/极限|lim/i.test(text)) {
         const approach = text.match(/(?:→|->|趋近于|趋近)\s*([^\s，,）)]+)/);
-        return this.verifyLimit(expr, approach ? approach[1] : '0', answer, variable);
+        return this.verifyLimit(
+          expr,
+          approach ? approach[1] : '0',
+          answer,
+          variable,
+        );
       }
       if (text.includes('=')) {
-        return this.verifyEquationSolutions(text, [answer], variable)[0] || null;
+        return (
+          this.verifyEquationSolutions(text, [answer], variable)[0] || null
+        );
       }
       return null;
     })();
@@ -402,7 +460,8 @@ export class SolutionVerificationService {
     const degB = polyDegree(b);
     if (degA !== degB) return false;
     for (let i = 0; i <= degA; i++) {
-      if (!fEquals(a[i] ?? { n: 0, d: 1 }, b[i] ?? { n: 0, d: 1 })) return false;
+      if (!fEquals(a[i] ?? { n: 0, d: 1 }, b[i] ?? { n: 0, d: 1 }))
+        return false;
     }
     return true;
   }
@@ -442,12 +501,16 @@ export class SolutionVerificationService {
       const claimed = g(x);
       if (!Number.isFinite(numeric) || !Number.isFinite(claimed)) continue;
       samples++;
-      const error = Math.abs(numeric - claimed) / Math.max(1, Math.abs(claimed));
+      const error =
+        Math.abs(numeric - claimed) / Math.max(1, Math.abs(claimed));
       maxError = Math.max(maxError, error);
     }
 
     if (samples < 3) {
-      return this.unknown(kind, `有效采样点不足（${samples} 个），无法数值验证`);
+      return this.unknown(
+        kind,
+        `有效采样点不足（${samples} 个），无法数值验证`,
+      );
     }
     const passed = maxError <= DERIVATIVE_TOLERANCE;
     return {
@@ -462,7 +525,12 @@ export class SolutionVerificationService {
     };
   }
 
-  private simpson(f: (x: number) => number, a: number, b: number, n: number): number {
+  private simpson(
+    f: (x: number) => number,
+    a: number,
+    b: number,
+    n: number,
+  ): number {
     const steps = n % 2 === 0 ? n : n + 1;
     const h = (b - a) / steps;
     let sum = f(a) + f(b);
@@ -488,7 +556,11 @@ export class SolutionVerificationService {
     return compileEvaluator(`(${lhs}) - (${rhs})`, variable);
   }
 
-  private residualScale(equation: string, value: number, variable: string): number {
+  private residualScale(
+    equation: string,
+    value: number,
+    variable: string,
+  ): number {
     // 用方程两边的数量级避免“大数方程”误判；取至少 1
     const normalized = equation.replace(/[−–]/g, '-');
     const parts = normalized.split('=');
@@ -497,7 +569,10 @@ export class SolutionVerificationService {
     const right = compileEvaluator(parts[1], variable);
     const l = left ? Math.abs(left(value)) : 0;
     const r = right ? Math.abs(right(value)) : 0;
-    return Math.max(1, Math.max(Number.isFinite(l) ? l : 0, Number.isFinite(r) ? r : 0));
+    return Math.max(
+      1,
+      Math.max(Number.isFinite(l) ? l : 0, Number.isFinite(r) ? r : 0),
+    );
   }
 
   /** 从一条答案里抽出所有可验证的数值解（`±2` → 2 与 -2） */
@@ -515,7 +590,9 @@ export class SolutionVerificationService {
       if (hasPlusMinus) {
         const bare = piece.replace(/^[+-]\s*/, '').replace(/[±]|\+\-/g, '');
         for (const sign of [1, -1]) {
-          const value = this.evaluateConstant(`(${sign < 0 ? '-' : ''}(${bare}))`);
+          const value = this.evaluateConstant(
+            `(${sign < 0 ? '-' : ''}(${bare}))`,
+          );
           if (value !== null && Number.isFinite(value)) {
             values.push({ label: `${sign < 0 ? '-' : ''}${bare}`, value });
           }
@@ -545,12 +622,16 @@ export class SolutionVerificationService {
   private extractExpression(problem: string): string | null {
     const limit = problem.match(/lim\s*_{?[^)]*}?\s*\(?([^,)\n]+)[,)]/);
     if (limit) return limit[1].trim();
-    const integral = problem.match(/∫\s*_?\{?([^}^\s]*)\}?\^?\{?([^}^\s]*)\}?\s*([^\s]+)\s*d[a-zA-Z]/);
+    const integral = problem.match(
+      /∫\s*_?\{?([^}^\s]*)\}?\^?\{?([^}^\s]*)\}?\s*([^\s]+)\s*d[a-zA-Z]/,
+    );
     if (integral) return integral[3].trim();
     const derivative = problem.match(/d\/d[a-zA-Z]\s*\(\s*([^)]+)\s*\)/);
     if (derivative) return derivative[1].trim();
     // 注意用贪婪匹配：惰性匹配会把 `sin(x)` 的右括号当成可选括号吞掉，得到 `sin(x`
-    const fraction = problem.match(/[（(]?\s*([0-9a-zA-Z^*+\-/.\s()√²³]+)\s*[）)]?\s*(?:求导|的导数|求极限|求积分)/);
+    const fraction = problem.match(
+      /[（(]?\s*([0-9a-zA-Z^*+\-/.\s()√²³]+)\s*[）)]?\s*(?:求导|的导数|求极限|求积分)/,
+    );
     if (fraction) return fraction[1].trim();
     return null;
   }

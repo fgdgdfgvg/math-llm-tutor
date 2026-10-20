@@ -29,7 +29,13 @@ export interface SolutionStep {
 
 export interface MathRule {
   name: string;
-  category: 'arithmetic' | 'algebra' | 'calculus' | 'geometry' | 'logic' | 'syntax';
+  category:
+    | 'arithmetic'
+    | 'algebra'
+    | 'calculus'
+    | 'geometry'
+    | 'logic'
+    | 'syntax';
   description: string;
   validator: (expression: string, context?: any) => boolean;
   examples: string[];
@@ -44,7 +50,8 @@ export class StepValidationService {
       name: '除零检查',
       category: 'arithmetic',
       description: '除数不能为零',
-      validator: (expr: string) => !(/\/\s*0(?![.\d])/.test(expr) || /\/\s*\([^)]*\)/.test(expr)),
+      validator: (expr: string) =>
+        !(/\/\s*0(?![.\d])/.test(expr) || /\/\s*\([^)]*\)/.test(expr)),
       examples: ['x/0', '5/(3-3)'],
     },
     {
@@ -108,14 +115,20 @@ export class StepValidationService {
 
     validationResults.push(this.validateMathRules(currentStep));
 
-    validationResults.push(this.validateLogicalConsistency(currentStep, previousSteps));
+    validationResults.push(
+      this.validateLogicalConsistency(currentStep, previousSteps),
+    );
 
     const errorDetection = this.detectErrors(currentStep, previousSteps);
     if (errorDetection) {
       validationResults.push(errorDetection);
     }
 
-    const suggestions = this.generateSuggestions(currentStep, previousSteps, validationResults);
+    const suggestions = this.generateSuggestions(
+      currentStep,
+      previousSteps,
+      validationResults,
+    );
 
     const finalResult = this.aggregateResults(validationResults, currentStep);
     finalResult.suggestions = suggestions;
@@ -129,10 +142,10 @@ export class StepValidationService {
 
     for (const rule of this.mathRules) {
       const fieldsToCheck = [step.formula, step.process, step.result];
-      
+
       for (const field of fieldsToCheck) {
         if (!field) continue;
-        
+
         const isValid = rule.validator(field);
         if (!isValid) {
           errors.push(`违反规则"${rule.name}": ${rule.description}`);
@@ -182,7 +195,9 @@ export class StepValidationService {
     const lastStep = previousSteps[previousSteps.length - 1];
 
     if (!this.checkLogicalConnection(lastStep, currentStep)) {
-      issues.push(`当前步骤"${currentStep.title}"与前一步骤"${lastStep.title}"之间缺乏明确的逻辑连接`);
+      issues.push(
+        `当前步骤"${currentStep.title}"与前一步骤"${lastStep.title}"之间缺乏明确的逻辑连接`,
+      );
     }
 
     if (currentStep.result && lastStep.result) {
@@ -198,7 +213,10 @@ export class StepValidationService {
         errorType: 'logic',
         message: '逻辑一致性验证发现问题',
         details: issues.join('; '),
-        suggestions: ['请检查步骤之间的逻辑关联性', '确保每一步都有明确的推导依据'],
+        suggestions: [
+          '请检查步骤之间的逻辑关联性',
+          '确保每一步都有明确的推导依据',
+        ],
         confidence: 0.7,
       };
     }
@@ -274,8 +292,8 @@ export class StepValidationService {
   ): string[] {
     const suggestions: string[] = [];
 
-    const failedResults = validationResults.filter(r => !r.isValid);
-    
+    const failedResults = validationResults.filter((r) => !r.isValid);
+
     if (failedResults.length === 0) {
       suggestions.push('当前步骤验证通过，可以继续下一步');
       if (currentStep.keyPoint) {
@@ -286,17 +304,17 @@ export class StepValidationService {
         suggestions.push(...result.suggestions);
       }
 
-      if (failedResults.some(r => r.errorType === 'calculation')) {
+      if (failedResults.some((r) => r.errorType === 'calculation')) {
         suggestions.push('建议重新检查计算过程，确保每一步运算的准确性');
         suggestions.push('可以尝试使用不同的计算方法进行验证');
       }
 
-      if (failedResults.some(r => r.errorType === 'logic')) {
+      if (failedResults.some((r) => r.errorType === 'logic')) {
         suggestions.push('建议回顾前序步骤，确保逻辑推理的连贯性');
         suggestions.push('检查是否存在遗漏的中间步骤');
       }
 
-      if (failedResults.some(r => r.errorType === 'concept')) {
+      if (failedResults.some((r) => r.errorType === 'concept')) {
         suggestions.push('建议重新审视相关数学概念的定义和性质');
         suggestions.push('可以参考教材或咨询老师以澄清概念理解');
       }
@@ -313,11 +331,11 @@ export class StepValidationService {
     results: ValidationResult[],
     step: SolutionStep,
   ): ValidationResult {
-    const hasFailure = results.some(r => r.status === 'fail');
-    const hasWarning = results.some(r => r.status === 'warning');
+    const hasFailure = results.some((r) => r.status === 'fail');
+    const hasWarning = results.some((r) => r.status === 'warning');
 
     if (hasFailure) {
-      const failedResult = results.find(r => r.status === 'fail')!;
+      const failedResult = results.find((r) => r.status === 'fail')!;
       return {
         ...failedResult,
         suggestions: [],
@@ -325,7 +343,7 @@ export class StepValidationService {
     }
 
     if (hasWarning) {
-      const warningResult = results.find(r => r.status === 'warning')!;
+      const warningResult = results.find((r) => r.status === 'warning')!;
       return {
         ...warningResult,
         suggestions: [],
@@ -338,15 +356,27 @@ export class StepValidationService {
       message: '步骤验证通过',
       details: '所有验证项均通过检查',
       suggestions: [],
-      confidence: Math.min(...results.map(r => r.confidence)),
+      confidence: Math.min(...results.map((r) => r.confidence)),
     };
   }
 
-  private checkLogicalConnection(previousStep: SolutionStep, currentStep: SolutionStep): boolean {
-    const connectionKeywords = ['因此', '所以', '于是', '从而', '那么', '接着', '然后'];
-    
-    const currentText = `${currentStep.title} ${currentStep.description} ${currentStep.process}`.toLowerCase();
-    
+  private checkLogicalConnection(
+    previousStep: SolutionStep,
+    currentStep: SolutionStep,
+  ): boolean {
+    const connectionKeywords = [
+      '因此',
+      '所以',
+      '于是',
+      '从而',
+      '那么',
+      '接着',
+      '然后',
+    ];
+
+    const currentText =
+      `${currentStep.title} ${currentStep.description} ${currentStep.process}`.toLowerCase();
+
     for (const keyword of connectionKeywords) {
       if (currentText.includes(keyword)) {
         return true;
@@ -356,11 +386,11 @@ export class StepValidationService {
     if (currentStep.keyPoint && previousStep.keyPoint) {
       const currentKeywords = currentStep.keyPoint.split(/[，,、]/);
       const previousKeywords = previousStep.keyPoint.split(/[，,、]/);
-      
-      const hasCommonKeyword = currentKeywords.some(kw => 
-        previousKeywords.some(pkw => kw.includes(pkw) || pkw.includes(kw))
+
+      const hasCommonKeyword = currentKeywords.some((kw) =>
+        previousKeywords.some((pkw) => kw.includes(pkw) || pkw.includes(kw)),
       );
-      
+
       if (hasCommonKeyword) {
         return true;
       }
@@ -369,7 +399,10 @@ export class StepValidationService {
     return true;
   }
 
-  private checkResultConsistency(previousResult: string, currentResult: string): boolean {
+  private checkResultConsistency(
+    previousResult: string,
+    currentResult: string,
+  ): boolean {
     const extractNumbers = (text: string): number[] => {
       const numberPattern = /-?\d+\.?\d*/g;
       const matches = text.match(numberPattern);
@@ -388,13 +421,13 @@ export class StepValidationService {
 
   validateAllSteps(steps: SolutionStep[]): ValidationResult[] {
     const results: ValidationResult[] = [];
-    
+
     for (let i = 0; i < steps.length; i++) {
       const previousSteps = steps.slice(0, i);
       const result = this.validateStep(steps[i], previousSteps);
       results.push(result);
     }
-    
+
     return results;
   }
 
@@ -407,12 +440,14 @@ export class StepValidationService {
     averageConfidence: number;
   } {
     const totalSteps = results.length;
-    const passedSteps = results.filter(r => r.status === 'pass').length;
-    const failedSteps = results.filter(r => r.status === 'fail').length;
-    const warningSteps = results.filter(r => r.status === 'warning').length;
-    
-    const overallStatus = failedSteps > 0 ? 'fail' : warningSteps > 0 ? 'warning' : 'pass';
-    const averageConfidence = results.reduce((sum, r) => sum + r.confidence, 0) / totalSteps;
+    const passedSteps = results.filter((r) => r.status === 'pass').length;
+    const failedSteps = results.filter((r) => r.status === 'fail').length;
+    const warningSteps = results.filter((r) => r.status === 'warning').length;
+
+    const overallStatus =
+      failedSteps > 0 ? 'fail' : warningSteps > 0 ? 'warning' : 'pass';
+    const averageConfidence =
+      results.reduce((sum, r) => sum + r.confidence, 0) / totalSteps;
 
     return {
       totalSteps,

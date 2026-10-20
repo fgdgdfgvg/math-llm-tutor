@@ -1,4 +1,10 @@
-import { Injectable, Logger, OnModuleInit, Inject, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { KnowledgeService } from '../../knowledge/knowledge.service';
 import { KnowledgePointMappingService } from '../../knowledge/knowledge-point-mapping.service';
 import { LearningService } from '../../learning/learning.service';
@@ -9,7 +15,10 @@ import {
   RelationContext,
   CognitiveState,
 } from '../types/interactive-learning.types';
-import { KnowledgeNode as BaseKnowledgeNode, KnowledgeRelation as BaseKnowledgeRelation } from '../../knowledge/interfaces/knowledge.interfaces';
+import {
+  KnowledgeNode as BaseKnowledgeNode,
+  KnowledgeRelation as BaseKnowledgeRelation,
+} from '../../knowledge/interfaces/knowledge.interfaces';
 import {
   IKnowledgeRepository,
   ILearningStatsProvider,
@@ -17,7 +26,11 @@ import {
   IWeightCalculator,
   ICacheManager,
 } from '../interfaces/interactive-learning.interfaces';
-import type { WeightConfig, TagRelevanceMap, KnowledgeArea } from '../types/interactive-learning.schemas';
+import type {
+  WeightConfig,
+  TagRelevanceMap,
+  KnowledgeArea,
+} from '../types/interactive-learning.schemas';
 import {
   DefaultWeightConfig,
   DefaultTagRelevance,
@@ -30,7 +43,9 @@ import {
 import { CircuitBreaker } from '../utils/circuit-breaker.util';
 
 @Injectable()
-export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalculator {
+export class DynamicKnowledgeGraphService
+  implements OnModuleInit, IWeightCalculator
+{
   private readonly logger = new Logger(DynamicKnowledgeGraphService.name);
 
   private relationCache: Map<string, DynamicKnowledgeRelation> = new Map();
@@ -67,7 +82,9 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     try {
       await this.initializeGraph();
     } catch (error: any) {
-      this.logger.error(`Graph initialization failed, will retry on first request: ${error.message}`);
+      this.logger.error(
+        `Graph initialization failed, will retry on first request: ${error.message}`,
+      );
     }
   }
 
@@ -80,10 +97,15 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       }
 
       for (const edge of edges) {
-        this.relationCache.set(`${edge.fromId}-${edge.toId}`, this.createDynamicRelation(edge));
+        this.relationCache.set(
+          `${edge.fromId}-${edge.toId}`,
+          this.createDynamicRelation(edge),
+        );
       }
 
-      this.logger.log(`Initialized graph with ${nodes.length} nodes and ${edges.length} edges`);
+      this.logger.log(
+        `Initialized graph with ${nodes.length} nodes and ${edges.length} edges`,
+      );
     } catch (error: any) {
       this.logger.error(`Failed to initialize graph: ${error.message}`);
       throw error;
@@ -95,13 +117,17 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     scenarioContext: ScenarioContext,
     relationContext: RelationContext,
   ): number {
-    if (relationContext.scenarioId && relationContext.scenarioId !== scenarioContext.id) {
+    if (
+      relationContext.scenarioId &&
+      relationContext.scenarioId !== scenarioContext.id
+    ) {
       return 0;
     }
 
     const userLevelAdjustment =
       1 +
-      (scenarioContext.userLevel - 0.5) * this.weightConfig.userLevelSensitivity;
+      (scenarioContext.userLevel - 0.5) *
+        this.weightConfig.userLevelSensitivity;
     const urgencyFactor = scenarioContext.taskUrgency
       ? this.weightConfig.urgencyMultiplier
       : 1.0;
@@ -126,7 +152,11 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
 
     return Math.min(
       this.weightConfig.maxWeightCap,
-      baseWeight * userLevelAdjustment * urgencyFactor * frequencyBonus * recencyBonus,
+      baseWeight *
+        userLevelAdjustment *
+        urgencyFactor *
+        frequencyBonus *
+        recencyBonus,
     );
   }
 
@@ -143,7 +173,11 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     let maxScore = 0.3;
 
     for (const mapping of areaTagMapping) {
-      if (node.tags.some((tag) => tag.toLowerCase().includes(mapping.tag.toLowerCase()))) {
+      if (
+        node.tags.some((tag) =>
+          tag.toLowerCase().includes(mapping.tag.toLowerCase()),
+        )
+      ) {
         maxScore = Math.max(maxScore, mapping.score);
       }
     }
@@ -176,15 +210,19 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     filtered: boolean;
     totalNodes: number;
   }> {
-    const cognitiveState = await this.getCognitiveStateWithCircuitBreaker(userId);
+    const cognitiveState =
+      await this.getCognitiveStateWithCircuitBreaker(userId);
     const effectiveContext =
       scenarioContext || this.getDefaultScenarioContext(cognitiveState);
 
     let relevantNodes: DynamicKnowledgeNode[] = [];
 
     for (const [, node] of this.nodeCache) {
-      const relevance = this.calculateRelevanceScore(node, effectiveContext.knowledgeArea);
-      
+      const relevance = this.calculateRelevanceScore(
+        node,
+        effectiveContext.knowledgeArea,
+      );
+
       if (relevance > 0.4 || !scenarioContext) {
         const updatedNode = await this.updateNodeDynamics(
           node,
@@ -209,10 +247,14 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
           scenarioId: effectiveContext.id,
           relationType: relation.type,
           frequency: relation.strengthHistory?.length || 0,
-          lastUsed:
-            relation.strengthHistory?.[relation.strengthHistory.length - 1]
-              ? new Date(relation.strengthHistory[relation.strengthHistory.length - 1].date)
-              : undefined,
+          lastUsed: relation.strengthHistory?.[
+            relation.strengthHistory.length - 1
+          ]
+            ? new Date(
+                relation.strengthHistory[relation.strengthHistory.length - 1]
+                  .date,
+              )
+            : undefined,
         };
 
         const newWeight = this.calculateDynamicWeight(
@@ -234,7 +276,10 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
         ].slice(-100);
 
         dynamicRelations.push(updatedRelation);
-        this.relationCache.set(`${relation.fromId}-${relation.toId}`, updatedRelation);
+        this.relationCache.set(
+          `${relation.fromId}-${relation.toId}`,
+          updatedRelation,
+        );
       }
     }
 
@@ -256,7 +301,8 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       let masteryLevel = 0;
 
       try {
-        const conceptProgress = await this.learningService.getConceptProgress(userId);
+        const conceptProgress =
+          await this.learningService.getConceptProgress(userId);
         // 学习记录按题库知识点归档（如“极限计算”），图谱节点是概念 id（如 limit_definition），
         // 需要经过映射翻译，否则节点掌握度永远是 0。
         const progress = conceptProgress.find(
@@ -273,8 +319,13 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       }
 
       const relevanceScore =
-        preCalculatedRelevance ?? this.calculateRelevanceScore(node, scenarioContext.knowledgeArea);
-      const activationLevel = this.calculateActivationLevel(masteryLevel, relevanceScore, node.accessCount);
+        preCalculatedRelevance ??
+        this.calculateRelevanceScore(node, scenarioContext.knowledgeArea);
+      const activationLevel = this.calculateActivationLevel(
+        masteryLevel,
+        relevanceScore,
+        node.accessCount,
+      );
 
       return {
         ...node,
@@ -286,14 +337,18 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
         accessCount: node.accessCount,
       };
     } catch (error: any) {
-      this.logger.error(`Failed to update node dynamics for ${node.id}: ${error.message}`);
+      this.logger.error(
+        `Failed to update node dynamics for ${node.id}: ${error.message}`,
+      );
       return node;
     }
   }
 
-  async getCognitiveStateWithCircuitBreaker(userId: string): Promise<CognitiveState> {
+  async getCognitiveStateWithCircuitBreaker(
+    userId: string,
+  ): Promise<CognitiveState> {
     const cacheKey = cognitiveStateCacheKey(userId);
-    
+
     const cached = await this.cacheManager.get<CognitiveState>(cacheKey);
     if (cached) {
       return cached;
@@ -312,9 +367,12 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     );
   }
 
-  private async computeFreshCognitiveState(userId: string): Promise<CognitiveState> {
+  private async computeFreshCognitiveState(
+    userId: string,
+  ): Promise<CognitiveState> {
     const learningStats = await this.learningService.getLearningStats(userId);
-    const conceptProgress = await this.learningService.getConceptProgress(userId);
+    const conceptProgress =
+      await this.learningService.getConceptProgress(userId);
 
     // 练习记录按题库知识点归档（“积分计算”），而认知模型的分类是按图谱概念 id 写的
     // （includes('definition') / includes('rules') ...）。不展开映射的话这些判定永远
@@ -323,15 +381,24 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
 
     const avgMastery = learningStats.averageMastery || 0;
 
-    const conceptualUnderstanding = this.calculateDimension(graphProgress, 'conceptual');
-    const proceduralFluency = this.calculateDimension(graphProgress, 'procedural');
+    const conceptualUnderstanding = this.calculateDimension(
+      graphProgress,
+      'conceptual',
+    );
+    const proceduralFluency = this.calculateDimension(
+      graphProgress,
+      'procedural',
+    );
     const strategicCompetence = this.calculateStrategicCompetence(
       graphProgress,
       conceptProgress.length,
     );
     const adaptiveReasoning = this.calculateAdaptiveReasoning(conceptProgress);
 
-    const cognitiveLoad = this.estimateCognitiveLoad(learningStats, conceptProgress);
+    const cognitiveLoad = this.estimateCognitiveLoad(
+      learningStats,
+      conceptProgress,
+    );
     const learningVelocity = this.calculateLearningVelocity(learningStats);
     const errorPattern = this.identifyErrorPatterns(conceptProgress);
 
@@ -349,10 +416,16 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
         learningVelocity,
         errorPattern,
         attentionLevel: this.estimateAttentionLevel(learningStats),
-        frustrationLevel: this.estimateFrustrationLevel(learningStats, conceptProgress),
+        frustrationLevel: this.estimateFrustrationLevel(
+          learningStats,
+          conceptProgress,
+        ),
       },
       predictions: {
-        masteryPrediction: this.predictMasteryCurve(avgMastery, learningVelocity),
+        masteryPrediction: this.predictMasteryCurve(
+          avgMastery,
+          learningVelocity,
+        ),
         optimalDifficulty: this.calculateOptimalDifficulty(avgMastery),
         recommendedIntervention: this.recommendInterventions(
           conceptualUnderstanding,
@@ -379,7 +452,10 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       status?: string;
     }>,
   ): Array<{ conceptId: string; masteryLevel: number; status: string }> {
-    const expanded = new Map<string, { conceptId: string; masteryLevel: number; status: string }>();
+    const expanded = new Map<
+      string,
+      { conceptId: string; masteryLevel: number; status: string }
+    >();
 
     for (const item of conceptProgress) {
       const ids = item.conceptIds?.length ? item.conceptIds : [item.conceptId];
@@ -401,7 +477,11 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
   }
 
   private calculateDimension(
-    conceptProgress: Array<{ conceptId: string; masteryLevel: number; status: string }>,
+    conceptProgress: Array<{
+      conceptId: string;
+      masteryLevel: number;
+      status: string;
+    }>,
     type: 'conceptual' | 'procedural',
   ): number {
     const relevantConcepts = conceptProgress.filter((p) => {
@@ -482,15 +562,18 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       // 练习次数太少，不足以判断趋势：按平均掌握度给出保守估计
       if (conceptProgress.length === 0) return 0;
       const avgMastery =
-        conceptProgress.reduce((sum, p) => sum + p.masteryLevel, 0) / conceptProgress.length;
+        conceptProgress.reduce((sum, p) => sum + p.masteryLevel, 0) /
+        conceptProgress.length;
       return Math.min(1, Math.max(0, avgMastery * 0.5));
     }
 
     const avgRecent =
-      withTrend.reduce((sum, p) => sum + (p.recentAccuracy as number), 0) / withTrend.length;
+      withTrend.reduce((sum, p) => sum + (p.recentAccuracy as number), 0) /
+      withTrend.length;
     const avgGain =
       withTrend.reduce(
-        (sum, p) => sum + ((p.recentAccuracy as number) - (p.earlyAccuracy as number)),
+        (sum, p) =>
+          sum + ((p.recentAccuracy as number) - (p.earlyAccuracy as number)),
         0,
       ) / withTrend.length;
 
@@ -516,8 +599,7 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
 
     if (earlierWeek.length === 0) return 0.5;
 
-    const recentAvg =
-      recentWeek.reduce((a, b) => a + b, 0) / recentWeek.length;
+    const recentAvg = recentWeek.reduce((a, b) => a + b, 0) / recentWeek.length;
     const earlierAvg =
       earlierWeek.reduce((a, b) => a + b, 0) / earlierWeek.length;
 
@@ -580,20 +662,27 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
   ): number {
     if (conceptProgress.length === 0) return 0.3;
 
-    const lowMasteryCount = conceptProgress.filter((p) => p.masteryLevel < 0.3).length;
+    const lowMasteryCount = conceptProgress.filter(
+      (p) => p.masteryLevel < 0.3,
+    ).length;
     const frustration = Math.min(
       1.0,
       (lowMasteryCount / conceptProgress.length) * 2,
     );
 
-    const noProgress = (stats.weeklyProgress || []).every((count) => count === 0)
+    const noProgress = (stats.weeklyProgress || []).every(
+      (count) => count === 0,
+    )
       ? 0.3
       : 0;
 
     return Math.min(1.0, frustration + noProgress);
   }
 
-  private predictMasteryCurve(currentMastery: number, velocity: number): number[] {
+  private predictMasteryCurve(
+    currentMastery: number,
+    velocity: number,
+  ): number[] {
     const predictions: number[] = [];
     let mastery = currentMastery;
 
@@ -617,7 +706,8 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     cognitiveLoad: number,
     errorPatterns: string[],
   ): CognitiveState['predictions']['recommendedIntervention'] {
-    const interventions: CognitiveState['predictions']['recommendedIntervention'] = [];
+    const interventions: CognitiveState['predictions']['recommendedIntervention'] =
+      [];
 
     if (cognitiveLoad > 0.8) {
       interventions.push('take_break');
@@ -642,7 +732,9 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
     return interventions;
   }
 
-  private getDefaultScenarioContext(cognitiveState: CognitiveState): ScenarioContext {
+  private getDefaultScenarioContext(
+    cognitiveState: CognitiveState,
+  ): ScenarioContext {
     return {
       id: 'default',
       knowledgeArea: 'limits',
@@ -755,11 +847,10 @@ export class DynamicKnowledgeGraphService implements OnModuleInit, IWeightCalcul
       totalNodes: this.nodeCache.size,
       totalRelations: this.relationCache.size,
       averageActivationLevel:
-        this.nodeCache.size > 0
-          ? totalActivation / this.nodeCache.size
-          : 0,
+        this.nodeCache.size > 0 ? totalActivation / this.nodeCache.size : 0,
       cacheSize: this.nodeCache.size + this.relationCache.size,
-      circuitBreakerStatus: this.learningServiceCircuitBreaker.getHealthStatus(),
+      circuitBreakerStatus:
+        this.learningServiceCircuitBreaker.getHealthStatus(),
     };
   }
 }

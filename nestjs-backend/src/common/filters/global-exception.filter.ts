@@ -8,7 +8,11 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppError, InternalError, isAppError } from '../errors/app-error';
-import { ErrorCode, ERROR_DEFAULT_MESSAGE, ERROR_HTTP_STATUS } from '../errors/error-codes';
+import {
+  ErrorCode,
+  ERROR_DEFAULT_MESSAGE,
+  ERROR_HTTP_STATUS,
+} from '../errors/error-codes';
 import { redactSecrets } from '../utils/redact';
 import { getTraceId, newTraceId } from '../utils/request-context';
 
@@ -51,7 +55,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // 此时拿不到 traceId（自检 P2-7 曾返回 "unknown"）——兜底生成一个并回写响应头，
     // 保证任何错误响应都可被用户报障时引用。
     const traceId = getTraceId() ?? req?.traceId ?? newTraceId();
-    if (res && typeof (res as any).setHeader === 'function' && !(res as any).headersSent) {
+    if (
+      res &&
+      typeof (res as any).setHeader === 'function' &&
+      !(res as any).headersSent
+    ) {
       (res as any).setHeader('X-Request-Id', traceId);
     }
     const path = req?.originalUrl || req?.url;
@@ -59,7 +67,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const appError = this.normalize(exception);
 
-    const body = this.buildBody(appError, traceId, path, isProduction, exception);
+    const body = this.buildBody(
+      appError,
+      traceId,
+      path,
+      isProduction,
+      exception,
+    );
     this.log(appError, traceId, path, exception);
 
     if (res && typeof res.status === 'function') {
@@ -77,13 +91,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Nest 内置异常（含 ValidationPipe 抛出的 BadRequestException）
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
-      const response = exception.getResponse() as string | { message?: unknown; error?: string };
+      const response = exception.getResponse() as
+        | string
+        | { message?: unknown; error?: string };
       const rawMessage =
-        typeof response === 'string' ? response : (response?.message ?? response?.error);
-      return new AppError(this.mapHttpStatus(status), this.flattenMessage(rawMessage), {
-        httpStatus: status,
-        expose: status < 500, // 5xx 的内部描述不外传
-      });
+        typeof response === 'string'
+          ? response
+          : (response?.message ?? response?.error);
+      return new AppError(
+        this.mapHttpStatus(status),
+        this.flattenMessage(rawMessage),
+        {
+          httpStatus: status,
+          expose: status < 500, // 5xx 的内部描述不外传
+        },
+      );
     }
 
     const anyError = exception as any;
@@ -108,11 +130,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // axios：外部服务异常/超时，原始信息不暴露给学生
     if (anyError?.isAxiosError) {
       const status: number | undefined = anyError.response?.status;
-      if (anyError.code === 'ECONNABORTED' || anyError.code === 'ETIMEDOUT' || status === 504) {
-        return new AppError(ErrorCode.UPSTREAM_TIMEOUT, undefined, { expose: false });
+      if (
+        anyError.code === 'ECONNABORTED' ||
+        anyError.code === 'ETIMEDOUT' ||
+        status === 504
+      ) {
+        return new AppError(ErrorCode.UPSTREAM_TIMEOUT, undefined, {
+          expose: false,
+        });
       }
       return new AppError(ErrorCode.EXTERNAL_SERVICE_ERROR, undefined, {
-        httpStatus: status && status >= 400 && status < 500 ? status : HttpStatus.BAD_GATEWAY,
+        httpStatus:
+          status && status >= 400 && status < 500
+            ? status
+            : HttpStatus.BAD_GATEWAY,
         expose: false,
       });
     }
@@ -139,7 +170,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case 504:
         return ErrorCode.UPSTREAM_TIMEOUT;
       default:
-        return status >= 500 ? ErrorCode.INTERNAL_ERROR : ErrorCode.BUSINESS_ERROR;
+        return status >= 500
+          ? ErrorCode.INTERNAL_ERROR
+          : ErrorCode.BUSINESS_ERROR;
     }
   }
 
@@ -174,7 +207,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return body;
   }
 
-  private log(error: AppError, traceId: string, path: string | undefined, original: unknown): void {
+  private log(
+    error: AppError,
+    traceId: string,
+    path: string | undefined,
+    original: unknown,
+  ): void {
     const payload = {
       traceId,
       path,

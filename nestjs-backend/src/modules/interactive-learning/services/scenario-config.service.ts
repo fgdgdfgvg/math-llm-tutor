@@ -22,7 +22,10 @@ import {
   FormativeCheck,
   ParameterConfig,
 } from '../types/interactive-learning.types';
-import { ScenarioYamlSchema, ValidatedScenarioConfig } from '../types/interactive-learning.schemas';
+import {
+  ScenarioYamlSchema,
+  ValidatedScenarioConfig,
+} from '../types/interactive-learning.schemas';
 
 export interface BrokenConfigInfo {
   scenarioId: string;
@@ -94,7 +97,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         await this.startChokidarWatcher();
       }
     } catch (error) {
-      this.logger.warn(`场景配置初始化失败，已跳过：${(error as Error).message}`);
+      this.logger.warn(
+        `场景配置初始化失败，已跳过：${(error as Error).message}`,
+      );
     }
 
     this.logger.log(
@@ -120,12 +125,16 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     return Array.from(this.scenarioCache.values());
   }
 
-  async getScenariosByKnowledgeArea(area: string): Promise<InteractiveScenario[]> {
+  async getScenariosByKnowledgeArea(
+    area: string,
+  ): Promise<InteractiveScenario[]> {
     const scenarios = Array.from(this.scenarioCache.values());
     return scenarios.filter((s) => s.knowledgeArea === area);
   }
 
-  async getScenariosByDifficulty(difficulty: string): Promise<InteractiveScenario[]> {
+  async getScenariosByDifficulty(
+    difficulty: string,
+  ): Promise<InteractiveScenario[]> {
     const scenarios = Array.from(this.scenarioCache.values());
     return scenarios.filter((s) => s.difficulty === difficulty);
   }
@@ -165,7 +174,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         (zodError.issues || zodError.errors || []).forEach((err: any) => {
           errors.push(
             `[${(err.path || []).join('.')}] ${err.message}${
-              err?.received ? ` (received: ${JSON.stringify(err.received)})` : ''
+              err?.received
+                ? ` (received: ${JSON.stringify(err.received)})`
+                : ''
             }`,
           );
         });
@@ -177,7 +188,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async createScenarioFromYaml(yamlContent: string): Promise<InteractiveScenario> {
+  async createScenarioFromYaml(
+    yamlContent: string,
+  ): Promise<InteractiveScenario> {
     this.validateYamlSize(yamlContent);
 
     let rawConfig: unknown;
@@ -191,17 +204,24 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     const validation = await this.validateScenarioConfig(rawConfig);
 
     if (!validation.isValid) {
-      throw new Error(`Invalid configuration:\n${validation.errors.join('\n')}`);
+      throw new Error(
+        `Invalid configuration:\n${validation.errors.join('\n')}`,
+      );
     }
 
-    if (validation.warnings.length > 0 && validation.validatedConfig?.scenario?.id) {
+    if (
+      validation.warnings.length > 0 &&
+      validation.validatedConfig?.scenario?.id
+    ) {
       this.logger.warn(
         `Warnings for ${validation.validatedConfig.scenario.id}:\n${validation.warnings.join('\n')}`,
       );
     }
 
     if (!validation.validatedConfig) {
-      throw new Error('Configuration validation succeeded but no validated config returned');
+      throw new Error(
+        'Configuration validation succeeded but no validated config returned',
+      );
     }
 
     return this.transformToInteractiveScenario(validation.validatedConfig);
@@ -220,7 +240,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         this.logger.log(`Successfully reloaded scenario: ${scenarioId}`);
       }
     } catch (error: any) {
-      this.logger.error(`Failed to reload scenario ${scenarioId}: ${error.message}`);
+      this.logger.error(
+        `Failed to reload scenario ${scenarioId}: ${error.message}`,
+      );
 
       const filePath = this.resolveFilePath(scenarioId);
       let rawContent: string | undefined;
@@ -246,7 +268,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
       const exists = await this.directoryExists();
 
       if (!exists) {
-        this.logger.log('Config directory does not exist, skipping initial load');
+        this.logger.log(
+          'Config directory does not exist, skipping initial load',
+        );
         return;
       }
 
@@ -262,13 +286,16 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         const scenarioId = path.basename(file, ext);
 
         try {
-          const scenario = await this.loadAndValidateScenarioFromFile(scenarioId);
+          const scenario =
+            await this.loadAndValidateScenarioFromFile(scenarioId);
 
           if (scenario) {
             this.scenarioCache.set(scenarioId, scenario);
           }
         } catch (error: any) {
-          this.logger.error(`Failed to load scenario ${scenarioId}: ${error.message}`);
+          this.logger.error(
+            `Failed to load scenario ${scenarioId}: ${error.message}`,
+          );
 
           const filePath = path.join(this.configPath, file);
           let rawContent: string | undefined;
@@ -332,7 +359,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         return this.transformToInteractiveScenario(validation.validatedConfig);
       } catch (error: any) {
         if (error.code !== 'ENOENT') {
-          this.logger.error(`Error loading scenario ${filePath}: ${error.message}`);
+          this.logger.error(
+            `Error loading scenario ${filePath}: ${error.message}`,
+          );
           throw error;
         }
       }
@@ -381,7 +410,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('Created sample scenario configurations');
   }
 
-  private async saveScenarioToFileAsync(config: ScenarioYamlConfig): Promise<void> {
+  private async saveScenarioToFileAsync(
+    config: ScenarioYamlConfig,
+  ): Promise<void> {
     const filePath = path.join(this.configPath, `${config.scenario.id}.yaml`);
     const yamlContent = yaml.dump(config, { indent: 2, lineWidth: 120 });
 
@@ -432,7 +463,9 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
       });
 
       this.isWatcherActive = true;
-      this.logger.log('Started chokidar file watcher for scenario configurations');
+      this.logger.log(
+        'Started chokidar file watcher for scenario configurations',
+      );
     } catch (error: any) {
       this.logger.warn(
         `Failed to start chokidar watcher: ${error.message}. File watching disabled.`,
@@ -512,7 +545,8 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
 
     if (
       config.assessment?.mastery_threshold !== undefined &&
-      (config.assessment.mastery_threshold < 0.5 || config.assessment.mastery_threshold > 0.95)
+      (config.assessment.mastery_threshold < 0.5 ||
+        config.assessment.mastery_threshold > 0.95)
     ) {
       warnings.push(
         `Unusual mastery threshold: ${config.assessment.mastery_threshold} (typical range: 0.5-0.95)`,
@@ -555,8 +589,18 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                 hint_system: {
                   max_hints: 3,
                   hints: [
-                    { level: 1, content: 'ε表示允许的误差范围', cost: 5, type: 'text' },
-                    { level: 2, content: 'δ定义x的范围使得f(x)在ε内', cost: 10, type: 'text' },
+                    {
+                      level: 1,
+                      content: 'ε表示允许的误差范围',
+                      cost: 5,
+                      type: 'text',
+                    },
+                    {
+                      level: 2,
+                      content: 'δ定义x的范围使得f(x)在ε内',
+                      cost: 10,
+                      type: 'text',
+                    },
                   ],
                 },
                 feedback_messages: {
@@ -565,7 +609,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '提示：观察当δ减小时发生什么',
                 },
               },
-              scoring: { max_points: 20, time_bonus: true, hint_penalty: 5, attempt_penalty: 2 },
+              scoring: {
+                max_points: 20,
+                time_bonus: true,
+                hint_penalty: 5,
+                attempt_penalty: 2,
+              },
             },
             {
               id: 'task_limit_intuition',
@@ -574,7 +623,7 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               interaction_mode: 'graph_interaction',
               description: '观察不同函数在某点的极限行为',
               validation: {
-                expected_answer: { 'lim_x_0_sinx_over_x': 1 },
+                expected_answer: { lim_x_0_sinx_over_x: 1 },
                 hint_system: { max_hints: 2, hints: [] },
                 feedback_messages: {
                   correct: '正确！',
@@ -582,14 +631,23 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '再观察图像',
                 },
               },
-              scoring: { max_points: 15, time_bonus: false, hint_penalty: 3, attempt_penalty: 1 },
+              scoring: {
+                max_points: 15,
+                time_bonus: false,
+                hint_penalty: 3,
+                attempt_penalty: 1,
+              },
             },
           ],
         },
         {
           id: 'phase2_computation',
           name: '极限计算方法',
-          concept_ids: ['limit_computation', 'lhopital_rule', 'infinity_limits'],
+          concept_ids: [
+            'limit_computation',
+            'lhopital_rule',
+            'infinity_limits',
+          ],
           tasks: [
             {
               id: 'task_direct_substitution',
@@ -607,7 +665,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '提示：先检查函数在该点是否有定义',
                 },
               },
-              scoring: { max_points: 15, time_bonus: true, hint_penalty: 4, attempt_penalty: 2 },
+              scoring: {
+                max_points: 15,
+                time_bonus: true,
+                hint_penalty: 4,
+                attempt_penalty: 2,
+              },
             },
             {
               id: 'task_lhopital_challenge',
@@ -615,7 +678,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               title: '洛必达法则挑战',
               interaction_mode: 'multi_step',
               description: '应用洛必达法则求解未定式极限',
-              adaptive_difficulty: { enabled: true, adjustment_factor: 0.1, min_difficulty: 0.3, max_difficulty: 0.9 },
+              adaptive_difficulty: {
+                enabled: true,
+                adjustment_factor: 0.1,
+                min_difficulty: 0.3,
+                max_difficulty: 0.9,
+              },
               validation: {
                 expected_answer: '0.5',
                 hint_system: { max_hints: 4, hints: [] },
@@ -625,7 +693,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '确认这是0/0或∞/∞型未定式',
                 },
               },
-              scoring: { max_points: 25, time_bonus: true, hint_penalty: 5, attempt_penalty: 3 },
+              scoring: {
+                max_points: 25,
+                time_bonus: true,
+                hint_penalty: 5,
+                attempt_penalty: 3,
+              },
             },
           ],
         },
@@ -649,7 +722,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '提示：瞬时速度是平均速度的极限',
                 },
               },
-              scoring: { max_points: 30, time_bonus: true, hint_penalty: 6, attempt_penalty: 2 },
+              scoring: {
+                max_points: 30,
+                time_bonus: true,
+                hint_penalty: 6,
+                attempt_penalty: 2,
+              },
             },
           ],
         },
@@ -667,7 +745,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               name: 'epsilon',
               label: 'ε (误差范围)',
               type: 'slider',
-              constraints: { min: 0.01, max: 1, step: 0.01, default_value: 0.1 },
+              constraints: {
+                min: 0.01,
+                max: 1,
+                step: 0.01,
+                default_value: 0.1,
+              },
               binding: { target: 'epsilon', unit: '' },
             },
             {
@@ -675,11 +758,20 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               name: 'delta',
               label: 'δ (邻域半径)',
               type: 'slider',
-              constraints: { min: 0.01, max: 1, step: 0.01, default_value: 0.1 },
+              constraints: {
+                min: 0.01,
+                max: 1,
+                step: 0.01,
+                default_value: 0.1,
+              },
               binding: { target: 'delta', unit: '' },
             },
           ],
-          interactions: { enabled: true, modes: ['drag', 'zoom'], callbacks: ['onParamChange'] },
+          interactions: {
+            enabled: true,
+            modes: ['drag', 'zoom'],
+            callbacks: ['onParamChange'],
+          },
           styling: { theme: 'light', show_grid: true, show_axes: true },
         },
         {
@@ -694,11 +786,20 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               name: 'h',
               label: '增量h',
               type: 'slider',
-              constraints: { min: 0.001, max: 2, step: 0.001, default_value: 1 },
+              constraints: {
+                min: 0.001,
+                max: 2,
+                step: 0.001,
+                default_value: 1,
+              },
               binding: { target: 'h', unit: '' },
             },
           ],
-          interactions: { enabled: true, modes: ['drag'], callbacks: ['onHover'] },
+          interactions: {
+            enabled: true,
+            modes: ['drag'],
+            callbacks: ['onHover'],
+          },
           styling: { theme: 'auto', show_axes: true },
         },
       ],
@@ -730,7 +831,11 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
               },
             ],
             passing_criteria: { min_correct_rate: 0.7 },
-            feedback: { show_immediate_feedback: true, detailed_explanations: true, suggest_review_topics: true },
+            feedback: {
+              show_immediate_feedback: true,
+              detailed_explanations: true,
+              suggest_review_topics: true,
+            },
           },
         ],
       },
@@ -774,7 +879,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '提示：让两个点越来越近',
                 },
               },
-              scoring: { max_points: 20, time_bonus: true, hint_penalty: 5, attempt_penalty: 2 },
+              scoring: {
+                max_points: 20,
+                time_bonus: true,
+                hint_penalty: 5,
+                attempt_penalty: 2,
+              },
             },
           ],
         },
@@ -798,7 +908,12 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
                   incorrect: '识别哪个是外层函数',
                 },
               },
-              scoring: { max_points: 15, time_bonus: false, hint_penalty: 3, attempt_penalty: 1 },
+              scoring: {
+                max_points: 15,
+                time_bonus: false,
+                hint_penalty: 3,
+                attempt_penalty: 1,
+              },
             },
           ],
         },
@@ -808,10 +923,14 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
           id: 'derivative_graph',
           type: 'dynamic_graph',
           title: '原函数与导函数对比',
-          description: '同时显示f(x)和f\'(x)',
+          description: "同时显示f(x)和f'(x)",
           data_binding: { source: 'dynamic' },
           parameters: [],
-          interactions: { enabled: true, modes: ['hover', 'click'], callbacks: [] },
+          interactions: {
+            enabled: true,
+            modes: ['hover', 'click'],
+            callbacks: [],
+          },
           styling: { theme: 'light', show_grid: true },
         },
       ],
@@ -822,18 +941,26 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  private transformToInteractiveScenario(config: ValidatedScenarioConfig): InteractiveScenario {
-    const learningPath: LearningPhase[] = (config.learning_path || []).map((phase, index) => ({
-      id: phase.id,
-      name: phase.name,
-      order: index,
-      conceptIds: phase.concept_ids || [],
-      objectives: [],
-      tasks: (phase.tasks || []).map((task) => this.transformTask(task, phase.id)),
-      duration: 15,
-    }));
+  private transformToInteractiveScenario(
+    config: ValidatedScenarioConfig,
+  ): InteractiveScenario {
+    const learningPath: LearningPhase[] = (config.learning_path || []).map(
+      (phase, index) => ({
+        id: phase.id,
+        name: phase.name,
+        order: index,
+        conceptIds: phase.concept_ids || [],
+        objectives: [],
+        tasks: (phase.tasks || []).map((task) =>
+          this.transformTask(task, phase.id),
+        ),
+        duration: 15,
+      }),
+    );
 
-    const visualizations: VisualizationConfig[] = (config.visualizations || []).map((viz) => ({
+    const visualizations: VisualizationConfig[] = (
+      config.visualizations || []
+    ).map((viz) => ({
       id: viz.id,
       type: viz.type as VisualizationConfig['type'],
       title: viz.title || '',
@@ -869,31 +996,34 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
     }));
 
     const assessment: AssessmentConfig = {
-      formativeChecks: (config.assessment?.formative_checks || []).map((check) => ({
-        id: check.id,
-        phaseId: '',
-        title: `阶段检查: ${check.id}`,
-        checkPoint: check.check_point || 'after_phase',
-        questions: (check.questions || []).map((q) => ({
-          id: q.id,
-          type: q.type as any,
-          question: q.question,
-          options: q.options,
-          expectedAnswer: q.expected_answer,
-          explanation: q.explanation || '',
-          difficulty: q.difficulty || 0.5,
-          conceptIds: q.concept_ids || [],
-        })),
-        passingCriteria: {
-          minCorrectRate: check.passing_criteria?.min_correct_rate || 0.7,
-          timeLimit: check.passing_criteria?.time_limit,
-        },
-        feedback: {
-          showImmediateFeedback: check.feedback?.show_immediate_feedback ?? true,
-          detailedExplanations: check.feedback?.detailed_explanations ?? true,
-          suggestReviewTopics: check.feedback?.suggest_review_topics ?? true,
-        },
-      })),
+      formativeChecks: (config.assessment?.formative_checks || []).map(
+        (check) => ({
+          id: check.id,
+          phaseId: '',
+          title: `阶段检查: ${check.id}`,
+          checkPoint: check.check_point || 'after_phase',
+          questions: (check.questions || []).map((q) => ({
+            id: q.id,
+            type: q.type as any,
+            question: q.question,
+            options: q.options,
+            expectedAnswer: q.expected_answer,
+            explanation: q.explanation || '',
+            difficulty: q.difficulty || 0.5,
+            conceptIds: q.concept_ids || [],
+          })),
+          passingCriteria: {
+            minCorrectRate: check.passing_criteria?.min_correct_rate || 0.7,
+            timeLimit: check.passing_criteria?.time_limit,
+          },
+          feedback: {
+            showImmediateFeedback:
+              check.feedback?.show_immediate_feedback ?? true,
+            detailedExplanations: check.feedback?.detailed_explanations ?? true,
+            suggestReviewTopics: check.feedback?.suggest_review_topics ?? true,
+          },
+        }),
+      ),
       summativeTask: undefined,
       adaptiveDifficulty: true,
       masteryThreshold: config.assessment?.mastery_threshold || 0.7,
@@ -945,7 +1075,8 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
       title: task.title,
       description: task.description || '',
       type: task.type as InteractiveTask['type'],
-      interactionMode: task.interaction_mode as InteractiveTask['interactionMode'],
+      interactionMode:
+        task.interaction_mode as InteractiveTask['interactionMode'],
 
       content: {
         text: task.description,
@@ -958,12 +1089,14 @@ export class ScenarioConfigService implements OnModuleInit, OnModuleDestroy {
         hintSystem: {
           maxHints: task.validation?.hint_system?.max_hints || 3,
           progressiveReveal: true,
-          hints: (task.validation?.hint_system?.hints || []).map((hint: any) => ({
-            level: hint.level,
-            content: hint.content,
-            cost: hint.cost || 5,
-            type: hint.type || 'text',
-          })),
+          hints: (task.validation?.hint_system?.hints || []).map(
+            (hint: any) => ({
+              level: hint.level,
+              content: hint.content,
+              cost: hint.cost || 5,
+              type: hint.type || 'text',
+            }),
+          ),
         },
         feedbackMessages: task.validation?.feedback_messages || {
           correct: '正确！',

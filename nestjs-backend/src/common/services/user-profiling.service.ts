@@ -89,29 +89,33 @@ export interface LearningPath {
 
 // 主题依赖图谱：每个主题的前置依赖
 const TOPIC_DEPENDENCIES: Record<string, string[]> = {
-  '函数与极限': [],
-  '导数与微分': ['函数与极限'],
-  '微分中值定理': ['导数与微分'],
-  '不定积分': ['导数与微分'],
-  '定积分': ['不定积分', '函数与极限'],
-  '定积分应用': ['定积分'],
-  '微分方程': ['不定积分', '导数与微分'],
-  '向量与空间几何': ['函数与极限'],
-  '多元函数微分': ['导数与微分', '向量与空间几何'],
-  '重积分': ['定积分', '多元函数微分'],
-  '曲线积分': ['重积分', '向量与空间几何'],
-  '曲面积分': ['重积分', '向量与空间几何'],
-  '无穷级数': ['函数与极限', '定积分'],
-  '线性代数': ['函数与极限'],
-  '概率论': ['函数与极限'],
+  函数与极限: [],
+  导数与微分: ['函数与极限'],
+  微分中值定理: ['导数与微分'],
+  不定积分: ['导数与微分'],
+  定积分: ['不定积分', '函数与极限'],
+  定积分应用: ['定积分'],
+  微分方程: ['不定积分', '导数与微分'],
+  向量与空间几何: ['函数与极限'],
+  多元函数微分: ['导数与微分', '向量与空间几何'],
+  重积分: ['定积分', '多元函数微分'],
+  曲线积分: ['重积分', '向量与空间几何'],
+  曲面积分: ['重积分', '向量与空间几何'],
+  无穷级数: ['函数与极限', '定积分'],
+  线性代数: ['函数与极限'],
+  概率论: ['函数与极限'],
 };
 
 @Injectable()
 export class UserProfilingService {
   private readonly logger = new Logger(UserProfilingService.name);
   private readonly userProfiles: Map<string, UserProfile> = new Map();
-  private readonly performanceHistory: Map<string, UserPerformanceRecord[]> = new Map();
-  private readonly sessionCache: Map<string, { sessionId: string; startTime: number }> = new Map();
+  private readonly performanceHistory: Map<string, UserPerformanceRecord[]> =
+    new Map();
+  private readonly sessionCache: Map<
+    string,
+    { sessionId: string; startTime: number }
+  > = new Map();
 
   createProfile(
     userId: string,
@@ -148,7 +152,9 @@ export class UserProfilingService {
     this.performanceHistory.set(userId, []);
     this.updateAdaptationTier(profile);
 
-    this.logger.log(`创建用户画像: ${profile.nickname} (${profile.knowledgeLevel})`);
+    this.logger.log(
+      `创建用户画像: ${profile.nickname} (${profile.knowledgeLevel})`,
+    );
     return profile;
   }
 
@@ -189,7 +195,8 @@ export class UserProfilingService {
 
     // 更新平均用时
     profile.averageTimePerQuestion =
-      (profile.averageTimePerQuestion * (profile.totalQuestionsSolved - 1) + record.timeSpent) /
+      (profile.averageTimePerQuestion * (profile.totalQuestionsSolved - 1) +
+        record.timeSpent) /
       profile.totalQuestionsSolved;
 
     profile.lastActive = Date.now();
@@ -250,8 +257,11 @@ export class UserProfilingService {
       verifyEncouragement: profile.adaptationTier !== AdaptationTier.ADVANCED,
       showAlternativeMethods: profile.adaptationTier !== AdaptationTier.BASIC,
       maxStepsPerSolution:
-        profile.adaptationTier === AdaptationTier.BASIC ? 8 :
-        profile.adaptationTier === AdaptationTier.INTERMEDIATE ? 6 : 4,
+        profile.adaptationTier === AdaptationTier.BASIC
+          ? 8
+          : profile.adaptationTier === AdaptationTier.INTERMEDIATE
+            ? 6
+            : 4,
     };
   }
 
@@ -294,13 +304,19 @@ export class UserProfilingService {
 
     const history = this.performanceHistory.get(userId) || [];
     const recentHistory = history.filter(
-      r => Date.now() - r.timestamp < 7 * 24 * 60 * 60 * 1000, // 最近一周
+      (r) => Date.now() - r.timestamp < 7 * 24 * 60 * 60 * 1000, // 最近一周
     );
 
     // 分析弱项
-    const categoryPerformance = new Map<string, { correct: number; total: number }>();
+    const categoryPerformance = new Map<
+      string,
+      { correct: number; total: number }
+    >();
     for (const record of recentHistory) {
-      const stat = categoryPerformance.get(record.problemCategory) || { correct: 0, total: 0 };
+      const stat = categoryPerformance.get(record.problemCategory) || {
+        correct: 0,
+        total: 0,
+      };
       stat.total++;
       if (record.isCorrect) stat.correct++;
       categoryPerformance.set(record.problemCategory, stat);
@@ -314,9 +330,10 @@ export class UserProfilingService {
     }
 
     // 推荐难度
-    const recentAccuracy = recentHistory.length > 0
-      ? recentHistory.filter(r => r.isCorrect).length / recentHistory.length
-      : 0.5;
+    const recentAccuracy =
+      recentHistory.length > 0
+        ? recentHistory.filter((r) => r.isCorrect).length / recentHistory.length
+        : 0.5;
 
     let suggestedDifficulty: 'easy' | 'medium' | 'hard';
     if (recentAccuracy < 0.5) suggestedDifficulty = 'easy';
@@ -324,13 +341,17 @@ export class UserProfilingService {
     else suggestedDifficulty = 'hard';
 
     // 建议主题
-    const suggestedTopics = profile.weaknesses.length > 0
-      ? profile.weaknesses.slice(0, 3)
-      : this.getNextRecommendedTopics(profile);
+    const suggestedTopics =
+      profile.weaknesses.length > 0
+        ? profile.weaknesses.slice(0, 3)
+        : this.getNextRecommendedTopics(profile);
 
-    const accuracyPercent = profile.totalQuestionsSolved > 0
-      ? Math.round((profile.questionsCorrect / profile.totalQuestionsSolved) * 100)
-      : 0;
+    const accuracyPercent =
+      profile.totalQuestionsSolved > 0
+        ? Math.round(
+            (profile.questionsCorrect / profile.totalQuestionsSolved) * 100,
+          )
+        : 0;
 
     const progressMessage = `总答题${profile.totalQuestionsSolved}道，正确率${accuracyPercent}%${
       recentHistory.length > 0
@@ -350,12 +371,16 @@ export class UserProfilingService {
   classifyLearningStyle(history: UserPerformanceRecord[]): UserLearningStyle {
     if (history.length < 5) return UserLearningStyle.ANALYTICAL;
 
-    const avgTime = history.reduce((sum, r) => sum + r.timeSpent, 0) / history.length;
-    const avgConfidence = history.reduce((sum, r) => sum + r.confidence, 0) / history.length;
-    const correctRatio = history.filter(r => r.isCorrect).length / history.length;
+    const avgTime =
+      history.reduce((sum, r) => sum + r.timeSpent, 0) / history.length;
+    const avgConfidence =
+      history.reduce((sum, r) => sum + r.confidence, 0) / history.length;
+    const correctRatio =
+      history.filter((r) => r.isCorrect).length / history.length;
 
     if (avgTime < 30 && correctRatio > 0.8) return UserLearningStyle.CONCEPTUAL;
-    if (avgTime > 60 && avgConfidence < 0.7) return UserLearningStyle.PROCEDURAL;
+    if (avgTime > 60 && avgConfidence < 0.7)
+      return UserLearningStyle.PROCEDURAL;
     if (avgConfidence > 0.8) return UserLearningStyle.ANALYTICAL;
 
     return UserLearningStyle.VISUAL;
@@ -376,8 +401,10 @@ export class UserProfilingService {
     const history = this.performanceHistory.get(userId) || [];
 
     // 学习趋势分析
-    const recentCorrect = history.slice(-10).filter(r => r.isCorrect).length;
-    const olderCorrect = history.slice(-20, -10).filter(r => r.isCorrect).length;
+    const recentCorrect = history.slice(-10).filter((r) => r.isCorrect).length;
+    const olderCorrect = history
+      .slice(-20, -10)
+      .filter((r) => r.isCorrect).length;
     let learningTrend: 'improving' | 'stable' | 'declining';
     if (recentCorrect > olderCorrect + 1) learningTrend = 'improving';
     else if (recentCorrect < olderCorrect - 1) learningTrend = 'declining';
@@ -385,9 +412,12 @@ export class UserProfilingService {
 
     return {
       totalSolved: profile.totalQuestionsSolved,
-      accuracy: profile.totalQuestionsSolved > 0
-        ? Math.round((profile.questionsCorrect / profile.totalQuestionsSolved) * 100)
-        : 0,
+      accuracy:
+        profile.totalQuestionsSolved > 0
+          ? Math.round(
+              (profile.questionsCorrect / profile.totalQuestionsSolved) * 100,
+            )
+          : 0,
       averageTime: Math.round(profile.averageTimePerQuestion),
       topStrengths: profile.strengths.slice(0, 3),
       topWeaknesses: profile.weaknesses.slice(0, 3),
@@ -415,9 +445,10 @@ export class UserProfilingService {
       return;
     }
 
-    const accuracy = profile.totalQuestionsSolved > 0
-      ? profile.questionsCorrect / profile.totalQuestionsSolved
-      : 0;
+    const accuracy =
+      profile.totalQuestionsSolved > 0
+        ? profile.questionsCorrect / profile.totalQuestionsSolved
+        : 0;
 
     if (accuracy > 0.85 && profile.totalQuestionsSolved > 30) {
       profile.adaptationTier = AdaptationTier.ADVANCED;
@@ -438,7 +469,10 @@ export class UserProfilingService {
     const categoryStats = new Map<string, { correct: number; total: number }>();
 
     for (const record of history) {
-      const stat = categoryStats.get(record.problemCategory) || { correct: 0, total: 0 };
+      const stat = categoryStats.get(record.problemCategory) || {
+        correct: 0,
+        total: 0,
+      };
       stat.total++;
       if (record.isCorrect) stat.correct++;
       categoryStats.set(record.problemCategory, stat);
@@ -464,11 +498,16 @@ export class UserProfilingService {
       return;
     }
 
-    const accuracy = profile.totalQuestionsSolved > 0
-      ? profile.questionsCorrect / profile.totalQuestionsSolved
-      : 0;
+    const accuracy =
+      profile.totalQuestionsSolved > 0
+        ? profile.questionsCorrect / profile.totalQuestionsSolved
+        : 0;
 
-    if (profile.totalQuestionsSolved > 50 && accuracy > 0.8 && profile.masteredTopics.length > 5) {
+    if (
+      profile.totalQuestionsSolved > 50 &&
+      accuracy > 0.8 &&
+      profile.masteredTopics.length > 5
+    ) {
       profile.knowledgeLevel = UserKnowledgeLevel.ADVANCED;
     } else if (profile.totalQuestionsSolved > 20 && accuracy > 0.5) {
       profile.knowledgeLevel = UserKnowledgeLevel.INTERMEDIATE;
@@ -479,13 +518,20 @@ export class UserProfilingService {
 
   private getNextRecommendedTopics(profile: UserProfile): string[] {
     const allTopics = [
-      '函数极限', '导数运算', '不定积分', '定积分应用',
-      '微分方程', '多元函数微分', '级数收敛', '向量空间',
-      '矩阵运算', '概率论基础',
+      '函数极限',
+      '导数运算',
+      '不定积分',
+      '定积分应用',
+      '微分方程',
+      '多元函数微分',
+      '级数收敛',
+      '向量空间',
+      '矩阵运算',
+      '概率论基础',
     ];
 
     return allTopics
-      .filter(t => !profile.completedTopics.includes(t))
+      .filter((t) => !profile.completedTopics.includes(t))
       .slice(0, 3);
   }
 
@@ -493,7 +539,9 @@ export class UserProfilingService {
     const weekly = [0, 0, 0, 0, 0, 0, 0]; // 最近7天
     const now = Date.now();
     for (const record of history) {
-      const dayDiff = Math.floor((now - record.timestamp) / (24 * 60 * 60 * 1000));
+      const dayDiff = Math.floor(
+        (now - record.timestamp) / (24 * 60 * 60 * 1000),
+      );
       if (dayDiff >= 0 && dayDiff < 7) {
         weekly[6 - dayDiff]++;
       }
@@ -514,18 +562,29 @@ export class UserProfilingService {
     return sessionId;
   }
 
-  updateProfile(userId: string, updates: Partial<Pick<UserProfile,
-    'nickname' | 'knowledgeLevel' | 'learningStyle' |
-    'completedTopics' | 'masteredTopics'
-  >>): UserProfile | undefined {
+  updateProfile(
+    userId: string,
+    updates: Partial<
+      Pick<
+        UserProfile,
+        | 'nickname'
+        | 'knowledgeLevel'
+        | 'learningStyle'
+        | 'completedTopics'
+        | 'masteredTopics'
+      >
+    >,
+  ): UserProfile | undefined {
     const profile = this.userProfiles.get(userId);
     if (!profile) return undefined;
 
     if (updates.nickname) profile.nickname = updates.nickname;
     if (updates.knowledgeLevel) profile.knowledgeLevel = updates.knowledgeLevel;
     if (updates.learningStyle) profile.learningStyle = updates.learningStyle;
-    if (updates.completedTopics) profile.completedTopics = [...new Set(updates.completedTopics)];
-    if (updates.masteredTopics) profile.masteredTopics = [...new Set(updates.masteredTopics)];
+    if (updates.completedTopics)
+      profile.completedTopics = [...new Set(updates.completedTopics)];
+    if (updates.masteredTopics)
+      profile.masteredTopics = [...new Set(updates.masteredTopics)];
 
     this.updateAdaptationTier(profile);
     this.logger.log(`更新用户画像: ${profile.nickname}`);
@@ -546,16 +605,26 @@ export class UserProfilingService {
 
     for (const [topicName, deps] of Object.entries(TOPIC_DEPENDENCIES)) {
       const mastery = topicMastery.get(topicName) ?? 0;
-      const prereqsSatisfied = deps.every(d => (topicMastery.get(d) ?? 0) >= 0.6);
-      const priority = this.calculateTopicPriority(topicName, mastery, prereqsSatisfied, deps, topicMastery);
+      const prereqsSatisfied = deps.every(
+        (d) => (topicMastery.get(d) ?? 0) >= 0.6,
+      );
+      const priority = this.calculateTopicPriority(
+        topicName,
+        mastery,
+        prereqsSatisfied,
+        deps,
+        topicMastery,
+      );
 
       // 间隔重复：若掌握度 > 0.8 但上次练习超过14天则建议复习
       let reviewDate: number | undefined;
       if (mastery > 0.8 && mastery < 0.95) {
         const lastAttempt = history
-          .filter(r => this.mapCategoryToTopic(r.problemCategory) === topicName)
+          .filter(
+            (r) => this.mapCategoryToTopic(r.problemCategory) === topicName,
+          )
           .sort((a, b) => b.timestamp - a.timestamp)[0];
-        if (lastAttempt && (Date.now() - lastAttempt.timestamp) > 14 * 86400000) {
+        if (lastAttempt && Date.now() - lastAttempt.timestamp > 14 * 86400000) {
           reviewDate = Date.now() + 3 * 86400000;
         }
       }
@@ -578,20 +647,32 @@ export class UserProfilingService {
     nodes.sort((a, b) => b.priority - a.priority);
 
     const nextMilestones = nodes
-      .filter(n => n.mastery >= 0.6 && n.mastery < 0.9)
+      .filter((n) => n.mastery >= 0.6 && n.mastery < 0.9)
       .slice(0, 3)
-      .map(n => n.topicName);
+      .map((n) => n.topicName);
 
-    const currentFocus = nodes.length > 0
-      ? nodes.filter(n => TOPIC_DEPENDENCIES[n.topicName].every(
-          d => (topicMastery.get(d) ?? 0) >= 0.6
-        ))[0]?.topicName || nodes[0].topicName
-      : '';
+    const currentFocus =
+      nodes.length > 0
+        ? nodes.filter((n) =>
+            TOPIC_DEPENDENCIES[n.topicName].every(
+              (d) => (topicMastery.get(d) ?? 0) >= 0.6,
+            ),
+          )[0]?.topicName || nodes[0].topicName
+        : '';
 
-    const totalUnmastered = nodes.filter(n => n.mastery < 0.9).length;
-    const dailyQuestions = Math.max(3, Math.min(10, profile.totalQuestionsSolved > 0
-      ? Math.ceil(profile.totalQuestionsSolved / Math.max(1, (Date.now() - profile.createdAt) / 86400000))
-      : 5));
+    const totalUnmastered = nodes.filter((n) => n.mastery < 0.9).length;
+    const dailyQuestions = Math.max(
+      3,
+      Math.min(
+        10,
+        profile.totalQuestionsSolved > 0
+          ? Math.ceil(
+              profile.totalQuestionsSolved /
+                Math.max(1, (Date.now() - profile.createdAt) / 86400000),
+            )
+          : 5,
+      ),
+    );
 
     return {
       userId,
@@ -599,41 +680,62 @@ export class UserProfilingService {
       nodes,
       currentFocus,
       nextMilestones,
-      estimatedCompletionDays: dailyQuestions > 0
-        ? Math.ceil(totalUnmastered * 20 / dailyQuestions)
-        : totalUnmastered * 20,
+      estimatedCompletionDays:
+        dailyQuestions > 0
+          ? Math.ceil((totalUnmastered * 20) / dailyQuestions)
+          : totalUnmastered * 20,
     };
   }
 
   // 增强的自适应难度：考虑特定主题的掌握程度
-  getAdaptiveDifficulty(userId: string, problemCategory: string): 'easy' | 'medium' | 'hard' {
+  getAdaptiveDifficulty(
+    userId: string,
+    problemCategory: string,
+  ): 'easy' | 'medium' | 'hard' {
     const profile = this.userProfiles.get(userId);
     if (!profile) return 'medium';
 
     const history = this.performanceHistory.get(userId) || [];
-    const categoryHistory = history.filter(r =>
-      r.problemCategory === problemCategory ||
-      this.mapCategoryToTopic(r.problemCategory) === problemCategory
+    const categoryHistory = history.filter(
+      (r) =>
+        r.problemCategory === problemCategory ||
+        this.mapCategoryToTopic(r.problemCategory) === problemCategory,
     );
 
     if (categoryHistory.length < 3) {
       return profile.preferredComplexity === 'challenging' ? 'medium' : 'easy';
     }
 
-    const recentAccuracy = categoryHistory.slice(-10)
-      .filter(r => r.isCorrect).length / Math.min(10, categoryHistory.length);
+    const recentAccuracy =
+      categoryHistory.slice(-10).filter((r) => r.isCorrect).length /
+      Math.min(10, categoryHistory.length);
 
     if (recentAccuracy > 0.85) return 'hard';
     if (recentAccuracy > 0.5) return 'medium';
     return 'easy';
   }
 
-  private calculateTopicMastery(history: UserPerformanceRecord[]): Map<string, number> {
-    const topicStats = new Map<string, { correct: number; total: number; recentCorrect: number; recentTotal: number }>();
+  private calculateTopicMastery(
+    history: UserPerformanceRecord[],
+  ): Map<string, number> {
+    const topicStats = new Map<
+      string,
+      {
+        correct: number;
+        total: number;
+        recentCorrect: number;
+        recentTotal: number;
+      }
+    >();
 
     for (const record of history) {
       const topic = this.mapCategoryToTopic(record.problemCategory);
-      const stat = topicStats.get(topic) || { correct: 0, total: 0, recentCorrect: 0, recentTotal: 0 };
+      const stat = topicStats.get(topic) || {
+        correct: 0,
+        total: 0,
+        recentCorrect: 0,
+        recentTotal: 0,
+      };
       stat.total++;
       if (record.isCorrect) stat.correct++;
       if (Date.now() - record.timestamp < 7 * 86400000) {
@@ -645,11 +747,18 @@ export class UserProfilingService {
 
     const mastery = new Map<string, number>();
     for (const [topic, stat] of topicStats) {
-      if (stat.total < 2) { mastery.set(topic, 0); continue; }
+      if (stat.total < 2) {
+        mastery.set(topic, 0);
+        continue;
+      }
       const overallAcc = stat.correct / stat.total;
-      const recentAcc = stat.recentTotal > 0 ? stat.recentCorrect / stat.recentTotal : overallAcc;
+      const recentAcc =
+        stat.recentTotal > 0
+          ? stat.recentCorrect / stat.recentTotal
+          : overallAcc;
       // 近期表现权重更高
-      const score = stat.recentTotal >= 3 ? recentAcc * 0.7 + overallAcc * 0.3 : overallAcc;
+      const score =
+        stat.recentTotal >= 3 ? recentAcc * 0.7 + overallAcc * 0.3 : overallAcc;
       mastery.set(topic, Math.round(score * 100) / 100);
     }
 
@@ -666,8 +775,9 @@ export class UserProfilingService {
     if (!prereqsSatisfied && mastery < 0.6) return 0.1;
     let priority = (1 - mastery) * 8; // 基础分
     // 是其他主题的前置依赖
-    const dependents = Object.entries(TOPIC_DEPENDENCIES)
-      .filter(([, d]) => d.includes(topicName)).length;
+    const dependents = Object.entries(TOPIC_DEPENDENCIES).filter(([, d]) =>
+      d.includes(topicName),
+    ).length;
     priority += dependents * 1.5;
     // 弱项加成
     if (mastery < 0.5 && prereqsSatisfied) priority += 4;
@@ -676,16 +786,22 @@ export class UserProfilingService {
 
   private mapCategoryToTopic(category: string): string {
     const mapping: Record<string, string> = {
-      'limit': '函数与极限', 'function_limit': '函数与极限',
-      'derivative': '导数与微分', 'differential_mean_value': '微分中值定理',
-      'integral': '定积分', 'indefinite_integral': '不定积分',
-      'integral_application': '定积分应用',
-      'differential_equations': '微分方程',
-      'vector_geometry': '向量与空间几何',
-      'multivariable': '多元函数微分', 'multivariable_integral': '重积分',
-      'line_integral': '曲线积分', 'surface_integral': '曲面积分',
-      'series': '无穷级数',
-      'linear_algebra': '线性代数', 'probability': '概率论',
+      limit: '函数与极限',
+      function_limit: '函数与极限',
+      derivative: '导数与微分',
+      differential_mean_value: '微分中值定理',
+      integral: '定积分',
+      indefinite_integral: '不定积分',
+      integral_application: '定积分应用',
+      differential_equations: '微分方程',
+      vector_geometry: '向量与空间几何',
+      multivariable: '多元函数微分',
+      multivariable_integral: '重积分',
+      line_integral: '曲线积分',
+      surface_integral: '曲面积分',
+      series: '无穷级数',
+      linear_algebra: '线性代数',
+      probability: '概率论',
     };
     return mapping[category] || category;
   }

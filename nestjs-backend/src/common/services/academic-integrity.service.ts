@@ -33,7 +33,12 @@ export interface EmbeddedWatermark {
   extractable: boolean;
 }
 
-type PromptType = 'solve' | 'explain' | 'verify' | 'write_essay' | 'direct_answer';
+type PromptType =
+  | 'solve'
+  | 'explain'
+  | 'verify'
+  | 'write_essay'
+  | 'direct_answer';
 
 interface BoundaryRule {
   type: PromptType;
@@ -48,7 +53,7 @@ const BOUNDARY_RULES: BoundaryRule[] = [
     level: AcademicIntegrityLevel.VIOLATION,
     condition: (p: string): boolean =>
       /直接给我答案|不要步骤|只要答案|免.*步骤|跳过.*推导/i.test(p) &&
-      !(/练习|习题|作业题|自测/.test(p)),
+      !/练习|习题|作业题|自测/.test(p),
     message: '检测到"直接要答案"请求：系统拒绝跳过解题步骤直接输出终答',
   },
   {
@@ -56,7 +61,8 @@ const BOUNDARY_RULES: BoundaryRule[] = [
     level: AcademicIntegrityLevel.BOUNDARY,
     condition: (p: string): boolean =>
       /帮忙写|代写|替我写|帮我写.*论文|自动生成.*报告/i.test(p),
-    message: '检测到"代写"请求：数学辅导系统以解题和学习为目标，不为写作任务提供代服务',
+    message:
+      '检测到"代写"请求：数学辅导系统以解题和学习为目标，不为写作任务提供代服务',
   },
   {
     type: 'solve',
@@ -64,8 +70,9 @@ const BOUNDARY_RULES: BoundaryRule[] = [
     condition: (p: string): boolean =>
       /考试|exam|试卷|test\s*paper|考试题|期末|期中|模拟考|真题/i.test(p) &&
       /在线|online|当前|现在|马上|立刻/.test(p) &&
-      !(/练习用|自测|模拟|复习/.test(p)),
-    message: '检测到疑似考试实时求助：系统标记此请求，仅提供练习/复习模式下的帮助',
+      !/练习用|自测|模拟|复习/.test(p),
+    message:
+      '检测到疑似考试实时求助：系统标记此请求，仅提供练习/复习模式下的帮助',
   },
   {
     type: 'explain',
@@ -90,29 +97,32 @@ export class AcademicIntegrityService {
 
   constructor() {
     this.systemSignature = randomBytes(32);
-    this.unauthorizedPatterns = [
-      /批量生成/g,
-      /全自动/g,
-      /替我.*完成/g,
-      /代/g,
-    ];
+    this.unauthorizedPatterns = [/批量生成/g, /全自动/g, /替我.*完成/g, /代/g];
     this.logger.log('学术诚信系统初始化完成');
   }
 
-  checkIntegrity(userPrompt: string, context?: {
-    consecutiveRequests?: number;
-    timeWindowMinutes?: number;
-    previousPrompts?: string[];
-  }): IntegrityCheckResult {
+  checkIntegrity(
+    userPrompt: string,
+    context?: {
+      consecutiveRequests?: number;
+      timeWindowMinutes?: number;
+      previousPrompts?: string[];
+    },
+  ): IntegrityCheckResult {
     const issues: string[] = [];
     let riskScore = 0;
 
     for (const rule of BOUNDARY_RULES) {
       if (rule.condition(userPrompt)) {
         issues.push(rule.message);
-        riskScore += rule.level === AcademicIntegrityLevel.VIOLATION ? 40 :
-          rule.level === AcademicIntegrityLevel.BOUNDARY ? 30 :
-          rule.level === AcademicIntegrityLevel.CAUTION ? 20 : 0;
+        riskScore +=
+          rule.level === AcademicIntegrityLevel.VIOLATION
+            ? 40
+            : rule.level === AcademicIntegrityLevel.BOUNDARY
+              ? 30
+              : rule.level === AcademicIntegrityLevel.CAUTION
+                ? 20
+                : 0;
       }
     }
 
@@ -127,8 +137,8 @@ export class AcademicIntegrityService {
       }
 
       if (context.previousPrompts && context.previousPrompts.length > 5) {
-        const similarPrompts = context.previousPrompts.filter(prev =>
-          this.promptSimilarity(prev, userPrompt) > 0.85,
+        const similarPrompts = context.previousPrompts.filter(
+          (prev) => this.promptSimilarity(prev, userPrompt) > 0.85,
         );
         if (similarPrompts.length > 3) {
           issues.push('连续多个高度相似的问题，可能为重复请求');
@@ -186,11 +196,13 @@ export class AcademicIntegrityService {
   getIntegrityResponse(level: AcademicIntegrityLevel): string {
     switch (level) {
       case AcademicIntegrityLevel.VIOLATION:
-        return '【学术诚信提醒】本系统旨在"引导和帮助你理解和掌握数学知识"，而非替代你的主动学习。\n\n' +
+        return (
+          '【学术诚信提醒】本系统旨在"引导和帮助你理解和掌握数学知识"，而非替代你的主动学习。\n\n' +
           '为了更好地帮助你，请按以下方式重新制定提问：\n' +
           '1. 先写出你已有的思考和方法尝试\n' +
           '2. 表明你需要解释概念还是检查你的推理过程\n' +
-          '3. 学习过程中遇到的具体困难（而非直接要答案）';
+          '3. 学习过程中遇到的具体困难（而非直接要答案）'
+        );
       case AcademicIntegrityLevel.BOUNDARY:
         return '【提示】为保障你的学习效果，系统提供分步骤引导式解答。请先阅读关键概念和引导步骤，尝试自己完成推导。';
       default:
@@ -240,7 +252,12 @@ export class AcademicIntegrityService {
     modelInfo: string,
     contentType: WatermarkPayload['contentType'] = 'solution_step',
   ): { watermarkedContent: string; watermark: EmbeddedWatermark } {
-    const watermark = this.generateWatermark(userId, sessionId, modelInfo, contentType);
+    const watermark = this.generateWatermark(
+      userId,
+      sessionId,
+      modelInfo,
+      contentType,
+    );
 
     // 将水印嵌入为末尾注释
     const watermarkedContent = `${content}\n\n<!-- ${watermark.location} -->`;
@@ -256,23 +273,28 @@ export class AcademicIntegrityService {
     modelInfo: string,
   ): { watermarkedContent: string; watermark: EmbeddedWatermark } {
     const watermark = this.generateWatermark(
-      userId, sessionId, modelInfo, 'solution_step',
+      userId,
+      sessionId,
+      modelInfo,
+      'solution_step',
     );
 
     // 零宽度字符隐形水印
-    const binaryHash = watermark.hash.split('').map(c =>
-      parseInt(c, 16).toString(2).padStart(4, '0'),
-    ).join('');
+    const binaryHash = watermark.hash
+      .split('')
+      .map((c) => parseInt(c, 16).toString(2).padStart(4, '0'))
+      .join('');
 
     const invisibleChars: Record<string, string> = {
-      '0': '\u200B',   // 零宽空格
-      '1': '\u200C',   // 零宽非连接符
-      ':': '\u200D',   // 零宽连接符
+      '0': '\u200B', // 零宽空格
+      '1': '\u200C', // 零宽非连接符
+      ':': '\u200D', // 零宽连接符
     };
 
-    const invisibleWatermark = `\u200B${binaryHash.split('').map(
-      b => invisibleChars[b] || '\u200B',
-    ).join('')}\u200B`;
+    const invisibleWatermark = `\u200B${binaryHash
+      .split('')
+      .map((b) => invisibleChars[b] || '\u200B')
+      .join('')}\u200B`;
 
     // 插入到内容的中间位置
     const insertPos = Math.floor(content.length / 3);
@@ -336,12 +358,16 @@ export class AcademicIntegrityService {
   }
 
   private promptSimilarity(a: string, b: string): number {
-    const aWords = new Set(a.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ' ').split(/\s+/));
-    const bWords = new Set(b.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ' ').split(/\s+/));
+    const aWords = new Set(
+      a.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ' ').split(/\s+/),
+    );
+    const bWords = new Set(
+      b.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ' ').split(/\s+/),
+    );
 
     if (aWords.size === 0 || bWords.size === 0) return 0;
 
-    const intersection = [...aWords].filter(w => bWords.has(w)).length;
+    const intersection = [...aWords].filter((w) => bWords.has(w)).length;
     const union = aWords.size + bWords.size - intersection;
 
     return union > 0 ? intersection / union : 0;

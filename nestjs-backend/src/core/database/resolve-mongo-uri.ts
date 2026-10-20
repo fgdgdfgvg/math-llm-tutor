@@ -11,7 +11,8 @@ const logger = new Logger('MongoDB');
  * 并打印明确警告，避免“换个环境就跑不起来”。
  */
 export async function resolveMongoUri(configuredUri?: string): Promise<string> {
-  const uri = (configuredUri || '').trim() || 'mongodb://localhost:27017/math_llm_tutor';
+  const uri =
+    (configuredUri || '').trim() || 'mongodb://localhost:27017/math_llm_tutor';
 
   const probe = await probeConnection(uri);
   if (probe.ok) return uri;
@@ -22,7 +23,9 @@ export async function resolveMongoUri(configuredUri?: string): Promise<string> {
     return uri;
   }
 
-  logger.warn(`MongoDB 连接失败（${probe.reason}），改用无凭据连接重试：${maskUri(fallback)}`);
+  logger.warn(
+    `MongoDB 连接失败（${probe.reason}），改用无凭据连接重试：${maskUri(fallback)}`,
+  );
   const retry = await probeConnection(fallback);
   if (retry.ok) {
     logger.warn('已改用无凭据连接的 MongoDB（本机 MongoDB 通常未开启鉴权）');
@@ -33,8 +36,13 @@ export async function resolveMongoUri(configuredUri?: string): Promise<string> {
   return uri;
 }
 
-async function probeConnection(uri: string): Promise<{ ok: boolean; reason: string }> {
-  const client = new MongoClient(uri, { serverSelectionTimeoutMS: 4000, connectTimeoutMS: 4000 });
+async function probeConnection(
+  uri: string,
+): Promise<{ ok: boolean; reason: string }> {
+  const client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 4000,
+    connectTimeoutMS: 4000,
+  });
   try {
     await client.connect();
     await client.db().admin().ping();

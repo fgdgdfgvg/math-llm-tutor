@@ -4,10 +4,11 @@
  * 用法：node scripts/verify-all.cjs          （或 npm run verify）
  * 内容：
  *   1. 后端类型检查   tsc -p tsconfig.build.json --noEmit
- *   2. 后端单元测试   jest（15 套件）
+ *   2. 后端单元测试   jest（20 套件）
  *   3. 前端类型检查   vue-tsc --noEmit
  *   4. 密钥扫描       scripts/secret-scan.cjs --scan
  *   5. 日志卫生扫描   scripts/log-hygiene-scan.cjs
+ *   6. 格式门禁       prettier --check（后端 src + test 下的全部 .ts）
  *
  * 不包含需要外部依赖（MongoDB/Redis/SymPy/Neo4j）的集成自检——
  * 那部分用 `node self-check.cjs --mode local --full`（会先重新构建 dist）。
@@ -61,6 +62,15 @@ results.push([
 
 results.push(['密钥扫描', run('密钥扫描', NODE, [path.join(ROOT, 'scripts/secret-scan.cjs'), '--scan'], ROOT)]);
 results.push(['日志卫生扫描', run('日志卫生扫描', NODE, [path.join(ROOT, 'scripts/log-hygiene-scan.cjs')], ROOT)]);
+
+// 格式门禁：prettier --check（统一格式，防止缩进/引号/换行漂移）。
+// 与本地 npm run format:check 同一套配置（.prettierrc），CI 与本地一致。
+results.push([
+  '格式门禁',
+  exists(path.join(BACKEND, 'node_modules/prettier/bin/prettier.cjs'))
+    ? run('格式门禁', NODE, [path.join(BACKEND, 'node_modules/prettier/bin/prettier.cjs'), '--check', 'src/**/*.ts', 'test/**/*.ts'], BACKEND)
+    : run('格式门禁', 'npx', ['prettier', '--check', 'src/**/*.ts', 'test/**/*.ts'], BACKEND),
+]);
 
 const failed = results.filter(([, ok]) => !ok).map(([name]) => name);
 console.log('\n' + '═'.repeat(52));

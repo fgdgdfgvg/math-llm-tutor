@@ -27,7 +27,11 @@ describe('TransformInterceptor', () => {
 
   it('业务成功：统一包成 code 200 / message success', async () => {
     const body = await run(200, { hello: 'world' });
-    expect(body).toEqual({ code: 200, data: { hello: 'world' }, message: 'success' });
+    expect(body).toEqual({
+      code: 200,
+      data: { hello: 'world' },
+      message: 'success',
+    });
   });
 
   it('data 为 undefined 时补齐为 null（避免前端拿到 undefined）', async () => {
@@ -60,7 +64,9 @@ describe('TransformInterceptor', () => {
       switchToHttp: () => ({ getResponse: () => undefined }),
     } as unknown as ExecutionContext;
     const result$ = interceptor.intercept(ctx, handlerReturning({ ok: true }));
-    const body = await new Promise<any>((resolve) => result$.subscribe(resolve));
+    const body = await new Promise<any>((resolve) =>
+      result$.subscribe(resolve),
+    );
     expect(body.code).toBe(200);
   });
 });

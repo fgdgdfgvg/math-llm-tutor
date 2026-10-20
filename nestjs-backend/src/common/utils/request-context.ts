@@ -22,7 +22,10 @@ export function newTraceId(): string {
   return randomUUID();
 }
 
-export function runWithRequestContext<T>(context: RequestContext, fn: () => T): T {
+export function runWithRequestContext<T>(
+  context: RequestContext,
+  fn: () => T,
+): T {
   return storage.run(context, fn);
 }
 

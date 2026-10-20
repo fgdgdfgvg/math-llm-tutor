@@ -14,7 +14,11 @@ export class LearningRecord {
   @Prop({ required: true })
   conceptName: string;
 
-  @Prop({ type: String, enum: ['view', 'practice', 'master', 'review'], required: true })
+  @Prop({
+    type: String,
+    enum: ['view', 'practice', 'master', 'review'],
+    required: true,
+  })
   action: string;
 
   @Prop({ type: Number, min: 0, max: 1, default: 0 })
@@ -55,7 +59,8 @@ export class LearningRecord {
   updatedAt: Date;
 }
 
-export const LearningRecordSchema = SchemaFactory.createForClass(LearningRecord);
+export const LearningRecordSchema =
+  SchemaFactory.createForClass(LearningRecord);
 
 LearningRecordSchema.index({ userId: 1, conceptId: 1, createdAt: -1 });
 LearningRecordSchema.index({ userId: 1, nextReviewDate: 1 });

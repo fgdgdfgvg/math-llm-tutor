@@ -23,14 +23,21 @@ import { AuthController } from './auth.controller';
           // access token 默认缩短到 15 分钟：泄露后的影响窗口从 7 天降到 15 分钟，
           // 续期由 /auth/refresh + 服务端存储的 refresh token 承担。
           // 注意：TokenService 签发时会显式传 expiresIn，这里只是兜底默认值。
-          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '15m') as any,
+          expiresIn: (configService.get<string>('JWT_EXPIRATION') ||
+            '15m') as any,
         },
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, TokenService, LoginThrottleService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    TokenService,
+    LoginThrottleService,
+  ],
   // 导出 TokenService / LoginThrottleService：UserModule 的登录接口需要它们
   exports: [AuthService, TokenService, LoginThrottleService],
 })

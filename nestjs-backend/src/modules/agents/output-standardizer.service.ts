@@ -76,22 +76,22 @@ export class OutputStandardizer {
   ];
 
   private readonly termMap: Record<string, string> = {
-    '极限': 'limit',
-    '导数': 'derivative',
-    '积分': 'integral',
-    '方程': 'equation',
-    '级数': 'series',
-    '证明': 'proof',
-    '几何': 'geometry',
-    '矩阵': 'matrix',
-    '概率': 'probability',
-    '未equation的解': 'solution',
+    极限: 'limit',
+    导数: 'derivative',
+    积分: 'integral',
+    方程: 'equation',
+    级数: 'series',
+    证明: 'proof',
+    几何: 'geometry',
+    矩阵: 'matrix',
+    概率: 'probability',
+    未equation的解: 'solution',
   };
 
   generateStandardOutput(
     state: SystemState,
     classification?: ProblemClassification,
-    options: OutputOptions = {}
+    options: OutputOptions = {},
   ): StandardOutput {
     this.logger.log('生成标准化输出');
 
@@ -111,7 +111,7 @@ export class OutputStandardizer {
 
   private standardizeProblemType(state: SystemState): string {
     let type = state.problemType || 'unknown';
-    
+
     if (type === 'unknown' || type.includes('未识别')) {
       return '通用数学问题';
     }
@@ -132,7 +132,9 @@ export class OutputStandardizer {
     return typeMap[type] || type;
   }
 
-  private standardizeKnowledgePoints(state: SystemState): StandardOutput['knowledgePoints'] {
+  private standardizeKnowledgePoints(
+    state: SystemState,
+  ): StandardOutput['knowledgePoints'] {
     if (state.knowledgePoints && state.knowledgePoints.length > 0) {
       return state.knowledgePoints.map((kp, index) => ({
         name: kp.name || `知识点 ${index + 1}`,
@@ -145,7 +147,9 @@ export class OutputStandardizer {
     return this.defaultKnowledgePoints;
   }
 
-  private standardizeSolutionSteps(state: SystemState): StandardOutput['solutionSteps'] {
+  private standardizeSolutionSteps(
+    state: SystemState,
+  ): StandardOutput['solutionSteps'] {
     if (!state.solutionSteps || state.solutionSteps.length === 0) {
       return [
         {
@@ -166,11 +170,13 @@ export class OutputStandardizer {
     }
 
     return state.solutionSteps.map((step, index) => {
-      const parsedStep = typeof step === 'string' ? this.parseStepString(step) : step;
-      
+      const parsedStep =
+        typeof step === 'string' ? this.parseStepString(step) : step;
+
       return {
         step: index + 1,
-        description: parsedStep.stepTitle || parsedStep.description || `步骤 ${index + 1}`,
+        description:
+          parsedStep.stepTitle || parsedStep.description || `步骤 ${index + 1}`,
         formula: parsedStep.formula || '',
         result: parsedStep.result || '',
         keyPoint: parsedStep.keyPoint || '',
@@ -209,8 +215,8 @@ export class OutputStandardizer {
     }
 
     const errorGroups: Record<string, string[]> = {};
-    
-    state.errors.forEach(error => {
+
+    state.errors.forEach((error) => {
       if (!errorGroups[error.agent]) {
         errorGroups[error.agent] = [];
       }
@@ -218,7 +224,7 @@ export class OutputStandardizer {
     });
 
     const analysis: string[] = [];
-    
+
     for (const [agent, messages] of Object.entries(errorGroups)) {
       analysis.push(`${this.getAgentName(agent)}: ${messages.join('; ')}`);
     }
@@ -238,19 +244,23 @@ export class OutputStandardizer {
       equation: '建议掌握各种方程的解法和验证方法。',
     };
 
-    return defaultAdvice[state.problemType] || '建议加强基础知识学习，多做练习题巩固。';
+    return (
+      defaultAdvice[state.problemType] ||
+      '建议加强基础知识学习，多做练习题巩固。'
+    );
   }
 
   private generateMetadata(
     state: SystemState,
-    classification?: ProblemClassification
+    classification?: ProblemClassification,
   ): StandardOutput['metadata'] {
     return {
       executionTime: Date.now(),
       agentStatus: {
         planner: state.plan ? 'completed' : 'failed',
         solver: state.solutionSteps.length > 0 ? 'completed' : 'failed',
-        diagnostic: state.verificationResults.length > 0 ? 'completed' : 'failed',
+        diagnostic:
+          state.verificationResults.length > 0 ? 'completed' : 'failed',
         feedback: state.feedback ? 'completed' : 'failed',
       },
       confidence: classification?.confidence || state.confidence || 0.5,
@@ -258,10 +268,15 @@ export class OutputStandardizer {
     };
   }
 
-  private generateDiagnostics(state: SystemState): StandardOutput['diagnostics'] {
-    const errorCount = state.errors?.filter(e => e.severity === 'error').length || 0;
-    const warningCount = state.errors?.filter(e => e.severity === 'warning').length || 0;
-    const verificationPassed = state.verificationResults?.filter(v => v.isValid).length || 0;
+  private generateDiagnostics(
+    state: SystemState,
+  ): StandardOutput['diagnostics'] {
+    const errorCount =
+      state.errors?.filter((e) => e.severity === 'error').length || 0;
+    const warningCount =
+      state.errors?.filter((e) => e.severity === 'warning').length || 0;
+    const verificationPassed =
+      state.verificationResults?.filter((v) => v.isValid).length || 0;
     const verificationTotal = state.verificationResults?.length || 0;
 
     return {
@@ -296,7 +311,10 @@ export class OutputStandardizer {
       recommendations.push('添加更多详细的解题步骤');
     }
 
-    if (output.finalAnswer.includes('未equation') || output.finalAnswer.includes('无法')) {
+    if (
+      output.finalAnswer.includes('未equation') ||
+      output.finalAnswer.includes('无法')
+    ) {
       formatErrors.push('最终答案格式不标准');
       recommendations.push('标准化最终答案格式');
     }
@@ -326,7 +344,7 @@ export class OutputStandardizer {
 
   private formatAsText(output: StandardOutput): string {
     const lines: string[] = [];
-    
+
     lines.push('=== 数学问题解答 ===');
     lines.push('');
     lines.push(`问题类型: ${output.problemType}`);
@@ -338,7 +356,7 @@ export class OutputStandardizer {
     });
     lines.push('');
     lines.push('=== 解题步骤 ===');
-    output.solutionSteps.forEach(step => {
+    output.solutionSteps.forEach((step) => {
       lines.push(`${step.step}. ${step.description}`);
       if (step.formula) lines.push(`   公式: ${step.formula}`);
       lines.push(`   结果: ${step.result}`);
@@ -353,13 +371,13 @@ export class OutputStandardizer {
     lines.push('');
     lines.push('=== 学习建议 ===');
     lines.push(output.learningAdvice);
-    
+
     return lines.join('\n');
   }
 
   private formatAsMarkdown(output: StandardOutput): string {
     const lines: string[] = [];
-    
+
     lines.push('# 数学问题解答');
     lines.push('');
     lines.push(`## 问题类型`);
@@ -373,7 +391,7 @@ export class OutputStandardizer {
       lines.push('');
     });
     lines.push(`## 解题步骤`);
-    output.solutionSteps.forEach(step => {
+    output.solutionSteps.forEach((step) => {
       lines.push(`### 步骤 ${step.step}: ${step.description}`);
       if (step.formula) lines.push(`**公式**: \`${step.formula}\``);
       lines.push(`**结果**: ${step.result}`);
@@ -388,19 +406,19 @@ export class OutputStandardizer {
     lines.push('');
     lines.push(`## 学习建议`);
     lines.push(output.learningAdvice);
-    
+
     return lines.join('\n');
   }
 
   private standardizeTerminology(text: string): string {
     let standardized = text;
-    
+
     for (const [chinese, english] of Object.entries(this.termMap)) {
       if (standardized.includes(chinese)) {
         standardized = standardized.replace(new RegExp(chinese, 'g'), english);
       }
     }
-    
+
     return standardized;
   }
 
@@ -417,7 +435,7 @@ export class OutputStandardizer {
 
   generateFallbackOutput(problem: string): StandardOutput {
     this.logger.log('生成降级输出');
-    
+
     return {
       problemType: '通用数学问题',
       knowledgePoints: this.defaultKnowledgePoints,
@@ -467,7 +485,10 @@ export class OutputStandardizer {
     };
   }
 
-  exportOutput(output: StandardOutput, format: 'json' | 'csv' | 'markdown' = 'json'): string {
+  exportOutput(
+    output: StandardOutput,
+    format: 'json' | 'csv' | 'markdown' = 'json',
+  ): string {
     switch (format) {
       case 'csv':
         return this.exportAsCsv(output);
@@ -485,18 +506,18 @@ export class OutputStandardizer {
     lines.push(`Final Answer,${output.finalAnswer}`);
     lines.push(`Error Analysis,${output.errorAnalysis}`);
     lines.push(`Learning Advice,${output.learningAdvice}`);
-    
+
     output.knowledgePoints.forEach((kp, index) => {
       lines.push(`Knowledge Point ${index + 1},${kp.name}`);
       lines.push(`Description ${index + 1},${kp.description}`);
     });
-    
-    output.solutionSteps.forEach(step => {
+
+    output.solutionSteps.forEach((step) => {
       lines.push(`Step ${step.step},${step.description}`);
       lines.push(`Formula ${step.step},${step.formula}`);
       lines.push(`Result ${step.step},${step.result}`);
     });
-    
+
     return lines.join('\n');
   }
 }

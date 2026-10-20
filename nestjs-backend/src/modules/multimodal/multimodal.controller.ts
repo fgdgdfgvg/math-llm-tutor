@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, UploadedFile, UseInterceptors, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MultimodalService } from './multimodal.service';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
@@ -46,21 +55,20 @@ export class MultimodalController {
 
   @Public()
   @Post('process')
-  async processMultimodalInput(@Body() input: {
-    type: 'speech' | 'handwriting' | 'text';
-    data: string;
-  }) {
+  async processMultimodalInput(
+    @Body() input: { type: 'speech' | 'handwriting' | 'text'; data: string },
+  ) {
     let processedData: Buffer | string;
-    
+
     if (input.type === 'speech' || input.type === 'handwriting') {
       processedData = Buffer.from(input.data, 'base64');
     } else {
       processedData = input.data;
     }
-    
+
     return this.multimodalService.processMultimodalInput({
       type: input.type,
-      data: processedData
+      data: processedData,
     });
   }
 
@@ -72,12 +80,18 @@ export class MultimodalController {
 
   @Public()
   @Post('image/generate')
-  async generateImage(@Body('prompt') prompt: string, @Body('model') model: string = 'stabilityai/stable-diffusion-xl-base-1.0') {
-    const imageBuffer = await this.multimodalService.generateImageFromText(prompt, model);
+  async generateImage(
+    @Body('prompt') prompt: string,
+    @Body('model') model: string = 'stabilityai/stable-diffusion-xl-base-1.0',
+  ) {
+    const imageBuffer = await this.multimodalService.generateImageFromText(
+      prompt,
+      model,
+    );
     return {
       image: imageBuffer.toString('base64'),
       prompt: prompt,
-      model: model
+      model: model,
     };
   }
 }

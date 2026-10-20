@@ -1,20 +1,39 @@
-import { Controller, Post, Body, Get, Query, UseGuards, BadRequestException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { FormulaRendererService } from './formula-renderer.service';
 import { Public } from '../../core/auth/guards/global-auth.guard';
 
 @ApiTags('formula-renderer')
 @Controller('formula-renderer')
 export class FormulaRendererController {
-  constructor(private readonly formulaRendererService: FormulaRendererService) {}
+  constructor(
+    private readonly formulaRendererService: FormulaRendererService,
+  ) {}
 
   @Public()
   @Post('render')
-  @ApiOperation({ summary: '渲染单个公式', description: '将LaTeX公式转换为图片' })
+  @ApiOperation({
+    summary: '渲染单个公式',
+    description: '将LaTeX公式转换为图片',
+  })
   @ApiResponse({ status: 200, description: '渲染成功，返回图片URL' })
   @ApiResponse({ status: 400, description: '公式格式错误或渲染失败' })
   async renderFormula(
-    @Body() body: {
+    @Body()
+    body: {
       formula?: string;
       latex?: string;
       options?: {
@@ -23,7 +42,7 @@ export class FormulaRendererController {
         color?: string;
         background?: string;
       };
-    }
+    },
   ) {
     const formula = body.formula || body.latex;
     if (!formula || typeof formula !== 'string' || !formula.trim()) {
@@ -38,11 +57,15 @@ export class FormulaRendererController {
 
   @Public()
   @Post('batch-render')
-  @ApiOperation({ summary: '批量渲染公式', description: '将多个LaTeX公式转换为图片' })
+  @ApiOperation({
+    summary: '批量渲染公式',
+    description: '将多个LaTeX公式转换为图片',
+  })
   @ApiResponse({ status: 200, description: '渲染成功，返回图片URL数组' })
   @ApiResponse({ status: 400, description: '公式格式错误或渲染失败' })
   async batchRenderFormulas(
-    @Body() body: {
+    @Body()
+    body: {
       formulas?: string[];
       latex?: string[];
       options?: {
@@ -51,10 +74,14 @@ export class FormulaRendererController {
         color?: string;
         background?: string;
       };
-    }
+    },
   ) {
     const formulas = body.formulas || body.latex;
-    if (!Array.isArray(formulas) || formulas.length === 0 || formulas.some((formula) => typeof formula !== 'string' || !formula.trim())) {
+    if (
+      !Array.isArray(formulas) ||
+      formulas.length === 0 ||
+      formulas.some((formula) => typeof formula !== 'string' || !formula.trim())
+    ) {
       throw new BadRequestException('缺少公式数组 formulas 或 latex');
     }
     const imageUrls = await this.formulaRendererService.batchRenderFormulas(
@@ -66,7 +93,10 @@ export class FormulaRendererController {
 
   @Public()
   @Get('check-complex')
-  @ApiOperation({ summary: '检查公式复杂度', description: '检查LaTeX公式是否为复杂公式' })
+  @ApiOperation({
+    summary: '检查公式复杂度',
+    description: '检查LaTeX公式是否为复杂公式',
+  })
   @ApiResponse({ status: 200, description: '检查成功，返回是否为复杂公式' })
   async checkComplexFormula(@Query('formula') formula: string) {
     if (!formula || typeof formula !== 'string') {

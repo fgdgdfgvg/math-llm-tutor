@@ -166,8 +166,8 @@ python main.py                     # http://localhost:8000
 ## 六、验证门禁（提交 / 部署前必跑）
 
 ```bash
-npm run verify          # 5 项全绿才可交付：
-                        #   后端 tsc / jest / 前端 vue-tsc / 密钥扫描 / 日志卫生
+npm run verify          # 6 项全绿才可交付：
+                        #   后端 tsc / jest / 前端 vue-tsc / 密钥扫描 / 日志卫生 / prettier 格式
 npm run verify:probe    # 部署加固探针 15 项（限流伪造 / 安全头 / CORS 403 / Swagger 收敛 / 探针语义）
 npm run auth:probe      # 认证授权探针（RBAC / 轮换 / 锁定 / 信封）
 npm run check:sh        # 启动脚本结构校验

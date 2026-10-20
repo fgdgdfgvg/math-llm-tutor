@@ -1,4 +1,8 @@
-export function toUserFriendlyError(error: any): { statusCode: number; message: string; originalError?: string } {
+export function toUserFriendlyError(error: any): {
+  statusCode: number;
+  message: string;
+  originalError?: string;
+} {
   const message = error?.message || error?.toString() || '未知错误';
 
   if (typeof message !== 'string') {
@@ -15,7 +19,10 @@ export function toUserFriendlyError(error: any): { statusCode: number; message: 
     };
   }
 
-  if (lower.includes('status code 429') || lower.includes('too many requests')) {
+  if (
+    lower.includes('status code 429') ||
+    lower.includes('too many requests')
+  ) {
     return {
       statusCode: 503,
       message: 'AI模型请求过于频繁，请稍等片刻后再试。',
@@ -31,7 +38,12 @@ export function toUserFriendlyError(error: any): { statusCode: number; message: 
     };
   }
 
-  if (lower.includes('timeout') || lower.includes('timed out') || lower.includes('econnrefused') || lower.includes('enotfound')) {
+  if (
+    lower.includes('timeout') ||
+    lower.includes('timed out') ||
+    lower.includes('econnrefused') ||
+    lower.includes('enotfound')
+  ) {
     return {
       statusCode: 504,
       message: 'AI模型响应超时，请检查网络连接后重试。',
@@ -39,7 +51,11 @@ export function toUserFriendlyError(error: any): { statusCode: number; message: 
     };
   }
 
-  if (lower.includes('not configured') || lower.includes('api key') || lower.includes('configuration incomplete')) {
+  if (
+    lower.includes('not configured') ||
+    lower.includes('api key') ||
+    lower.includes('configuration incomplete')
+  ) {
     return {
       statusCode: 503,
       message: 'AI模型未正确配置，请联系管理员设置API密钥。',
@@ -55,7 +71,11 @@ export function toUserFriendlyError(error: any): { statusCode: number; message: 
     };
   }
 
-  if (lower.includes('validation') || lower.includes('is not valid') || lower.includes('invalid')) {
+  if (
+    lower.includes('validation') ||
+    lower.includes('is not valid') ||
+    lower.includes('invalid')
+  ) {
     return {
       statusCode: 400,
       message: '输入格式不正确，请检查后重试。',

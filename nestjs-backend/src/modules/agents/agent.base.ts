@@ -1,5 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { AgentInput, AgentOutput, AgentContext, AgentConfig } from './agent.types';
+import {
+  AgentInput,
+  AgentOutput,
+  AgentContext,
+  AgentConfig,
+} from './agent.types';
 import { describeErrorForLog } from '../../common/utils/redact';
 
 // 智能体基类
@@ -34,13 +39,24 @@ export abstract class BaseAgent {
       };
 
       // 记录执行历史
-      this.addExecutionHistory(context, input, output, executionTime, 'success');
+      this.addExecutionHistory(
+        context,
+        input,
+        output,
+        executionTime,
+        'success',
+      );
 
-      this.logger.log(`智能体任务执行完成: ${this.config.name} (${executionTime}ms)`);
+      this.logger.log(
+        `智能体任务执行完成: ${this.config.name} (${executionTime}ms)`,
+      );
       return output;
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      this.logger.error(`智能体任务执行失败: ${this.config.name}`, describeErrorForLog(error));
+      this.logger.error(
+        `智能体任务执行失败: ${this.config.name}`,
+        describeErrorForLog(error),
+      );
 
       // 构建错误输出
       const output: AgentOutput = {
@@ -52,7 +68,13 @@ export abstract class BaseAgent {
       };
 
       // 记录执行历史
-      this.addExecutionHistory(output.context, input, output, executionTime, 'failure');
+      this.addExecutionHistory(
+        output.context,
+        input,
+        output,
+        executionTime,
+        'failure',
+      );
 
       return output;
     }
@@ -87,7 +109,10 @@ export abstract class BaseAgent {
   }
 
   // 具体的智能体处理逻辑，由子类实现
-  protected abstract process(input: AgentInput, context: AgentContext): Promise<any>;
+  protected abstract process(
+    input: AgentInput,
+    context: AgentContext,
+  ): Promise<any>;
 
   // 获取智能体名称
   get name(): string {

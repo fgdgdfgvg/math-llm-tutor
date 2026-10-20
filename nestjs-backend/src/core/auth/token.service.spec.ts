@@ -59,7 +59,10 @@ describe('TokenService', () => {
   });
 
   it('JWT_EXPIRATION / JWT_REFRESH_TTL 可覆盖默认时长', async () => {
-    const { service } = createService({ JWT_EXPIRATION: '1h', JWT_REFRESH_TTL: '7d' });
+    const { service } = createService({
+      JWT_EXPIRATION: '1h',
+      JWT_REFRESH_TTL: '7d',
+    });
     const pair = await service.issuePair(user);
     expect(pair.expires_in).toBe(3600);
     expect(pair.refresh_expires_in).toBe(7 * 24 * 3600);
@@ -78,7 +81,9 @@ describe('TokenService', () => {
     expect(third.refresh_token).not.toBe(second.refresh_token);
 
     // 旧值已被标记为已用，再次使用应被拒绝
-    await expect(service.rotate(first.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate(first.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
   });
 
   it('重用检测：检测到重放后吊销整个令牌族，合法的新 token 也失效', async () => {
@@ -87,10 +92,14 @@ describe('TokenService', () => {
     const second = await service.rotate(first.refresh_token);
 
     // 攻击者重放被盗的旧 token —— 这正是窃取检测要抓的场景
-    await expect(service.rotate(first.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate(first.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
 
     // 令牌族被吊销后，真实用户手上的新 token 也不能再用，强制重新登录
-    await expect(service.rotate(second.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate(second.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
   });
 
   it('宽容窗口：窗口内的重复刷新是幂等的，返回同一份新令牌（自检 P1-3）', async () => {
@@ -127,7 +136,9 @@ describe('TokenService', () => {
     const { service } = createService(strict);
     const pair = await service.issuePair(user);
     await service.revoke(pair.refresh_token);
-    await expect(service.rotate(pair.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate(pair.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
   });
 
   it('登出全部设备：该用户所有 refresh token 失效', async () => {
@@ -137,15 +148,25 @@ describe('TokenService', () => {
     const count = await service.revokeAllForUser('user-1');
 
     expect(count).toBeGreaterThanOrEqual(2);
-    await expect(service.rotate(a.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
-    await expect(service.rotate(b.refresh_token)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate(a.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
+    await expect(service.rotate(b.refresh_token)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
   });
 
   it('无效/空 refresh token 一律 401，不泄露具体原因', async () => {
     const { service } = createService(strict);
-    await expect(service.rotate('')).rejects.toBeInstanceOf(UnauthorizedAppError);
-    await expect(service.rotate('not-a-real-token')).rejects.toBeInstanceOf(UnauthorizedAppError);
-    await expect(service.rotate(undefined as any)).rejects.toBeInstanceOf(UnauthorizedAppError);
+    await expect(service.rotate('')).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
+    await expect(service.rotate('not-a-real-token')).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
+    await expect(service.rotate(undefined as any)).rejects.toBeInstanceOf(
+      UnauthorizedAppError,
+    );
   });
 
   it('缓存里存的是 refresh token 的哈希，不是明文', async () => {

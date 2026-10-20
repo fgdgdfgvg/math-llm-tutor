@@ -12,7 +12,9 @@ import { ApiErrorResponse } from '../dto/interactive-learning.dto';
 
 @Catch()
 export class GlobalInteractiveLearningExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(GlobalInteractiveLearningExceptionFilter.name);
+  private readonly logger = new Logger(
+    GlobalInteractiveLearningExceptionFilter.name,
+  );
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();

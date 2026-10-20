@@ -1,5 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { AgentContext, SolvePlan, KnowledgePoint, VerificationResult, FeedbackResult } from './agent.types';
+import {
+  AgentContext,
+  SolvePlan,
+  KnowledgePoint,
+  VerificationResult,
+  FeedbackResult,
+} from './agent.types';
 
 // 解决方案步骤
 export interface SolutionStep {
@@ -37,7 +43,14 @@ export interface SystemState {
   }>;
   metadata: Record<string, any>;
   snapshots: SystemStateSnapshot[];
-  status: 'initializing' | 'planning' | 'solving' | 'diagnosing' | 'feedback' | 'completed' | 'failed';
+  status:
+    | 'initializing'
+    | 'planning'
+    | 'solving'
+    | 'diagnosing'
+    | 'feedback'
+    | 'completed'
+    | 'failed';
   iteration: number;
   maxIterations: number;
 }
@@ -111,9 +124,11 @@ export class StateManager {
     const previousType = this.currentState.problemType;
     this.currentState.problemType = type;
     this.currentState.confidence = confidence;
-    
+
     if (previousType !== type) {
-      this.logger.log(`更新问题类型: ${previousType} → ${type} (置信度: ${confidence})`);
+      this.logger.log(
+        `更新问题类型: ${previousType} → ${type} (置信度: ${confidence})`,
+      );
       this.takeSnapshot('classifier', `问题类型识别: ${type}`);
     }
   }
@@ -123,21 +138,35 @@ export class StateManager {
     this.currentState.plan = plan;
     this.currentState.totalSteps = plan.steps?.length || 0;
     this.currentState.status = 'planning';
-    
-    if (!previousPlan || JSON.stringify(previousPlan) !== JSON.stringify(plan)) {
-      this.logger.log(`更新解题计划: ${plan.problemType}, ${this.currentState.totalSteps}步`);
-      this.takeSnapshot('planner', '生成解题计划', { previousState: { plan: previousPlan } });
+
+    if (
+      !previousPlan ||
+      JSON.stringify(previousPlan) !== JSON.stringify(plan)
+    ) {
+      this.logger.log(
+        `更新解题计划: ${plan.problemType}, ${this.currentState.totalSteps}步`,
+      );
+      this.takeSnapshot('planner', '生成解题计划', {
+        previousState: { plan: previousPlan },
+      });
     }
   }
 
   addKnowledgePoints(points: KnowledgePoint[]): void {
-    const existingNames = new Set(this.currentState.knowledgePoints.map(kp => kp.name));
-    const newPoints = points.filter(p => !existingNames.has(p.name));
-    
+    const existingNames = new Set(
+      this.currentState.knowledgePoints.map((kp) => kp.name),
+    );
+    const newPoints = points.filter((p) => !existingNames.has(p.name));
+
     if (newPoints.length > 0) {
       this.currentState.knowledgePoints.push(...newPoints);
-      this.logger.log(`添加${newPoints.length}个知识点 (总计: ${this.currentState.knowledgePoints.length})`);
-      this.takeSnapshot('planner', `添加知识点: ${newPoints.map(p => p.name).join(', ')}`);
+      this.logger.log(
+        `添加${newPoints.length}个知识点 (总计: ${this.currentState.knowledgePoints.length})`,
+      );
+      this.takeSnapshot(
+        'planner',
+        `添加知识点: ${newPoints.map((p) => p.name).join(', ')}`,
+      );
     }
   }
 
@@ -147,11 +176,17 @@ export class StateManager {
     } else {
       this.currentState.solutionSteps.push(step);
     }
-    this.currentState.currentStepIndex = this.currentState.solutionSteps.length - 1;
+    this.currentState.currentStepIndex =
+      this.currentState.solutionSteps.length - 1;
     this.currentState.status = 'solving';
-    
-    this.logger.log(`添加解题步骤 #${this.currentState.currentStepIndex + 1}: ${step.stepTitle}`);
-    this.takeSnapshot('solver', `执行步骤${this.currentState.currentStepIndex + 1}`);
+
+    this.logger.log(
+      `添加解题步骤 #${this.currentState.currentStepIndex + 1}: ${step.stepTitle}`,
+    );
+    this.takeSnapshot(
+      'solver',
+      `执行步骤${this.currentState.currentStepIndex + 1}`,
+    );
   }
 
   updateIntermediateResults(results: any[]): void {
@@ -167,23 +202,30 @@ export class StateManager {
   updateVerificationResults(results: VerificationResult[]): void {
     this.currentState.verificationResults = results;
     this.currentState.status = 'diagnosing';
-    
-    const passedCount = results.filter(r => r.isValid).length;
+
+    const passedCount = results.filter((r) => r.isValid).length;
     this.logger.log(`验证结果: ${passedCount}/${results.length} 通过`);
-    this.takeSnapshot('diagnostic', `步骤验证完成 (${passedCount}/${results.length})`);
+    this.takeSnapshot(
+      'diagnostic',
+      `步骤验证完成 (${passedCount}/${results.length})`,
+    );
   }
 
   updateFeedback(feedback: FeedbackResult): void {
     this.currentState.feedback = feedback;
     this.currentState.status = 'feedback';
-    this.logger.log(`更新反馈: 准确率${Math.round((feedback.accuracy || 0) * 100)}%`);
+    this.logger.log(
+      `更新反馈: 准确率${Math.round((feedback.accuracy || 0) * 100)}%`,
+    );
     this.takeSnapshot('feedback', '生成反馈');
   }
 
   addError(error: Omit<SystemState['errors'][0], 'timestamp'>): void {
     const errorEntry = { ...error, timestamp: Date.now() };
     this.currentState.errors.push(errorEntry);
-    this.logger.error(`[${error.severity.toUpperCase()}] ${error.agent}: ${error.message}`);
+    this.logger.error(
+      `[${error.severity.toUpperCase()}] ${error.agent}: ${error.message}`,
+    );
   }
 
   setStatus(status: SystemState['status']): void {
@@ -192,7 +234,9 @@ export class StateManager {
 
   incrementIteration(): void {
     this.currentState.iteration++;
-    this.logger.log(`迭代次数: ${this.currentState.iteration}/${this.currentState.maxIterations}`);
+    this.logger.log(
+      `迭代次数: ${this.currentState.iteration}/${this.currentState.maxIterations}`,
+    );
   }
 
   validateState(): StateValidationResult {
@@ -200,7 +244,10 @@ export class StateManager {
     const warnings: string[] = [];
     const missingFields: string[] = [];
 
-    if (!this.currentState.problem || this.currentState.problem.trim().length === 0) {
+    if (
+      !this.currentState.problem ||
+      this.currentState.problem.trim().length === 0
+    ) {
       missingFields.push('problem');
       errors.push('问题描述为空');
     }
@@ -211,16 +258,26 @@ export class StateManager {
 
     if (!this.currentState.plan) {
       warnings.push('解题计划缺失');
-    } else if (!this.currentState.plan.steps || this.currentState.plan.steps.length === 0) {
+    } else if (
+      !this.currentState.plan.steps ||
+      this.currentState.plan.steps.length === 0
+    ) {
       errors.push('解题计划无步骤');
       missingFields.push('plan.steps');
     }
 
-    if (this.currentState.solutionSteps.length === 0 && this.currentState.status !== 'initializing' && this.currentState.status !== 'planning') {
+    if (
+      this.currentState.solutionSteps.length === 0 &&
+      this.currentState.status !== 'initializing' &&
+      this.currentState.status !== 'planning'
+    ) {
       warnings.push('暂无解题步骤');
     }
 
-    if (!this.currentState.finalAnswer && this.currentState.status === 'completed') {
+    if (
+      !this.currentState.finalAnswer &&
+      this.currentState.status === 'completed'
+    ) {
       warnings.push('最终答案为空');
     }
 
@@ -239,19 +296,24 @@ export class StateManager {
   }
 
   hasErrors(): boolean {
-    return this.currentState.errors.some(e => e.severity === 'error');
+    return this.currentState.errors.some((e) => e.severity === 'error');
   }
 
-  getErrors(severity?: SystemState['errors'][0]['severity']): SystemState['errors'] {
+  getErrors(
+    severity?: SystemState['errors'][0]['severity'],
+  ): SystemState['errors'] {
     if (severity) {
-      return this.currentState.errors.filter(e => e.severity === severity);
+      return this.currentState.errors.filter((e) => e.severity === severity);
     }
     return [...this.currentState.errors];
   }
 
   canContinue(): boolean {
     const validation = this.validateState();
-    if (!validation.isValid && validation.errors.some(e => e.includes('为空'))) {
+    if (
+      !validation.isValid &&
+      validation.errors.some((e) => e.includes('为空'))
+    ) {
       return false;
     }
     if (this.currentState.iteration >= this.currentState.maxIterations) {
@@ -261,7 +323,11 @@ export class StateManager {
     return true;
   }
 
-  takeSnapshot(agent: string, action: string, extraData?: { previousState?: Partial<SystemState> }): SystemStateSnapshot {
+  takeSnapshot(
+    agent: string,
+    action: string,
+    extraData?: { previousState?: Partial<SystemState> },
+  ): SystemStateSnapshot {
     const snapshot: SystemStateSnapshot = {
       id: `snap_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
       timestamp: Date.now(),
@@ -274,7 +340,9 @@ export class StateManager {
     this.currentState.snapshots.push(snapshot);
 
     if (this.currentState.snapshots.length > this.maxSnapshots) {
-      this.currentState.snapshots = this.currentState.snapshots.slice(-this.maxSnapshots);
+      this.currentState.snapshots = this.currentState.snapshots.slice(
+        -this.maxSnapshots,
+      );
     }
 
     return snapshot;
@@ -282,23 +350,30 @@ export class StateManager {
 
   getSnapshots(agent?: string): SystemStateSnapshot[] {
     if (agent) {
-      return this.currentState.snapshots.filter(s => s.agent === agent);
+      return this.currentState.snapshots.filter((s) => s.agent === agent);
     }
     return [...this.currentState.snapshots];
   }
 
   rollbackToSnapshot(snapshotId: string): boolean {
-    const snapshotIndex = this.currentState.snapshots.findIndex(s => s.id === snapshotId);
+    const snapshotIndex = this.currentState.snapshots.findIndex(
+      (s) => s.id === snapshotId,
+    );
     if (snapshotIndex === -1) {
       this.logger.warn(`快照不存在: ${snapshotId}`);
       return false;
     }
 
     const snapshot = this.currentState.snapshots[snapshotIndex];
-    this.logger.log(`回滚到快照: ${snapshot.action} (${new Date(snapshot.timestamp).toLocaleString()})`);
+    this.logger.log(
+      `回滚到快照: ${snapshot.action} (${new Date(snapshot.timestamp).toLocaleString()})`,
+    );
 
     Object.assign(this.currentState, snapshot.state);
-    this.currentState.snapshots = this.currentState.snapshots.slice(0, snapshotIndex + 1);
+    this.currentState.snapshots = this.currentState.snapshots.slice(
+      0,
+      snapshotIndex + 1,
+    );
 
     return true;
   }
@@ -317,7 +392,12 @@ export class StateManager {
           ],
           estimatedDifficulty: 'medium',
         },
-        knowledgePoints: [{ name: '数学分析基础', description: '相关数学概念' } as KnowledgePoint],
+        knowledgePoints: [
+          {
+            name: '数学分析基础',
+            description: '相关数学概念',
+          } as KnowledgePoint,
+        ],
       },
       solver: {
         solutionSteps: [
@@ -371,7 +451,8 @@ export class StateManager {
           },
         ],
         metadata: {
-          fallbackReason: '各模型API未配置或不可达。请在.env中配置至少一个模型API密钥以获取完整求解能力。本地规则引擎已尽力提供结构化分析框架。',
+          fallbackReason:
+            '各模型API未配置或不可达。请在.env中配置至少一个模型API密钥以获取完整求解能力。本地规则引擎已尽力提供结构化分析框架。',
         },
       },
       diagnostic: {
@@ -380,16 +461,20 @@ export class StateManager {
           (_, i) => ({
             stepId: `step${i + 1}`,
             isValid: false,
-            errorMessage: '解析失败：无法验证此步骤的正确性（请检查AI模型配置）',
+            errorMessage:
+              '解析失败：无法验证此步骤的正确性（请检查AI模型配置）',
             confidence: 0.0,
             isFallback: true,
-          })
+          }),
         ),
       },
       feedback: {
         feedback: {
           accuracy: 0.6,
-          completeness: Math.min(1, (this.currentState.solutionSteps?.length || 0) / 4),
+          completeness: Math.min(
+            1,
+            (this.currentState.solutionSteps?.length || 0) / 4,
+          ),
           clarity: 0.7,
           suggestions: ['建议配置AI模型以获得更精准的诊断反馈'],
           improvements: ['加强基础知识学习'],
@@ -414,7 +499,9 @@ export class StateManager {
     return {
       problem: this.currentState.problem,
       plan: this.currentState.plan as any,
-      solutionSteps: this.currentState.solutionSteps.map(s => JSON.stringify(s)),
+      solutionSteps: this.currentState.solutionSteps.map((s) =>
+        JSON.stringify(s),
+      ),
       finalAnswer: this.currentState.finalAnswer,
       knowledgePoints: this.currentState.knowledgePoints,
       verificationResults: this.currentState.verificationResults,
@@ -431,20 +518,35 @@ export class StateManager {
     if (context.problem) this.currentState.problem = context.problem;
     if (context.plan) this.currentState.plan = context.plan;
     if (context.solutionSteps) {
-      this.currentState.solutionSteps = context.solutionSteps.map(s => {
+      this.currentState.solutionSteps = context.solutionSteps.map((s) => {
         try {
           return typeof s === 'string' ? JSON.parse(s) : s;
         } catch {
-          return { stepTitle: s, keyPoint: '', formula: '', process: s, result: '', highlight: '' };
+          return {
+            stepTitle: s,
+            keyPoint: '',
+            formula: '',
+            process: s,
+            result: '',
+            highlight: '',
+          };
         }
       });
     }
-    if (context.finalAnswer) this.currentState.finalAnswer = context.finalAnswer;
-    if (context.knowledgePoints) this.currentState.knowledgePoints = context.knowledgePoints;
-    if (context.verificationResults) this.currentState.verificationResults = context.verificationResults;
+    if (context.finalAnswer)
+      this.currentState.finalAnswer = context.finalAnswer;
+    if (context.knowledgePoints)
+      this.currentState.knowledgePoints = context.knowledgePoints;
+    if (context.verificationResults)
+      this.currentState.verificationResults = context.verificationResults;
     if (context.feedback) this.currentState.feedback = context.feedback;
-    if (context.intermediateResults) this.currentState.intermediateResults = context.intermediateResults;
-    if (context.metadata) this.currentState.metadata = { ...this.currentState.metadata, ...context.metadata };
+    if (context.intermediateResults)
+      this.currentState.intermediateResults = context.intermediateResults;
+    if (context.metadata)
+      this.currentState.metadata = {
+        ...this.currentState.metadata,
+        ...context.metadata,
+      };
   }
 
   getDebugInfo(): any {
@@ -474,8 +576,12 @@ export class StateManager {
   importState(stateJson: string): boolean {
     try {
       const imported = JSON.parse(stateJson) as SystemState;
-      
-      const requiredFields: (keyof SystemState)[] = ['problem', 'problemType', 'status'];
+
+      const requiredFields: (keyof SystemState)[] = [
+        'problem',
+        'problemType',
+        'status',
+      ];
       for (const field of requiredFields) {
         if (!(field in imported)) {
           this.logger.error(`导入的状态缺少必要字段: ${field}`);

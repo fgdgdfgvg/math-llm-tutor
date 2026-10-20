@@ -1,5 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Subject, Observable, forkJoin, from, of, throwError, timer } from 'rxjs';
+import {
+  Subject,
+  Observable,
+  forkJoin,
+  from,
+  of,
+  throwError,
+  timer,
+} from 'rxjs';
 import { mergeMap, catchError, retry, timeout, map, tap } from 'rxjs/operators';
 
 export interface AsyncTask<T = any> {
@@ -54,7 +62,12 @@ export class AsyncProcessingService {
               resultPromise,
               new Promise<T>((_, reject) =>
                 setTimeout(
-                  () => reject(new Error(`任务 "${task.name}" 超时 (${task.timeoutMs}ms)`)),
+                  () =>
+                    reject(
+                      new Error(
+                        `任务 "${task.name}" 超时 (${task.timeoutMs}ms)`,
+                      ),
+                    ),
                   task.timeoutMs,
                 ),
               ),
@@ -127,7 +140,9 @@ export class AsyncProcessingService {
     maxConcurrency: number = 5,
   ): Promise<BatchProcessResult<T>> {
     const startTime = Date.now();
-    this.logger.log(`开始批处理: ${tasks.length} 个任务, 最大并发=${maxConcurrency}`);
+    this.logger.log(
+      `开始批处理: ${tasks.length} 个任务, 最大并发=${maxConcurrency}`,
+    );
 
     this.eventBus.next({
       type: 'batch:started',
@@ -139,9 +154,10 @@ export class AsyncProcessingService {
     const failed = results.filter((r) => !r.success).length;
     const totalDuration = Date.now() - startTime;
 
-    const throughput = totalDuration > 0
-      ? Math.round((tasks.length / totalDuration) * 1000 * 100) / 100
-      : 0;
+    const throughput =
+      totalDuration > 0
+        ? Math.round((tasks.length / totalDuration) * 1000 * 100) / 100
+        : 0;
 
     const batchResult: BatchProcessResult<T> = {
       totalTasks: tasks.length,

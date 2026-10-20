@@ -32,16 +32,12 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      this.driver = neo4j.driver(
-        uri, 
-        neo4j.auth.basic(user, password),
-        {
-          encrypted: false,
-          trust: 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES',
-          maxConnectionPoolSize: 50,
-          connectionAcquisitionTimeout: 10000,
-        }
-      );
+      this.driver = neo4j.driver(uri, neo4j.auth.basic(user, password), {
+        encrypted: false,
+        trust: 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES',
+        maxConnectionPoolSize: 50,
+        connectionAcquisitionTimeout: 10000,
+      });
       await this.driver.verifyConnectivity();
       this._isInitialized = true;
       this._authFailed = false;
@@ -58,7 +54,9 @@ export class Neo4jService implements OnModuleInit, OnModuleDestroy {
           `Neo4j 认证失败: ${msg}. 请检查 .env 中 NEO4J_USER/NEO4J_PASSWORD 是否正确。知识图谱功能将使用内存降级模式。`,
         );
       } else {
-        this.logger.warn(`Neo4j 连接失败: ${msg}. 知识图谱功能将使用内存降级模式。`);
+        this.logger.warn(
+          `Neo4j 连接失败: ${msg}. 知识图谱功能将使用内存降级模式。`,
+        );
       }
       this._isInitialized = false;
     }

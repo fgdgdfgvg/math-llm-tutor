@@ -43,7 +43,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
     private readonly config: CircuitBreakerConfig = DefaultCircuitBreakerConfig,
   ) {
     this.circuitStateSubject$.pipe(debounceTime(1000)).subscribe((state) => {
-      this.logger.debug(`Circuit breaker [${this.serviceName}] state changed to: ${state}`);
+      this.logger.debug(
+        `Circuit breaker [${this.serviceName}] state changed to: ${state}`,
+      );
     });
   }
 
@@ -51,7 +53,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
     if (this.state === CircuitState.OPEN) {
       this.checkResetCondition();
       if (this.state === CircuitState.OPEN) {
-        this.logger.warn(`Circuit breaker [${this.serviceName}] is OPEN, using fallback`);
+        this.logger.warn(
+          `Circuit breaker [${this.serviceName}] is OPEN, using fallback`,
+        );
         return fallback ? fallback() : this.getLastSuccessfulOrThrow();
       }
     }
@@ -98,7 +102,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
 
     if (this.state === CircuitState.HALF_OPEN) {
       this.state = CircuitState.CLOSED;
-      this.logger.log(`Circuit breaker [${this.serviceName}] recovered (HALF_OPEN -> CLOSED)`);
+      this.logger.log(
+        `Circuit breaker [${this.serviceName}] recovered (HALF_OPEN -> CLOSED)`,
+      );
     }
 
     this.successCount++;
@@ -118,7 +124,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
       this.failureCount >= this.config.failureThreshold
     ) {
       this.state = CircuitState.OPEN;
-      this.logger.warn(`Circuit breaker [${this.serviceName}] opened due to failures`);
+      this.logger.warn(
+        `Circuit breaker [${this.serviceName}] opened due to failures`,
+      );
     }
 
     this.circuitStateSubject$.next(this.state);
@@ -130,7 +138,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
       Date.now() - this.lastFailureTime.getTime() >= this.config.resetTimeoutMs
     ) {
       this.state = CircuitState.HALF_OPEN;
-      this.logger.log(`Circuit breaker [${this.serviceName}] transitioning to HALF_OPEN`);
+      this.logger.log(
+        `Circuit breaker [${this.serviceName}] transitioning to HALF_OPEN`,
+      );
     }
   }
 
@@ -138,7 +148,9 @@ export class CircuitBreaker<T> implements OnModuleDestroy {
     if (this.lastSuccessfulResult) {
       return this.lastSuccessfulResult;
     }
-    throw new Error(`Service ${this.serviceName} unavailable and no cached result exists`);
+    throw new Error(
+      `Service ${this.serviceName} unavailable and no cached result exists`,
+    );
   }
 
   onModuleDestroy(): void {

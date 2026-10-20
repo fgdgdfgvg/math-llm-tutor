@@ -37,8 +37,14 @@ import { HealthController } from './health.controller';
 import { resolveMongoUri } from './core/database/resolve-mongo-uri';
 import { ApiDocsController } from './api-docs.controller';
 import { User, UserSchema } from './modules/user/schemas/user.schema';
-import { Question, QuestionSchema } from './modules/questions/schemas/question.schema';
-import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.schema';
+import {
+  Question,
+  QuestionSchema,
+} from './modules/questions/schemas/question.schema';
+import {
+  Mistake,
+  MistakeSchema,
+} from './modules/questions/schemas/mistake.schema';
 
 @Module({
   imports: [
@@ -55,7 +61,9 @@ import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.sche
         connectionFactory: (connection) => {
           const logger = new (require('@nestjs/common').Logger)('MongoDB');
           connection.on('connected', () => logger.log('MongoDB连接成功'));
-          connection.on('error', (err) => logger.error('MongoDB连接错误:', err.message));
+          connection.on('error', (err) =>
+            logger.error('MongoDB连接错误:', err.message),
+          );
           connection.on('disconnected', () => logger.warn('MongoDB连接断开'));
           return connection;
         },
@@ -74,7 +82,8 @@ import { Mistake, MistakeSchema } from './modules/questions/schemas/mistake.sche
         signOptions: {
           // access token 默认 15 分钟（原为 7 天），配合 /auth/refresh 续期；
           // 提升 JWT_EXPIRATION 可覆盖，但生产环境不建议超过 1 小时。
-          expiresIn: (configService.get<string>('JWT_EXPIRATION') || '15m') as any,
+          expiresIn: (configService.get<string>('JWT_EXPIRATION') ||
+            '15m') as any,
         },
       }),
       inject: [ConfigService],

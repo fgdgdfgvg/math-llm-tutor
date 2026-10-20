@@ -30,15 +30,22 @@ function createService(configOverrides: Record<string, string> = {}) {
 describe('LoginThrottleService（自检 P1 防爆破 + P2-19 倒计时）', () => {
   it('默认允许登录', async () => {
     const { service } = createService();
-    await expect(service.assertAllowed('alice', '1.2.3.4')).resolves.toBeUndefined();
+    await expect(
+      service.assertAllowed('alice', '1.2.3.4'),
+    ).resolves.toBeUndefined();
   });
 
   it('失败 5 次后锁定，第 6 次直接 429', async () => {
-    const { service } = createService({ LOGIN_MAX_FAILURES: '5', LOGIN_LOCK_SECONDS: '900' });
+    const { service } = createService({
+      LOGIN_MAX_FAILURES: '5',
+      LOGIN_LOCK_SECONDS: '900',
+    });
     for (let i = 0; i < 5; i++) {
       await service.recordFailure('alice', '1.2.3.4');
     }
-    await expect(service.assertAllowed('alice', '1.2.3.4')).rejects.toBeInstanceOf(AppError);
+    await expect(
+      service.assertAllowed('alice', '1.2.3.4'),
+    ).rejects.toBeInstanceOf(AppError);
   });
 
   it('锁定期间正确密码也不放行（防爆破语义）', async () => {
@@ -51,11 +58,18 @@ describe('LoginThrottleService（自检 P1 防爆破 + P2-19 倒计时）', () =
   });
 
   it('剩余锁定时间随时间递减（自检 P2-19：不再返回固定时长）', async () => {
-    const { service, cache } = createService({ LOGIN_MAX_FAILURES: '1', LOGIN_LOCK_SECONDS: '900' });
+    const { service, cache } = createService({
+      LOGIN_MAX_FAILURES: '1',
+      LOGIN_LOCK_SECONDS: '900',
+    });
     await service.recordFailure('alice');
     const first = await service.status('alice');
     // 人为把到期时间戳拨近 60 秒，模拟时间流逝
-    await cache.set('auth:login:lock:u:alice', String(Date.now() + 840 * 1000), 840);
+    await cache.set(
+      'auth:login:lock:u:alice',
+      String(Date.now() + 840 * 1000),
+      840,
+    );
     const later = await service.status('alice');
     expect(later.retryAfterSeconds).toBeLessThan(first.retryAfterSeconds);
   });

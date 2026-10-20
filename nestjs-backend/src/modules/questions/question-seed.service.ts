@@ -35,7 +35,9 @@ const DIFFICULTIES = ['基础', '中等', '较难', '困难'];
 export class QuestionSeedService implements OnApplicationBootstrap {
   private readonly logger = new Logger(QuestionSeedService.name);
 
-  constructor(@InjectModel(Question.name) private questionModel: Model<Question>) {}
+  constructor(
+    @InjectModel(Question.name) private questionModel: Model<Question>,
+  ) {}
 
   async onApplicationBootstrap(): Promise<void> {
     const mode = (process.env.SEED_QUESTIONS || '').trim().toLowerCase();
@@ -53,7 +55,9 @@ export class QuestionSeedService implements OnApplicationBootstrap {
 
       const source = await this.resolveDatasetFile();
       if (!source) {
-        this.logger.warn('未找到 datasets/math.json，跳过题库初始化（可设置 DATASETS_DIR 指定目录）');
+        this.logger.warn(
+          '未找到 datasets/math.json，跳过题库初始化（可设置 DATASETS_DIR 指定目录）',
+        );
         return;
       }
 
@@ -79,7 +83,9 @@ export class QuestionSeedService implements OnApplicationBootstrap {
       currentDir = path.dirname(currentDir);
     }
 
-    candidates.push(path.join(__dirname, '..', '..', '..', '..', 'datasets', fileName));
+    candidates.push(
+      path.join(__dirname, '..', '..', '..', '..', 'datasets', fileName),
+    );
 
     for (const candidate of candidates) {
       try {
@@ -100,8 +106,8 @@ export class QuestionSeedService implements OnApplicationBootstrap {
     }
 
     const docs = raw
-      .filter(item => item && item.题目编号 && item.题目内容)
-      .map(item => this.toDocument(item as RawQuestion));
+      .filter((item) => item && item.题目编号 && item.题目内容)
+      .map((item) => this.toDocument(item as RawQuestion));
 
     if (!docs.length) return 0;
 
@@ -111,7 +117,7 @@ export class QuestionSeedService implements OnApplicationBootstrap {
     for (let i = 0; i < docs.length; i += batchSize) {
       const batch = docs.slice(i, i + batchSize);
       await this.questionModel.bulkWrite(
-        batch.map(doc => ({
+        batch.map((doc) => ({
           updateOne: {
             filter: { questionId: doc.questionId },
             update: { $set: doc, $setOnInsert: { createdAt: new Date() } },
@@ -128,13 +134,18 @@ export class QuestionSeedService implements OnApplicationBootstrap {
 
   /** 中文键 → 数据库字段，并做基础清洗（难度枚举、子概念去空） */
   private toDocument(item: RawQuestion) {
-    const difficulty = DIFFICULTIES.includes(item.难度等级 || '') ? item.难度等级! : '中等';
+    const difficulty = DIFFICULTIES.includes(item.难度等级 || '')
+      ? item.难度等级!
+      : '中等';
 
     return {
       questionId: item.题目编号!.trim(),
       knowledgePoint: (item.知识点 || '未分类').trim(),
       subConcepts: Array.isArray(item.关联子概念)
-        ? item.关联子概念.filter((value): value is string => typeof value === 'string' && !!value.trim())
+        ? item.关联子概念.filter(
+            (value): value is string =>
+              typeof value === 'string' && !!value.trim(),
+          )
         : [],
       chapterSource: item.章节来源 || '',
       content: item.题目内容!,

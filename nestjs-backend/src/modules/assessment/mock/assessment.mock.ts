@@ -7,7 +7,7 @@ export const mockKnowledgeStats: KnowledgeStats[] = [
     mastery: 85,
     practiceCount: 20,
     correctRate: 80,
-    errorPatterns: ['计算错误']
+    errorPatterns: ['计算错误'],
   },
   {
     conceptId: 'limit',
@@ -15,7 +15,7 @@ export const mockKnowledgeStats: KnowledgeStats[] = [
     mastery: 70,
     practiceCount: 15,
     correctRate: 75,
-    errorPatterns: ['概念混淆', '计算错误']
+    errorPatterns: ['概念混淆', '计算错误'],
   },
   {
     conceptId: 'derivative',
@@ -23,7 +23,7 @@ export const mockKnowledgeStats: KnowledgeStats[] = [
     mastery: 65,
     practiceCount: 18,
     correctRate: 70,
-    errorPatterns: ['链式法则错误', '乘积法则错误']
+    errorPatterns: ['链式法则错误', '乘积法则错误'],
   },
   {
     conceptId: 'integral',
@@ -31,7 +31,7 @@ export const mockKnowledgeStats: KnowledgeStats[] = [
     mastery: 60,
     practiceCount: 12,
     correctRate: 65,
-    errorPatterns: ['换元法错误', '分部积分错误']
+    errorPatterns: ['换元法错误', '分部积分错误'],
   },
   {
     conceptId: 'differential_equation',
@@ -39,8 +39,8 @@ export const mockKnowledgeStats: KnowledgeStats[] = [
     mastery: 55,
     practiceCount: 10,
     correctRate: 60,
-    errorPatterns: ['分离变量错误', '积分常数错误']
-  }
+    errorPatterns: ['分离变量错误', '积分常数错误'],
+  },
 ];
 
 export const mockClassAverage = {

@@ -76,7 +76,9 @@ export class ConnectionPoolService implements OnModuleDestroy {
     this.startHealthCheck(config);
     this.startIdleCleanup(config);
 
-    this.logger.log(`连接池 "${config.name}" 已注册 (min=${config.minConnections}, max=${config.maxConnections})`);
+    this.logger.log(
+      `连接池 "${config.name}" 已注册 (min=${config.minConnections}, max=${config.maxConnections})`,
+    );
   }
 
   private async initializeMinConnections(config: PoolConfig): Promise<void> {
@@ -91,7 +93,9 @@ export class ConnectionPoolService implements OnModuleDestroy {
 
     const conns = this.connections.get(poolName)!;
     if (conns.length >= config.maxConnections) {
-      throw new Error(`连接池 "${poolName}" 已达最大连接数 (${config.maxConnections})`);
+      throw new Error(
+        `连接池 "${poolName}" 已达最大连接数 (${config.maxConnections})`,
+      );
     }
 
     const conn: PoolConnection = {
@@ -110,7 +114,10 @@ export class ConnectionPoolService implements OnModuleDestroy {
     stats.totalCreated++;
     stats.idleConnections++;
 
-    this.poolEvents.emit('connectionCreated', { pool: poolName, connId: conn.id });
+    this.poolEvents.emit('connectionCreated', {
+      pool: poolName,
+      connId: conn.id,
+    });
     return conn;
   }
 
@@ -219,7 +226,9 @@ export class ConnectionPoolService implements OnModuleDestroy {
           const stats = this.poolStats.get(config.name)!;
           if (!healthy) {
             stats.healthCheckFailed++;
-            this.logger.warn(`连接池 "${config.name}" 连接 ${conn.id} 健康检查失败`);
+            this.logger.warn(
+              `连接池 "${config.name}" 连接 ${conn.id} 健康检查失败`,
+            );
             await this.destroyConnection(config.name, conn);
             if (!conn.inUse && conns.length < config.minConnections) {
               await this.createConnection(config.name);
@@ -263,7 +272,10 @@ export class ConnectionPoolService implements OnModuleDestroy {
     this.idleCleanupTimers.set(config.name, timer);
   }
 
-  private async destroyConnection(poolName: string, conn: PoolConnection): Promise<void> {
+  private async destroyConnection(
+    poolName: string,
+    conn: PoolConnection,
+  ): Promise<void> {
     const config = this.pools.get(poolName);
     if (!config) return;
 
@@ -280,10 +292,15 @@ export class ConnectionPoolService implements OnModuleDestroy {
     try {
       await config.destroyConnection(conn.data);
     } catch (err) {
-      this.logger.error(`销毁连接 "${conn.id}" 失败: ${(err as Error).message}`);
+      this.logger.error(
+        `销毁连接 "${conn.id}" 失败: ${(err as Error).message}`,
+      );
     }
 
-    this.poolEvents.emit('connectionDestroyed', { pool: poolName, connId: conn.id });
+    this.poolEvents.emit('connectionDestroyed', {
+      pool: poolName,
+      connId: conn.id,
+    });
   }
 
   getStats(poolName: string): PoolStats | undefined {

@@ -76,7 +76,9 @@ describe('polyDerivative / polyIntegral', () => {
 
   it('逐项积分保留分数系数', () => {
     const p = parsePolynomialExact('x^2 + 3x')!;
-    expect(polyToLatex(polyIntegral(p))).toBe('\\frac{1}{3}x^{3} + \\frac{3}{2}x^{2}');
+    expect(polyToLatex(polyIntegral(p))).toBe(
+      '\\frac{1}{3}x^{3} + \\frac{3}{2}x^{2}',
+    );
   });
 });
 
@@ -156,7 +158,9 @@ describe('回归：reviewer 指出的具体错误', () => {
     const solution = solveEquationString('x² + x = 0');
     expect(solution.kind).toBe('roots');
     if (solution.kind === 'roots') {
-      expect(solution.roots.every((r) => Number.isFinite(r.numeric))).toBe(true);
+      expect(solution.roots.every((r) => Number.isFinite(r.numeric))).toBe(
+        true,
+      );
     }
   });
 

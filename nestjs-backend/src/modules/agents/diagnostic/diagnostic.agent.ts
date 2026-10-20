@@ -6,9 +6,21 @@ import { AgentInput, AgentContext, VerificationResult } from '../agent.types';
 import { AIModelsService } from '../ai-models.service';
 import { AIModelProvider } from '../ai-models.types';
 import { LocalComputationService } from '../local-computation/local-computation.service';
-import { StepValidationService, ValidationResult, SolutionStep } from './step-validation.service';
-import { VisualizationService, MermaidFlowchart, ExportOptions } from './visualization.service';
-import { ErrorDiagnosisService, FullDiagnosisReport, ErrorLayer } from '../../../common/services/error-diagnosis.service';
+import {
+  StepValidationService,
+  ValidationResult,
+  SolutionStep,
+} from './step-validation.service';
+import {
+  VisualizationService,
+  MermaidFlowchart,
+  ExportOptions,
+} from './visualization.service';
+import {
+  ErrorDiagnosisService,
+  FullDiagnosisReport,
+  ErrorLayer,
+} from '../../../common/services/error-diagnosis.service';
 import { extractAiJson } from '../ai-json.utils';
 
 // 诊断智能体
@@ -26,7 +38,10 @@ export class DiagnosticAgent extends BaseAgent {
     super(config);
   }
 
-  protected async process(input: AgentInput, context: AgentContext): Promise<VerificationResult[]> {
+  protected async process(
+    input: AgentInput,
+    context: AgentContext,
+  ): Promise<VerificationResult[]> {
     const { problem } = input;
     const { solutionSteps, plan, knowledgePoints } = context;
 
@@ -39,7 +54,8 @@ export class DiagnosticAgent extends BaseAgent {
     let referenceSolution: any = null;
     try {
       this.logger.log('获取本地计算服务的参考解决方案');
-      referenceSolution = await this.localComputationService.solveProblem(problem);
+      referenceSolution =
+        await this.localComputationService.solveProblem(problem);
     } catch (error) {
       this.logger.warn('获取参考解决方案失败', error.message);
     }
@@ -51,7 +67,13 @@ export class DiagnosticAgent extends BaseAgent {
       const stepId = plan?.steps[i]?.id || `step${i + 1}`;
 
       try {
-        const verification = await this.verifyStep(step, problem, context, stepId, referenceSolution);
+        const verification = await this.verifyStep(
+          step,
+          problem,
+          context,
+          stepId,
+          referenceSolution,
+        );
         verificationResults.push({
           stepId,
           isValid: verification.isValid,
@@ -62,7 +84,13 @@ export class DiagnosticAgent extends BaseAgent {
         this.logger.warn(`验证步骤失败: ${stepId}`, error.message);
 
         // 使用规则引擎验证作为fallback
-        const ruleBased = this.ruleBasedVerify(step, stepId, i, solutionSteps.length, referenceSolution);
+        const ruleBased = this.ruleBasedVerify(
+          step,
+          stepId,
+          i,
+          solutionSteps.length,
+          referenceSolution,
+        );
         verificationResults.push(ruleBased);
       }
     }
@@ -70,7 +98,12 @@ export class DiagnosticAgent extends BaseAgent {
     // 验证最终答案
     if (context.finalAnswer) {
       try {
-        const finalVerification = await this.verifyFinalAnswer(context.finalAnswer, problem, context, referenceSolution);
+        const finalVerification = await this.verifyFinalAnswer(
+          context.finalAnswer,
+          problem,
+          context,
+          referenceSolution,
+        );
         verificationResults.push({
           stepId: 'finalAnswer',
           isValid: finalVerification.isValid,
@@ -93,12 +126,16 @@ export class DiagnosticAgent extends BaseAgent {
 
     // 四层错误诊断引擎（新增）
     try {
-      const diagnosisReport = this.errorDiagnosisService.diagnoseFull(problem, solutionSteps);
-      const scoreCard = this.errorDiagnosisService.generateScoreCard(diagnosisReport);
+      const diagnosisReport = this.errorDiagnosisService.diagnoseFull(
+        problem,
+        solutionSteps,
+      );
+      const scoreCard =
+        this.errorDiagnosisService.generateScoreCard(diagnosisReport);
       this.logger.log(
         `四层错误诊断完成: 总分=${scoreCard.overallScore}, 等级=${scoreCard.grade}, ` +
-        `语法=${scoreCard.syntaxScore}, 计算=${scoreCard.calculationScore}, ` +
-        `逻辑=${scoreCard.logicScore}, 方法=${scoreCard.methodScore}`,
+          `语法=${scoreCard.syntaxScore}, 计算=${scoreCard.calculationScore}, ` +
+          `逻辑=${scoreCard.logicScore}, 方法=${scoreCard.methodScore}`,
       );
       context.metadata['errorDiagnosisReport'] = diagnosisReport;
       context.metadata['errorScoreCard'] = scoreCard;
@@ -110,7 +147,13 @@ export class DiagnosticAgent extends BaseAgent {
   }
 
   // 规则引擎验证（不依赖AI的核心fallback）
-  private ruleBasedVerify(step: string, stepId: string, index: number, totalSteps: number, referenceSolution?: any): VerificationResult {
+  private ruleBasedVerify(
+    step: string,
+    stepId: string,
+    index: number,
+    totalSteps: number,
+    referenceSolution?: any,
+  ): VerificationResult {
     const hasContent = step && step.length > 10;
     const hasStructure = step.includes('"stepTitle"') || step.includes(':');
     const isLastStep = index === totalSteps - 1;
@@ -128,14 +171,23 @@ export class DiagnosticAgent extends BaseAgent {
       errorMessage = '步骤格式不规范，建议检查结构完整性';
     }
 
-    if (isLastStep && !step.includes('结果') && !step.includes('答案') && !step.includes('answer')) {
+    if (
+      isLastStep &&
+      !step.includes('结果') &&
+      !step.includes('答案') &&
+      !step.includes('answer')
+    ) {
       confidence = Math.min(confidence, 0.6);
       // 只扣置信度提示格式，不判整体失败：措辞差异不是数学错误
       errorMessage = errorMessage || '最后一步建议明确写出计算结果或结论';
     }
 
     // 使用参考解决方案进行更准确的验证
-    if (referenceSolution && referenceSolution.steps && referenceSolution.steps[index]) {
+    if (
+      referenceSolution &&
+      referenceSolution.steps &&
+      referenceSolution.steps[index]
+    ) {
       const referenceStep = referenceSolution.steps[index];
       if (referenceStep.result) {
         // 比较的是「数学结果」而不是「原文措辞」：AI 步骤文本与参考解措辞不同是常态，
@@ -144,11 +196,15 @@ export class DiagnosticAgent extends BaseAgent {
         const mathTokens = (text: string): Set<string> => {
           const tokens = new Set<string>();
           // 数字（含分数、小数、负号、科学计数）
-          for (const m of text.matchAll(/-?\d+(?:\.\d+)?(?:\/(?:-?\d+(?:\.\d+)?))?/g)) {
+          for (const m of text.matchAll(
+            /-?\d+(?:\.\d+)?(?:\/(?:-?\d+(?:\.\d+)?))?/g,
+          )) {
             tokens.add(m[0].replace(/^0+(?=\d)/, ''));
           }
           // 常见数学函数与变量组合（x^2、e^x、sin(x) 等）
-          for (const m of text.matchAll(/(?:sin|cos|tan|ln|log|exp)\s*\(?[^)\s]*\)?/gi)) {
+          for (const m of text.matchAll(
+            /(?:sin|cos|tan|ln|log|exp)\s*\(?[^)\s]*\)?/gi,
+          )) {
             tokens.add(m[0].replace(/\s+/g, '').toLowerCase());
           }
           for (const m of text.matchAll(/[a-zA-Z]\s*\^\s*[-\d.]+/g)) {
@@ -175,14 +231,21 @@ export class DiagnosticAgent extends BaseAgent {
           } else {
             isValid = false;
             confidence = Math.min(confidence, 0.4);
-            errorMessage = errorMessage || `步骤结果与参考解决方案不一致，参考结果为: ${referenceStep.result}`;
+            errorMessage =
+              errorMessage ||
+              `步骤结果与参考解决方案不一致，参考结果为: ${referenceStep.result}`;
           }
         }
       }
     }
 
     this.logger.log(`规则验证 ${stepId}: valid=${isValid} conf=${confidence}`);
-    return { stepId, isValid: !!isValid, errorMessage: errorMessage || '', confidence };
+    return {
+      stepId,
+      isValid: !!isValid,
+      errorMessage: errorMessage || '',
+      confidence,
+    };
   }
 
   // 基于规则的完整验证（无步骤时的fallback）
@@ -221,7 +284,12 @@ export class DiagnosticAgent extends BaseAgent {
   ): Promise<{ isValid: boolean; errorMessage?: string; confidence: number }> {
     try {
       if (this.aiModelsService.isModelAvailable(AIModelProvider.GLM)) {
-        return await this.aiVerifyStep(step, problem, stepId, referenceSolution);
+        return await this.aiVerifyStep(
+          step,
+          problem,
+          stepId,
+          referenceSolution,
+        );
       }
     } catch (error) {
       this.logger.warn('GLM AI验证不可用，使用规则验证', error.message);
@@ -231,7 +299,12 @@ export class DiagnosticAgent extends BaseAgent {
   }
 
   // AI验证步骤（使用GLM-4.7-Flash超快速验证）
-  private async aiVerifyStep(step: string, problem: string, stepId: string, referenceSolution?: any): Promise<{
+  private async aiVerifyStep(
+    step: string,
+    problem: string,
+    stepId: string,
+    referenceSolution?: any,
+  ): Promise<{
     isValid: boolean;
     errorMessage?: string;
     confidence: number;
@@ -263,7 +336,12 @@ export class DiagnosticAgent extends BaseAgent {
   }
 
   // 验证最终答案
-  private async verifyFinalAnswer(finalAnswer: string, problem: string, context: AgentContext, referenceSolution?: any): Promise<{
+  private async verifyFinalAnswer(
+    finalAnswer: string,
+    problem: string,
+    context: AgentContext,
+    referenceSolution?: any,
+  ): Promise<{
     isValid: boolean;
     errorMessage?: string;
     confidence: number;
@@ -331,15 +409,22 @@ export class DiagnosticAgent extends BaseAgent {
       return {
         isValid: parsed.isValid ?? true,
         errorMessage: parsed.errorMessage || '',
-        confidence: Math.max(0, Math.min(1, Number(parsed.confidence ?? 0.7)) || 0.7),
+        confidence: Math.max(
+          0,
+          Math.min(1, Number(parsed.confidence ?? 0.7)) || 0.7,
+        ),
       };
     }
-    this.logger.warn(`解析验证结果失败，无法从 AI 输出提取 JSON（前 200 字符: ${String(content).slice(0, 200).replace(/\s+/g, ' ')}）`);
+    this.logger.warn(
+      `解析验证结果失败，无法从 AI 输出提取 JSON（前 200 字符: ${String(content).slice(0, 200).replace(/\s+/g, ' ')}）`,
+    );
     return { isValid: true, errorMessage: '', confidence: 0.5 };
   }
 
   // 使用步骤验证服务进行实时验证
-  async validateStepsWithService(steps: SolutionStep[]): Promise<ValidationResult[]> {
+  async validateStepsWithService(
+    steps: SolutionStep[],
+  ): Promise<ValidationResult[]> {
     this.logger.log(`使用步骤验证服务验证${steps.length}个步骤`);
     return this.stepValidationService.validateAllSteps(steps);
   }
@@ -350,7 +435,10 @@ export class DiagnosticAgent extends BaseAgent {
     validationResults: ValidationResult[],
   ): Promise<MermaidFlowchart> {
     this.logger.log('生成解题流程可视化');
-    return this.visualizationService.generateMermaidFlowchart(steps, validationResults);
+    return this.visualizationService.generateMermaidFlowchart(
+      steps,
+      validationResults,
+    );
   }
 
   // 生成交互式HTML
@@ -389,6 +477,9 @@ export class DiagnosticAgent extends BaseAgent {
     validation: ValidationResult;
     details: string[];
   }> {
-    return this.visualizationService.generateStepDetails(steps, validationResults);
+    return this.visualizationService.generateStepDetails(
+      steps,
+      validationResults,
+    );
   }
 }

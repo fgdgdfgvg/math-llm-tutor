@@ -1,6 +1,21 @@
-import { Controller, Post, Get, Body, Param, Query, Delete, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Query,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
-import { SyncService, SyncData, LearningBehavior, LearningInsight } from './sync.service';
+import {
+  SyncService,
+  SyncData,
+  LearningBehavior,
+  LearningInsight,
+} from './sync.service';
 
 @Controller('sync')
 @UseGuards(JwtAuthGuard)
@@ -10,16 +25,13 @@ export class SyncController {
   @Post('data')
   async syncData(
     @Request() req: Request & { user: { userId: string } },
-    @Body() body: {
+    @Body()
+    body: {
       deviceId: string;
       data: SyncData['data'];
     },
   ): Promise<SyncData> {
-    return this.syncService.syncData(
-      req.user.userId,
-      body.deviceId,
-      body.data,
-    );
+    return this.syncService.syncData(req.user.userId, body.deviceId, body.data);
   }
 
   @Get('data')
@@ -33,18 +45,21 @@ export class SyncController {
   @Get('devices')
   async listDevices(
     @Request() req: Request & { user: { userId: string } },
-  ): Promise<Array<{
-    deviceId: string;
-    deviceType: 'desktop' | 'mobile' | 'tablet';
-    lastSyncTime: Date;
-  }>> {
+  ): Promise<
+    Array<{
+      deviceId: string;
+      deviceType: 'desktop' | 'mobile' | 'tablet';
+      lastSyncTime: Date;
+    }>
+  > {
     return this.syncService.listDevices(req.user.userId);
   }
 
   @Post('behavior')
   async recordLearningBehavior(
     @Request() req: Request & { user: { userId: string } },
-    @Body() body: {
+    @Body()
+    body: {
       behaviorType: LearningBehavior['behaviorType'];
       details?: any;
     },

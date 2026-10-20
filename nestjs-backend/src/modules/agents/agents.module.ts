@@ -30,7 +30,7 @@ import { AcademicIntegrityService } from '../../common/services/academic-integri
   providers: [
     // AI 模型服务
     AIModelsService,
-    
+
     // 步骤验证和可视化服务
     StepValidationService,
     VisualizationService,
@@ -40,7 +40,7 @@ import { AcademicIntegrityService } from '../../common/services/academic-integri
 
     // 解题结果自校验（求导/积分/方程/极限 代回原题，数值 + 符号证据）
     SolutionVerificationService,
-    
+
     // 智能体配置
     {
       provide: 'PLANNER_AGENT_CONFIG',
@@ -78,41 +78,136 @@ import { AcademicIntegrityService } from '../../common/services/academic-integri
         maxRetries: 2,
       },
     },
-    
+
     // 智能体实例
     {
       provide: PlannerAgent,
-      useFactory: (config: any, configService: ConfigService, httpService: any, knowledgeService: any, aiModelsService: AIModelsService) => {
-        return new PlannerAgent(config, configService, httpService, knowledgeService, aiModelsService);
+      useFactory: (
+        config: any,
+        configService: ConfigService,
+        httpService: any,
+        knowledgeService: any,
+        aiModelsService: AIModelsService,
+      ) => {
+        return new PlannerAgent(
+          config,
+          configService,
+          httpService,
+          knowledgeService,
+          aiModelsService,
+        );
       },
-      inject: ['PLANNER_AGENT_CONFIG', ConfigService, HttpService, KnowledgeService, AIModelsService],
+      inject: [
+        'PLANNER_AGENT_CONFIG',
+        ConfigService,
+        HttpService,
+        KnowledgeService,
+        AIModelsService,
+      ],
     },
     {
       provide: SolverAgent,
-      useFactory: (config: any, configService: ConfigService, httpService: any, aiModelsService: AIModelsService, localComputationService: LocalComputationService, redisCacheService: RedisCacheService, modelRouterService: ModelRouterService, hallucinationGuardService: HallucinationGuardService) => {
-        return new SolverAgent(config, configService, httpService, aiModelsService, localComputationService, redisCacheService, modelRouterService, hallucinationGuardService);
+      useFactory: (
+        config: any,
+        configService: ConfigService,
+        httpService: any,
+        aiModelsService: AIModelsService,
+        localComputationService: LocalComputationService,
+        redisCacheService: RedisCacheService,
+        modelRouterService: ModelRouterService,
+        hallucinationGuardService: HallucinationGuardService,
+      ) => {
+        return new SolverAgent(
+          config,
+          configService,
+          httpService,
+          aiModelsService,
+          localComputationService,
+          redisCacheService,
+          modelRouterService,
+          hallucinationGuardService,
+        );
       },
-      inject: ['SOLVER_AGENT_CONFIG', ConfigService, HttpService, AIModelsService, LocalComputationService, RedisCacheService, ModelRouterService, HallucinationGuardService],
+      inject: [
+        'SOLVER_AGENT_CONFIG',
+        ConfigService,
+        HttpService,
+        AIModelsService,
+        LocalComputationService,
+        RedisCacheService,
+        ModelRouterService,
+        HallucinationGuardService,
+      ],
     },
     {
       provide: DiagnosticAgent,
-      useFactory: (config: any, configService: ConfigService, httpService: any, aiModelsService: AIModelsService, localComputationService: LocalComputationService, stepValidationService: StepValidationService, visualizationService: VisualizationService, errorDiagnosisService: ErrorDiagnosisService) => {
-        return new DiagnosticAgent(config, configService, httpService, aiModelsService, localComputationService, stepValidationService, visualizationService, errorDiagnosisService);
+      useFactory: (
+        config: any,
+        configService: ConfigService,
+        httpService: any,
+        aiModelsService: AIModelsService,
+        localComputationService: LocalComputationService,
+        stepValidationService: StepValidationService,
+        visualizationService: VisualizationService,
+        errorDiagnosisService: ErrorDiagnosisService,
+      ) => {
+        return new DiagnosticAgent(
+          config,
+          configService,
+          httpService,
+          aiModelsService,
+          localComputationService,
+          stepValidationService,
+          visualizationService,
+          errorDiagnosisService,
+        );
       },
-      inject: ['DIAGNOSTIC_AGENT_CONFIG', ConfigService, HttpService, AIModelsService, LocalComputationService, StepValidationService, VisualizationService, ErrorDiagnosisService],
+      inject: [
+        'DIAGNOSTIC_AGENT_CONFIG',
+        ConfigService,
+        HttpService,
+        AIModelsService,
+        LocalComputationService,
+        StepValidationService,
+        VisualizationService,
+        ErrorDiagnosisService,
+      ],
     },
     {
       provide: FeedbackAgent,
-      useFactory: (config: any, configService: ConfigService, httpService: any, aiModelsService: AIModelsService, localComputationService: LocalComputationService) => {
-        return new FeedbackAgent(config, configService, httpService, aiModelsService, localComputationService);
+      useFactory: (
+        config: any,
+        configService: ConfigService,
+        httpService: any,
+        aiModelsService: AIModelsService,
+        localComputationService: LocalComputationService,
+      ) => {
+        return new FeedbackAgent(
+          config,
+          configService,
+          httpService,
+          aiModelsService,
+          localComputationService,
+        );
       },
-      inject: ['FEEDBACK_AGENT_CONFIG', ConfigService, HttpService, AIModelsService, LocalComputationService],
+      inject: [
+        'FEEDBACK_AGENT_CONFIG',
+        ConfigService,
+        HttpService,
+        AIModelsService,
+        LocalComputationService,
+      ],
     },
-    
+
     // 智能体编排器
     {
       provide: AgentOrchestrator,
-      useFactory: (plannerAgent: PlannerAgent, solverAgent: SolverAgent, diagnosticAgent: DiagnosticAgent, feedbackAgent: FeedbackAgent) => {
+      useFactory: (
+        plannerAgent: PlannerAgent,
+        solverAgent: SolverAgent,
+        diagnosticAgent: DiagnosticAgent,
+        feedbackAgent: FeedbackAgent,
+      ) => {
         const config = {
           agents: [
             {
@@ -137,11 +232,16 @@ import { AcademicIntegrityService } from '../../common/services/academic-integri
           fallbackStrategy: 'retry' as const,
         };
 
-        return new AgentOrchestrator(config, [plannerAgent, solverAgent, diagnosticAgent, feedbackAgent]);
+        return new AgentOrchestrator(config, [
+          plannerAgent,
+          solverAgent,
+          diagnosticAgent,
+          feedbackAgent,
+        ]);
       },
       inject: [PlannerAgent, SolverAgent, DiagnosticAgent, FeedbackAgent],
     },
-    
+
     // 智能体服务
     AgentsService,
   ],

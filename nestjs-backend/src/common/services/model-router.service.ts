@@ -146,7 +146,7 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '洛必达法则求极限 - SymPy可精确计算导数',
-    keywords: ['洛必达', 'L\'Hôpital', '不定式', '0/0', '∞/∞'],
+    keywords: ['洛必达', "L'Hôpital", '不定式', '0/0', '∞/∞'],
   },
   {
     category: MathProblemCategory.LIMIT_IMPORTANT_FORMULA,
@@ -218,7 +218,7 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 2,
     description: '高阶导数 - SymPy自动递推求导',
-    keywords: ['高阶导数', '二阶导数', 'n阶导数', 'y\'\'', 'f^(n)'],
+    keywords: ['高阶导数', '二阶导数', 'n阶导数', "y''", 'f^(n)'],
   },
   {
     category: MathProblemCategory.DIFFERENTIAL_APPROXIMATION,
@@ -338,7 +338,7 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '高阶微分方程 - 特征方程+待定系数法',
-    keywords: ['高阶', 'y\'\'', '特征方程', '常系数', '通解'],
+    keywords: ['高阶', "y''", '特征方程', '常系数', '通解'],
   },
   {
     category: MathProblemCategory.DIFFERENTIAL_EQUATION_SYSTEM,
@@ -578,7 +578,17 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '二重积分 - 直角坐标/极坐标计算+面积元素变换',
-    keywords: ['二重积分', '\\iint', 'dσ', 'dxdy', '极坐标', 'rdrdθ', '交换次序', 'X型', 'Y型'],
+    keywords: [
+      '二重积分',
+      '\\iint',
+      'dσ',
+      'dxdy',
+      '极坐标',
+      'rdrdθ',
+      '交换次序',
+      'X型',
+      'Y型',
+    ],
   },
   {
     category: MathProblemCategory.MULTIPLE_INTEGRAL_TRIPLE,
@@ -590,7 +600,16 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '三重积分 - 投影法/截面法/柱坐标/球坐标',
-    keywords: ['三重积分', '\\iiint', 'dV', '柱坐标', '球坐标', '投影法', '截面法', 'ρ²sinφ'],
+    keywords: [
+      '三重积分',
+      '\\iiint',
+      'dV',
+      '柱坐标',
+      '球坐标',
+      '投影法',
+      '截面法',
+      'ρ²sinφ',
+    ],
   },
   {
     category: MathProblemCategory.MULTIPLE_INTEGRAL_TRANSFORM,
@@ -614,7 +633,15 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 2,
     description: '重积分应用 - 质量/质心/转动惯量/曲面面积',
-    keywords: ['质量', '质心', '形心', '转动惯量', '曲面面积', '引力', '重积分应用'],
+    keywords: [
+      '质量',
+      '质心',
+      '形心',
+      '转动惯量',
+      '曲面面积',
+      '引力',
+      '重积分应用',
+    ],
   },
   {
     category: MathProblemCategory.CURVE_INTEGRAL_ARC,
@@ -626,7 +653,7 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '对弧长的曲线积分 - 弧微分+参数化',
-    keywords: ['弧长', 'ds', '曲线积分', '第一类', '对弧长', '√(x\'²+y\'²)'],
+    keywords: ['弧长', 'ds', '曲线积分', '第一类', '对弧长', "√(x'²+y'²)"],
   },
   {
     category: MathProblemCategory.CURVE_INTEGRAL_COORDINATE,
@@ -650,7 +677,15 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '格林公式 - 闭曲线积分转二重积分',
-    keywords: ['格林', 'Green', '∂Q/∂x-∂P/∂y', '闭曲线', '正向', '挖洞法', '路径无关'],
+    keywords: [
+      '格林',
+      'Green',
+      '∂Q/∂x-∂P/∂y',
+      '闭曲线',
+      '正向',
+      '挖洞法',
+      '路径无关',
+    ],
   },
   {
     category: MathProblemCategory.SURFACE_INTEGRAL_AREA,
@@ -674,7 +709,16 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '对坐标的曲面积分 - 流量+侧向判断',
-    keywords: ['对坐标', '第二类曲面积分', 'dydz', 'dzdx', 'dxdy', '流量', '上侧下侧', '外侧'],
+    keywords: [
+      '对坐标',
+      '第二类曲面积分',
+      'dydz',
+      'dzdx',
+      'dxdy',
+      '流量',
+      '上侧下侧',
+      '外侧',
+    ],
   },
   {
     category: MathProblemCategory.SURFACE_INTEGRAL_GAUSS,
@@ -686,7 +730,15 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '高斯公式 - 闭曲面积分转三重积分+散度',
-    keywords: ['高斯', 'Gauss', '散度', 'div', '∂P/∂x+∂Q/∂y+∂R/∂z', '闭曲面', '通量'],
+    keywords: [
+      '高斯',
+      'Gauss',
+      '散度',
+      'div',
+      '∂P/∂x+∂Q/∂y+∂R/∂z',
+      '闭曲面',
+      '通量',
+    ],
   },
   {
     category: MathProblemCategory.STOKES_THEOREM,
@@ -710,7 +762,18 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 3,
     description: '场论 - 梯度/散度/旋度+有势场/无源场',
-    keywords: ['梯度', 'grad', '散度', 'div', '旋度', 'rot', '∇', '有势场', '保守场', '调和场'],
+    keywords: [
+      '梯度',
+      'grad',
+      '散度',
+      'div',
+      '旋度',
+      'rot',
+      '∇',
+      '有势场',
+      '保守场',
+      '调和场',
+    ],
   },
   {
     category: MathProblemCategory.VECTOR_ALGEBRA_DOT,
@@ -758,7 +821,14 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '平面方程 - 点法式/一般式+距离/夹角',
-    keywords: ['平面', 'Ax+By+Cz+D=0', '点法式', '法向量', '点到平面距离', '面面角'],
+    keywords: [
+      '平面',
+      'Ax+By+Cz+D=0',
+      '点法式',
+      '法向量',
+      '点到平面距离',
+      '面面角',
+    ],
   },
   {
     category: MathProblemCategory.SPATIAL_GEOMETRY_LINE,
@@ -770,7 +840,14 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 1,
     description: '空间直线 - 对称式/参数式+位置关系',
-    keywords: ['空间直线', '(x-x₀)/m=', '方向向量', '异面直线', '线线角', '线面角'],
+    keywords: [
+      '空间直线',
+      '(x-x₀)/m=',
+      '方向向量',
+      '异面直线',
+      '线线角',
+      '线面角',
+    ],
   },
   {
     category: MathProblemCategory.SPATIAL_GEOMETRY_SURFACE,
@@ -782,7 +859,15 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 2,
     description: '空间曲面与曲线 - 二次曲面+截痕法',
-    keywords: ['二次曲面', '椭球面', '双曲面', '抛物面', '截痕法', '投影曲线', '旋转曲面'],
+    keywords: [
+      '二次曲面',
+      '椭球面',
+      '双曲面',
+      '抛物面',
+      '截痕法',
+      '投影曲线',
+      '旋转曲面',
+    ],
   },
   {
     category: MathProblemCategory.CURVE_SURFACE_COMPREHENSIVE,
@@ -794,7 +879,15 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
     useSymPy: true,
     priority: 2,
     description: '曲线曲面积分综合 - 格林/高斯/斯托克斯联合应用',
-    keywords: ['综合', '曲线积分', '曲面积分', '通量', '环量', '电通量', '场论综合'],
+    keywords: [
+      '综合',
+      '曲线积分',
+      '曲面积分',
+      '通量',
+      '环量',
+      '电通量',
+      '场论综合',
+    ],
   },
   {
     category: MathProblemCategory.GENERAL_MATH,
@@ -814,40 +907,55 @@ const MODEL_ROUTING_TABLE: ModelRoute[] = [
 export class ModelRouterService {
   private readonly logger = new Logger(ModelRouterService.name);
   private readonly routes: ModelRoute[];
-  private routingStats: Map<string, { hits: number; successes: number }> = new Map();
+  private routingStats: Map<string, { hits: number; successes: number }> =
+    new Map();
 
   constructor() {
-    this.routes = [...MODEL_ROUTING_TABLE].sort((a, b) => a.priority - b.priority);
-    this.logger.log(`模型路由器初始化完成: 加载${this.routes.length}条路由规则`);
+    this.routes = [...MODEL_ROUTING_TABLE].sort(
+      (a, b) => a.priority - b.priority,
+    );
+    this.logger.log(
+      `模型路由器初始化完成: 加载${this.routes.length}条路由规则`,
+    );
   }
 
   route(problem: string, userContext?: Record<string, any>): RoutingDecision {
     const lowerProblem = problem.toLowerCase();
 
     for (const route of this.routes) {
-      const matchCount = route.keywords.filter(kw =>
+      const matchCount = route.keywords.filter((kw) =>
         lowerProblem.includes(kw.toLowerCase()),
       ).length;
 
       if (matchCount >= (route.priority <= 2 ? 1 : 2)) {
-        const confidence = Math.min(1.0, matchCount / route.keywords.length + 0.4);
+        const confidence = Math.min(
+          1.0,
+          matchCount / route.keywords.length + 0.4,
+        );
 
         return {
           category: route.category,
           selectedModel: route.primaryModel,
           confidence,
           reasoning: `匹配路由: ${route.description} (匹配关键词${matchCount}个)`,
-          alternativeModels: [route.fallbackModel, route.verificationModel].filter(
-            m => m !== route.primaryModel,
-          ),
+          alternativeModels: [
+            route.fallbackModel,
+            route.verificationModel,
+          ].filter((m) => m !== route.primaryModel),
           estimatedComplexity:
-            route.priority <= 1 ? 'low' : route.priority <= 3 ? 'medium' : 'high',
+            route.priority <= 1
+              ? 'low'
+              : route.priority <= 3
+                ? 'medium'
+                : 'high',
           useSymPy: route.useSymPy,
         };
       }
     }
 
-    const defaultRoute = this.routes.find(r => r.category === MathProblemCategory.GENERAL_MATH)!;
+    const defaultRoute = this.routes.find(
+      (r) => r.category === MathProblemCategory.GENERAL_MATH,
+    )!;
     return {
       category: MathProblemCategory.GENERAL_MATH,
       selectedModel: defaultRoute.primaryModel,
@@ -860,7 +968,7 @@ export class ModelRouterService {
   }
 
   getRouteConfig(category: MathProblemCategory): ModelRoute | undefined {
-    return this.routes.find(r => r.category === category);
+    return this.routes.find((r) => r.category === category);
   }
 
   getModelConfigForCategory(category: MathProblemCategory): {
@@ -903,19 +1011,28 @@ export class ModelRouterService {
     this.routingStats.set(category, stat);
   }
 
-  getAllCategories(): Array<{ category: MathProblemCategory; description: string; priority: number }> {
-    return this.routes.map(r => ({
+  getAllCategories(): Array<{
+    category: MathProblemCategory;
+    description: string;
+    priority: number;
+  }> {
+    return this.routes.map((r) => ({
       category: r.category,
       description: r.description,
       priority: r.priority,
     }));
   }
 
-  recommendModelForComplexity(complexity: 'low' | 'medium' | 'high'): ModelType[] {
+  recommendModelForComplexity(
+    complexity: 'low' | 'medium' | 'high',
+  ): ModelType[] {
     switch (complexity) {
-      case 'low': return [ModelType.LOCAL_RULE, ModelType.SYMPY];
-      case 'medium': return [ModelType.QWEN, ModelType.DEEPSEEK];
-      case 'high': return [ModelType.DEEPSEEK, ModelType.GPT52];
+      case 'low':
+        return [ModelType.LOCAL_RULE, ModelType.SYMPY];
+      case 'medium':
+        return [ModelType.QWEN, ModelType.DEEPSEEK];
+      case 'high':
+        return [ModelType.DEEPSEEK, ModelType.GPT52];
     }
   }
 }

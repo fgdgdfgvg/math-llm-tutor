@@ -69,7 +69,9 @@ describe('SolutionVerificationService', () => {
 
   describe('方程解验证（代回原方程）', () => {
     it('x² - 4 = 0 的 ±2 通过', () => {
-      const checks = service.verifyEquationSolutions('x^2 - 4 = 0', ['x = -2, x = 2']);
+      const checks = service.verifyEquationSolutions('x^2 - 4 = 0', [
+        'x = -2, x = 2',
+      ]);
       expect(checks).toHaveLength(2);
       expect(checks.every((c) => c.passed)).toBe(true);
     });
@@ -82,7 +84,9 @@ describe('SolutionVerificationService', () => {
     it('一元一次方程 2x - 8 = 0 的解 4 通过（含分数写法）', () => {
       const checks = service.verifyEquationSolutions('2*x - 8 = 0', ['x = 4']);
       expect(checks[0].passed).toBe(true);
-      const fractional = service.verifyEquationSolutions('2*x - 1 = 0', ['x = 1/2']);
+      const fractional = service.verifyEquationSolutions('2*x - 1 = 0', [
+        'x = 1/2',
+      ]);
       expect(fractional[0].passed).toBe(true);
     });
   });
@@ -112,7 +116,10 @@ describe('SolutionVerificationService', () => {
 
   describe('按题面自动验证', () => {
     it('“求导”题面自动走求导验证', () => {
-      const report = service.verifyByProblemText('求 f(x) = sin(x) 的导数', 'cos(x)');
+      const report = service.verifyByProblemText(
+        '求 f(x) = sin(x) 的导数',
+        'cos(x)',
+      );
       expect(report.checks).toHaveLength(1);
       expect(report.checks[0].kind).toBe('derivative');
       expect(report.verified).toBe(true);

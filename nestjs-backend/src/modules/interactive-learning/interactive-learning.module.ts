@@ -16,13 +16,7 @@ import { InteractiveLearningController } from './interactive-learning.controller
     LearningModule,
   ],
   controllers: [InteractiveLearningController],
-  providers: [
-    DynamicKnowledgeGraphService,
-    ScenarioConfigService,
-  ],
-  exports: [
-    DynamicKnowledgeGraphService,
-    ScenarioConfigService,
-  ],
+  providers: [DynamicKnowledgeGraphService, ScenarioConfigService],
+  exports: [DynamicKnowledgeGraphService, ScenarioConfigService],
 })
 export class InteractiveLearningModule {}

@@ -15,13 +15,19 @@ export class AgentsService {
   constructor(
     private readonly orchestrator: AgentOrchestrator,
     @Optional() private readonly userProfilingService?: UserProfilingService,
-    @Optional() private readonly localComputationService?: LocalComputationService,
-    @Optional() private readonly answerEquivalenceService?: AnswerEquivalenceService,
-    @Optional() private readonly solutionVerificationService?: SolutionVerificationService,
+    @Optional()
+    private readonly localComputationService?: LocalComputationService,
+    @Optional()
+    private readonly answerEquivalenceService?: AnswerEquivalenceService,
+    @Optional()
+    private readonly solutionVerificationService?: SolutionVerificationService,
   ) {}
 
   // 执行多智能体协作解题
-  async solveProblem(problem: string, userId?: string): Promise<MultiAgentResult> {
+  async solveProblem(
+    problem: string,
+    userId?: string,
+  ): Promise<MultiAgentResult> {
     this.logger.log(`开始执行多智能体协作解题: ${problem.substring(0, 50)}...`);
 
     const startTime = Date.now();
@@ -34,8 +40,13 @@ export class AgentsService {
     };
 
     if (this.userProfilingService && userId) {
-      this.userProfilingService.getOrCreateProfile(userId, { nickname: `user_${userId}` });
-      const difficulty = this.userProfilingService.getAdaptiveDifficulty(userId, 'general');
+      this.userProfilingService.getOrCreateProfile(userId, {
+        nickname: `user_${userId}`,
+      });
+      const difficulty = this.userProfilingService.getAdaptiveDifficulty(
+        userId,
+        'general',
+      );
       if (input.metadata) {
         input.metadata.difficulty = difficulty;
       }
@@ -108,7 +119,9 @@ export class AgentsService {
       const summary = report.checks
         .map((check) => `${check.kind}:${check.passed ? '通过' : '未通过'}`)
         .join('、');
-      this.logger.log(`Verifier 自校验（${summary}）：${report.checks[0].summary}`);
+      this.logger.log(
+        `Verifier 自校验（${summary}）：${report.checks[0].summary}`,
+      );
     } catch (error) {
       // 自校验是增强能力，异常不应影响解题主流程
       this.logger.warn(`Verifier 自校验异常（已忽略）: ${error.message}`);
@@ -120,9 +133,10 @@ export class AgentsService {
     studentAnswer: string;
     solution?: any;
   }) {
-    const problem = typeof input.problem === 'string'
-      ? input.problem
-      : input.problem?.originalText || input.problem?.content || '';
+    const problem =
+      typeof input.problem === 'string'
+        ? input.problem
+        : input.problem?.originalText || input.problem?.content || '';
     const studentAnswer = input.studentAnswer || '';
     let expectedAnswer = input.solution?.finalAnswer || '';
     if (!expectedAnswer && this.localComputationService) {
@@ -136,13 +150,14 @@ export class AgentsService {
       : null;
 
     if (!equivalence) {
-      const normalize = (value: string) => value
-        .toLowerCase()
-        .replace(/\\left|\\right/g, '')
-        .replace(/\\frac\\{([^}]+)\\}\\{([^}]+)\\}/g, '($1)/($2)')
-        .replace(/[{}$\\\s]/g, '')
-        .replace(/[，。；：]/g, '')
-        .replace(/答案[:：=]/g, '');
+      const normalize = (value: string) =>
+        value
+          .toLowerCase()
+          .replace(/\\left|\\right/g, '')
+          .replace(/\\frac\\{([^}]+)\\}\\{([^}]+)\\}/g, '($1)/($2)')
+          .replace(/[{}$\\\s]/g, '')
+          .replace(/[，。；：]/g, '')
+          .replace(/答案[:：=]/g, '');
       const isCorrect = normalize(studentAnswer) === normalize(expectedAnswer);
       return {
         isCorrect,
@@ -150,12 +165,17 @@ export class AgentsService {
         studentAnswer,
         verdict: isCorrect ? 'correct' : 'incorrect',
         confidence: expectedAnswer ? 0.6 : 0.4,
-        message: isCorrect ? '答案正确' : `答案不一致，参考答案为：${expectedAnswer || '暂无'}`,
-        details: isCorrect ? ['答案与计算结果一致'] : ['请检查表达式、符号和常数项'],
+        message: isCorrect
+          ? '答案正确'
+          : `答案不一致，参考答案为：${expectedAnswer || '暂无'}`,
+        details: isCorrect
+          ? ['答案与计算结果一致']
+          : ['请检查表达式、符号和常数项'],
       };
     }
 
-    const isCorrect = equivalence.verdict === 'correct' || equivalence.verdict === 'equivalent';
+    const isCorrect =
+      equivalence.verdict === 'correct' || equivalence.verdict === 'equivalent';
     const message =
       equivalence.verdict === 'correct' || equivalence.verdict === 'equivalent'
         ? '答案正确'
@@ -179,14 +199,23 @@ export class AgentsService {
     studentAnswer: string;
     diagnosis?: any;
   }) {
-    const diagnosis = input.diagnosis || await this.diagnoseStudentAnswer(input);
+    const diagnosis =
+      input.diagnosis || (await this.diagnoseStudentAnswer(input));
     return {
       isCorrect: diagnosis.isCorrect,
-      summary: diagnosis.isCorrect ? '解答正确，继续保持。' : '解答需要进一步检查。',
+      summary: diagnosis.isCorrect
+        ? '解答正确，继续保持。'
+        : '解答需要进一步检查。',
       suggestions: diagnosis.isCorrect
         ? ['可以尝试使用另一种方法验证结果。']
-        : ['重新识别题型并列出已知条件。', '逐步检查代数运算和边界条件。', `参考答案：${diagnosis.expectedAnswer || '暂无'}`],
-      nextSteps: diagnosis.isCorrect ? ['挑战更高难度的同类题。'] : ['查看完整解题步骤后重新作答。'],
+        : [
+            '重新识别题型并列出已知条件。',
+            '逐步检查代数运算和边界条件。',
+            `参考答案：${diagnosis.expectedAnswer || '暂无'}`,
+          ],
+      nextSteps: diagnosis.isCorrect
+        ? ['挑战更高难度的同类题。']
+        : ['查看完整解题步骤后重新作答。'],
       diagnosis,
     };
   }
@@ -203,7 +232,7 @@ export class AgentsService {
   // 获取智能体状态
   getAgentStatus() {
     const agents = this.orchestrator.getAgents();
-    return agents.map(agent => ({
+    return agents.map((agent) => ({
       name: agent.name,
       config: agent.getConfig(),
     }));

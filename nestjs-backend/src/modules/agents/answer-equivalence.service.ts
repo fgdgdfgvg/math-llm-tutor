@@ -11,7 +11,11 @@ import {
   polyToLatex,
 } from './math-expression';
 
-export type EquivalenceVerdict = 'correct' | 'equivalent' | 'incorrect' | 'unknown';
+export type EquivalenceVerdict =
+  | 'correct'
+  | 'equivalent'
+  | 'incorrect'
+  | 'unknown';
 
 export interface EquivalenceResult {
   verdict: EquivalenceVerdict;
@@ -82,25 +86,33 @@ export class AnswerEquivalenceService {
 
     // 0.5 两边都是纯数值（含分数、科学计数法）
     const numericVerdict = this.compareNumbers(student, expected);
-    if (numericVerdict) return { ...numericVerdict, normalizedStudent, normalizedExpected };
+    if (numericVerdict)
+      return { ...numericVerdict, normalizedStudent, normalizedExpected };
 
     // 0.6 定性结论（中文自然语言答案）：
     // “极限不存在” 与 “极限不存在（左右极限不相等）” 是同一个结论，
     // 不应该因为括号里的说明文字就判为无法判定。
-    const qualitativeVerdict = this.compareQualitativeStatements(student, expected);
-    if (qualitativeVerdict) return { ...qualitativeVerdict, normalizedStudent, normalizedExpected };
+    const qualitativeVerdict = this.compareQualitativeStatements(
+      student,
+      expected,
+    );
+    if (qualitativeVerdict)
+      return { ...qualitativeVerdict, normalizedStudent, normalizedExpected };
 
     // 1. 精确多项式等价
     const polyVerdict = this.comparePolynomials(student, expected);
-    if (polyVerdict) return { ...polyVerdict, normalizedStudent, normalizedExpected };
+    if (polyVerdict)
+      return { ...polyVerdict, normalizedStudent, normalizedExpected };
 
     // 2. 解集比较（方程题）
     const solutionVerdict = this.compareSolutionSets(student, expected);
-    if (solutionVerdict) return { ...solutionVerdict, normalizedStudent, normalizedExpected };
+    if (solutionVerdict)
+      return { ...solutionVerdict, normalizedStudent, normalizedExpected };
 
     // 3. 数值抽样
     const sampleVerdict = this.compareBySampling(student, expected);
-    if (sampleVerdict) return { ...sampleVerdict, normalizedStudent, normalizedExpected };
+    if (sampleVerdict)
+      return { ...sampleVerdict, normalizedStudent, normalizedExpected };
 
     return {
       verdict: 'unknown',
@@ -139,7 +151,15 @@ export class AnswerEquivalenceService {
 
   /** 表示“不存在/无解”类结论的中文关键词（必须先于肯定词检查：'不存在' 含 '存在'） */
   private static readonly NEGATIVE_CONCLUSIONS = [
-    '不存在', '无解', '没有解', '无实数解', '无实根', '不可导', '不收敛', '发散', '未定义',
+    '不存在',
+    '无解',
+    '没有解',
+    '无实数解',
+    '无实根',
+    '不可导',
+    '不收敛',
+    '发散',
+    '未定义',
   ];
 
   /**
@@ -149,11 +169,16 @@ export class AnswerEquivalenceService {
   private compareQualitativeStatements(
     a: string,
     b: string,
-  ): Omit<EquivalenceResult, 'normalizedStudent' | 'normalizedExpected'> | null {
+  ): Omit<
+    EquivalenceResult,
+    'normalizedStudent' | 'normalizedExpected'
+  > | null {
     const strip = (text: string) =>
       text.replace(/[（(][^）)]*[）)]/g, '').replace(/\s/g, '');
     const hasNegative = (text: string) =>
-      AnswerEquivalenceService.NEGATIVE_CONCLUSIONS.some((keyword) => text.includes(keyword));
+      AnswerEquivalenceService.NEGATIVE_CONCLUSIONS.some((keyword) =>
+        text.includes(keyword),
+      );
 
     const left = strip(a);
     const right = strip(b);
@@ -170,7 +195,9 @@ export class AnswerEquivalenceService {
     // 一侧说不存在、另一侧给出具体值 → 明确矛盾
     if (hasNegative(left) !== hasNegative(right)) {
       const valueSide = hasNegative(left) ? right : left;
-      const isNumericValue = /^[-+0-9./]+$/.test(valueSide.replace(/[a-z=]/gi, ''));
+      const isNumericValue = /^[-+0-9./]+$/.test(
+        valueSide.replace(/[a-z=]/gi, ''),
+      );
       if (isNumericValue) {
         return {
           verdict: 'incorrect',
@@ -183,14 +210,23 @@ export class AnswerEquivalenceService {
     return null;
   }
 
-  private compareNumbers(a: string, b: string): Omit<EquivalenceResult, 'normalizedStudent' | 'normalizedExpected'> | null {
+  private compareNumbers(
+    a: string,
+    b: string,
+  ): Omit<
+    EquivalenceResult,
+    'normalizedStudent' | 'normalizedExpected'
+  > | null {
     const parse = (value: string): number | null => {
       const cleaned = normalizeMathText(value).replace(/[{}]/g, '').trim();
       if (!cleaned) return null;
       // 分数形式 a/b
-      const m = cleaned.match(/^([+-]?\d+(?:\.\d+)?)\s*\/\s*([+-]?\d+(?:\.\d+)?)$/);
+      const m = cleaned.match(
+        /^([+-]?\d+(?:\.\d+)?)\s*\/\s*([+-]?\d+(?:\.\d+)?)$/,
+      );
       if (m) return Number(m[1]) / Number(m[2]);
-      if (/^[+-]?\d+(\.\d+)?(e[+-]?\d+)?$/i.test(cleaned)) return Number(cleaned);
+      if (/^[+-]?\d+(\.\d+)?(e[+-]?\d+)?$/i.test(cleaned))
+        return Number(cleaned);
       return null;
     };
     const na = parse(a);
@@ -199,14 +235,25 @@ export class AnswerEquivalenceService {
     const diff = Math.abs(na - nb);
     const tolerance = 1e-9 * Math.max(1, Math.abs(na), Math.abs(nb));
     return diff <= tolerance
-      ? { verdict: 'correct', confidence: 0.95, evidence: [`数值相等：${na} = ${nb}`] }
-      : { verdict: 'incorrect', confidence: 0.9, evidence: [`数值不等：${na} ≠ ${nb}`] };
+      ? {
+          verdict: 'correct',
+          confidence: 0.95,
+          evidence: [`数值相等：${na} = ${nb}`],
+        }
+      : {
+          verdict: 'incorrect',
+          confidence: 0.9,
+          evidence: [`数值不等：${na} ≠ ${nb}`],
+        };
   }
 
   private comparePolynomials(
     a: string,
     b: string,
-  ): Omit<EquivalenceResult, 'normalizedStudent' | 'normalizedExpected'> | null {
+  ): Omit<
+    EquivalenceResult,
+    'normalizedStudent' | 'normalizedExpected'
+  > | null {
     const polyA = this.toPolynomial(a);
     const polyB = this.toPolynomial(b);
     if (!polyA || !polyB) return null;
@@ -252,7 +299,10 @@ export class AnswerEquivalenceService {
   private compareSolutionSets(
     a: string,
     b: string,
-  ): Omit<EquivalenceResult, 'normalizedStudent' | 'normalizedExpected'> | null {
+  ): Omit<
+    EquivalenceResult,
+    'normalizedStudent' | 'normalizedExpected'
+  > | null {
     const setA = this.extractRootSet(a);
     const setB = this.extractRootSet(b);
     if (!setA || !setB || setA.length === 0 || setB.length === 0) return null;
@@ -266,7 +316,10 @@ export class AnswerEquivalenceService {
     const used = new Array(setB.length).fill(false);
     for (const value of setA) {
       const index = setB.findIndex(
-        (candidate, i) => !used[i] && Math.abs(candidate - value) < 1e-9 * Math.max(1, Math.abs(value), Math.abs(candidate)),
+        (candidate, i) =>
+          !used[i] &&
+          Math.abs(candidate - value) <
+            1e-9 * Math.max(1, Math.abs(value), Math.abs(candidate)),
       );
       if (index < 0) {
         return {
@@ -315,7 +368,10 @@ export class AnswerEquivalenceService {
   private compareBySampling(
     a: string,
     b: string,
-  ): Omit<EquivalenceResult, 'normalizedStudent' | 'normalizedExpected'> | null {
+  ): Omit<
+    EquivalenceResult,
+    'normalizedStudent' | 'normalizedExpected'
+  > | null {
     const fa = compileEvaluator(this.prepareExpression(a));
     const fb = compileEvaluator(this.prepareExpression(b));
     if (!fa || !fb) return null;
@@ -331,7 +387,9 @@ export class AnswerEquivalenceService {
       const bDefined = Number.isFinite(vb);
       if (!aDefined && !bDefined) continue;
       if (aDefined !== bDefined) {
-        evidence.push(`x=${x} 处定义域不同（${aDefined ? '学生' : '参考'}答案无定义）`);
+        evidence.push(
+          `x=${x} 处定义域不同（${aDefined ? '学生' : '参考'}答案无定义）`,
+        );
         return { verdict: 'unknown', confidence: 0, evidence };
       }
       compared++;

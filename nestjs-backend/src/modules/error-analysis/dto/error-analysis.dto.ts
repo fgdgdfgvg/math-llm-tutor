@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsArray, IsObject, IsOptional, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  IsObject,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
 
 export class AnalyzeErrorDto {
   @IsString()

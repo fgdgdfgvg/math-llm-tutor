@@ -1,16 +1,35 @@
-import { Controller, Post, Body, Get, Param, Put, Delete } from '@nestjs/common';
-import { ErrorAnalysisService, ErrorDiagnosis, MultiStepDiagnosis, ErrorPattern } from './error-analysis.service';
-import { AnalyzeErrorDto, AnalyzeMultiStepSolutionDto, AddErrorPatternDto, UpdateErrorPatternDto } from './dto/error-analysis.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common';
+import {
+  ErrorAnalysisService,
+  ErrorDiagnosis,
+  MultiStepDiagnosis,
+  ErrorPattern,
+} from './error-analysis.service';
+import {
+  AnalyzeErrorDto,
+  AnalyzeMultiStepSolutionDto,
+  AddErrorPatternDto,
+  UpdateErrorPatternDto,
+} from './dto/error-analysis.dto';
 
 @Controller('error-analysis')
 export class ErrorAnalysisController {
   constructor(private readonly errorAnalysisService: ErrorAnalysisService) {}
 
   @Post('analyze')
-  async analyzeError(
-    @Body() dto: AnalyzeErrorDto,
-  ): Promise<ErrorDiagnosis[]> {
-    return this.errorAnalysisService.analyzeError(dto.userAnswer, dto.correctAnswer);
+  async analyzeError(@Body() dto: AnalyzeErrorDto): Promise<ErrorDiagnosis[]> {
+    return this.errorAnalysisService.analyzeError(
+      dto.userAnswer,
+      dto.correctAnswer,
+    );
   }
 
   @Post('analyze-multi-step')
@@ -31,7 +50,7 @@ export class ErrorAnalysisController {
   ): Promise<ErrorPattern> {
     return this.errorAnalysisService.addErrorPattern({
       ...dto,
-      pattern: new RegExp(dto.pattern)
+      pattern: new RegExp(dto.pattern),
     });
   }
 

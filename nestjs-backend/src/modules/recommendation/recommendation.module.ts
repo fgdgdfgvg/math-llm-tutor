@@ -7,7 +7,12 @@ import { ErrorAnalysisModule } from '../error-analysis/error-analysis.module';
 import { QuestionsModule } from '../questions/questions.module';
 
 @Module({
-  imports: [KnowledgeModule, LearningModule, ErrorAnalysisModule, QuestionsModule],
+  imports: [
+    KnowledgeModule,
+    LearningModule,
+    ErrorAnalysisModule,
+    QuestionsModule,
+  ],
   controllers: [RecommendationController],
   providers: [RecommendationService],
   exports: [RecommendationService],

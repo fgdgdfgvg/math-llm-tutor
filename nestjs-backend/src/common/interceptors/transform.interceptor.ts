@@ -30,9 +30,12 @@ export class TransformInterceptor<T> implements NestInterceptor<
         // 4xx/5xx 时必须透传：例如 /health/ready 未就绪会 set 503，
         // 若这里恒返回 code:200，按 body.code 判定的客户端会把"不就绪"读成成功。
         // 抛出的异常走 GlobalExceptionFilter，不经过这里，因此改动面仅限主动设状态码的处理器。
-        const statusCode = http.getResponse<{ statusCode?: number }>()?.statusCode;
+        const statusCode = http.getResponse<{ statusCode?: number }>()
+          ?.statusCode;
         const code =
-          typeof statusCode === 'number' && statusCode >= 400 ? statusCode : 200;
+          typeof statusCode === 'number' && statusCode >= 400
+            ? statusCode
+            : 200;
         return {
           code,
           data: data ?? null,

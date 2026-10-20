@@ -79,7 +79,8 @@ export class LocalComputationService {
     private readonly httpService: HttpService,
     private readonly mathTerminologyService: MathTerminologyService,
   ) {
-    this.sympyServiceUrl = this.configService.get<string>('SYMPY_SERVICE_URL') || '';
+    this.sympyServiceUrl =
+      this.configService.get<string>('SYMPY_SERVICE_URL') || '';
   }
 
   // 解决数学问题
@@ -88,7 +89,8 @@ export class LocalComputationService {
     this.logger.log(`识别问题类型: ${problemType}`);
 
     // 标准化问题表述
-    const standardizedProblem = this.mathTerminologyService.standardizeExpression(problem);
+    const standardizedProblem =
+      this.mathTerminologyService.standardizeExpression(problem);
     this.logger.log(`标准化问题: ${standardizedProblem}`);
 
     // 根据问题类型选择解题策略
@@ -121,21 +123,31 @@ export class LocalComputationService {
     }
 
     // 标准化解题步骤中的数学术语和符号
-    solution.steps = solution.steps.map(step => {
+    solution.steps = solution.steps.map((step) => {
       return {
         ...step,
         title: this.mathTerminologyService.standardizeExpression(step.title),
-        description: this.mathTerminologyService.standardizeExpression(step.description),
-        process: this.mathTerminologyService.standardizeExpression(step.process),
+        description: this.mathTerminologyService.standardizeExpression(
+          step.description,
+        ),
+        process: this.mathTerminologyService.standardizeExpression(
+          step.process,
+        ),
         formula: this.mathTerminologyService.toLaTeX(step.formula),
         result: this.mathTerminologyService.standardizeExpression(step.result),
-        highlight: this.mathTerminologyService.standardizeExpression(step.highlight),
-        keyPoint: this.mathTerminologyService.standardizeExpression(step.keyPoint),
+        highlight: this.mathTerminologyService.standardizeExpression(
+          step.highlight,
+        ),
+        keyPoint: this.mathTerminologyService.standardizeExpression(
+          step.keyPoint,
+        ),
       };
     });
 
     // 标准化最终答案
-    solution.finalAnswer = this.mathTerminologyService.standardizeExpression(solution.finalAnswer);
+    solution.finalAnswer = this.mathTerminologyService.standardizeExpression(
+      solution.finalAnswer,
+    );
 
     // 尝试使用SymPy进行精确计算（如果可用）
     if (this.isSymPyAvailable()) {
@@ -155,16 +167,23 @@ export class LocalComputationService {
    * 绝不返回占位符冒充答案；调用方（诊断/反馈/前端）据此提示转交 AI 或请教老师。
    */
   private markUnsolved(solution: ProblemSolution): ProblemSolution {
-    const reason = this.unsolvedReasons[solution.problemType] || '本地规则引擎未能确定本题答案';
-    this.logger.warn(`本地引擎未能求解（${solution.problemType}）：回退为 unsolved 状态`);
+    const reason =
+      this.unsolvedReasons[solution.problemType] ||
+      '本地规则引擎未能确定本题答案';
+    this.logger.warn(
+      `本地引擎未能求解（${solution.problemType}）：回退为 unsolved 状态`,
+    );
     return {
       ...solution,
       status: 'unsolved',
       reason,
       finalAnswer: '',
-      steps: solution.steps.map(step =>
+      steps: solution.steps.map((step) =>
         step.result === LocalComputationService.UNSOLVED
-          ? { ...step, result: '未能确定（本地规则引擎无法自动求解，需转交 AI 或人工）' }
+          ? {
+              ...step,
+              result: '未能确定（本地规则引擎无法自动求解，需转交 AI 或人工）',
+            }
           : step,
       ),
     };
@@ -172,10 +191,13 @@ export class LocalComputationService {
 
   /** 各题型 unsolved 的具体原因说明 */
   private readonly unsolvedReasons: Record<string, string> = {
-    [MathProblemType.LIMIT]: '极限式中含本地规则无法识别的结构（如分式、复合函数），需 AI 或符号计算求解',
-    [MathProblemType.DERIVATIVE]: '函数形式不在本地规则覆盖范围内（仅支持多项式与基本初等函数）',
+    [MathProblemType.LIMIT]:
+      '极限式中含本地规则无法识别的结构（如分式、复合函数），需 AI 或符号计算求解',
+    [MathProblemType.DERIVATIVE]:
+      '函数形式不在本地规则覆盖范围内（仅支持多项式与基本初等函数）',
     [MathProblemType.INTEGRAL]: '被积函数不在本地规则覆盖范围内',
-    [MathProblemType.EQUATION]: '方程不是一次/二次多项式形式，本地规则无法给出精确解',
+    [MathProblemType.EQUATION]:
+      '方程不是一次/二次多项式形式，本地规则无法给出精确解',
     [MathProblemType.ODE]: '微分方程不满足本地支持的常系数线性齐次形式',
     [MathProblemType.GENERAL]: '未识别出可自动求解的题型',
   };
@@ -195,31 +217,37 @@ export class LocalComputationService {
     };
 
     // —— ODE 特征：必须是微分方程字样或 y 的导数记号，不用裸 'ode' 子串 ——
-    if (/微分方程|常微分|differential\s*equation/.test(text)) add(MathProblemType.ODE, 6);
+    if (/微分方程|常微分|differential\s*equation/.test(text))
+      add(MathProblemType.ODE, 6);
     if (/\bode\b|\bivp\b/.test(text)) add(MathProblemType.ODE, 4);
     if (/(?:^|[^a-z])y\s*['′]{1,2}/.test(text)) add(MathProblemType.ODE, 5);
     if (/\bd[\^\s]*2?y\s*\/\s*dx/.test(text)) add(MathProblemType.ODE, 4);
 
     // —— 级数特征 ——
-    if (/级数|series|收敛域|收敛半径|幂级数|泰勒级数|麦克劳林/.test(text)) add(MathProblemType.SERIES, 6);
+    if (/级数|series|收敛域|收敛半径|幂级数|泰勒级数|麦克劳林/.test(text))
+      add(MathProblemType.SERIES, 6);
     if (/\bsum\b|∑|求和/.test(text)) add(MathProblemType.SERIES, 3);
 
     // —— 极限 / 导数 / 积分 ——
     if (/极限|\blimit\b|\blim\b/.test(text)) add(MathProblemType.LIMIT, 6);
     if (/→|->|趋近于|趋近/.test(text)) add(MathProblemType.LIMIT, 2);
-    if (/导数|求导|derivative|d\/dx|导函数/.test(text)) add(MathProblemType.DERIVATIVE, 6);
+    if (/导数|求导|derivative|d\/dx|导函数/.test(text))
+      add(MathProblemType.DERIVATIVE, 6);
     if (/积分|integral|∫|原函数/.test(text)) add(MathProblemType.INTEGRAL, 6);
 
     // —— 方程特征 ——
-    if (/方程|equation|\bsolve\b|解方程/.test(text)) add(MathProblemType.EQUATION, 5);
+    if (/方程|equation|\bsolve\b|解方程/.test(text))
+      add(MathProblemType.EQUATION, 5);
     if (/=/.test(text)) add(MathProblemType.EQUATION, 2);
 
     // —— 证明 / 几何 ——
     if (/证明|求证|proof|prove/.test(text)) add(MathProblemType.PROOF, 5);
-    if (/几何|geometry|抛物线|椭圆|双曲线|平面方程|切平面/.test(text)) add(MathProblemType.GEOMETRY, 5);
+    if (/几何|geometry|抛物线|椭圆|双曲线|平面方程|切平面/.test(text))
+      add(MathProblemType.GEOMETRY, 5);
 
     // 幂次/根式等“像多项式”的线索，弱化方程优势，避免纯算式被判成方程
-    if (/^[\dx\s\+\-\*\/\^\.\(\)=]+$/i.test(problem.trim())) add(MathProblemType.EQUATION, 1);
+    if (/^[\dx\s\+\-\*\/\^\.\(\)=]+$/i.test(problem.trim()))
+      add(MathProblemType.EQUATION, 1);
 
     const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     if (!ranked.length || ranked[0][1] < 2) return MathProblemType.GENERAL;
@@ -313,9 +341,11 @@ export class LocalComputationService {
       title: '选择求导法则',
       description: '根据函数结构选择适当的求导法则',
       formula: '',
-      process: '根据函数结构选择基本公式、链式法则、乘积法则或商法则\n解释选择该法则的原因和适用条件',
+      process:
+        '根据函数结构选择基本公式、链式法则、乘积法则或商法则\n解释选择该法则的原因和适用条件',
       result: '已选择合适的求导法则',
-      highlight: '复合函数需要使用链式法则，乘积函数使用乘积法则，商函数使用商法则',
+      highlight:
+        '复合函数需要使用链式法则，乘积函数使用乘积法则，商函数使用商法则',
       keyPoint: '求导法则选择',
     });
 
@@ -389,9 +419,11 @@ export class LocalComputationService {
       title: '选择积分方法',
       description: '根据函数特点选择合适的积分方法',
       formula: '',
-      process: '根据函数特点选择换元法、分部积分法或部分分式分解等方法\n解释选择该方法的原因和适用条件',
+      process:
+        '根据函数特点选择换元法、分部积分法或部分分式分解等方法\n解释选择该方法的原因和适用条件',
       result: '已选择合适的积分方法',
-      highlight: '换元法适用于复合函数，分部积分法适用于乘积函数，部分分式分解适用于有理函数',
+      highlight:
+        '换元法适用于复合函数，分部积分法适用于乘积函数，部分分式分解适用于有理函数',
       keyPoint: '积分方法选择',
     });
 
@@ -477,7 +509,8 @@ export class LocalComputationService {
       title: '选择解法',
       description: '根据方程类型选择合适的解法',
       formula: '',
-      process: '根据方程类型选择因式分解、求根公式、配方法或其他方法\n解释选择该方法的原因和适用条件',
+      process:
+        '根据方程类型选择因式分解、求根公式、配方法或其他方法\n解释选择该方法的原因和适用条件',
       result: '已选择合适的解法',
       highlight: '选择合适的方法可以简化计算，提高效率',
       keyPoint: '解法选择',
@@ -600,7 +633,8 @@ export class LocalComputationService {
     if (!match) {
       return {
         formula: 'r^2 + ar + b = 0',
-        process: '已识别为微分方程，但暂时无法从题面可靠提取常系数，请补充标准形式。',
+        process:
+          '已识别为微分方程，但暂时无法从题面可靠提取常系数，请补充标准形式。',
         result: '无法自动提取微分方程系数',
       };
     }
@@ -610,7 +644,10 @@ export class LocalComputationService {
     const a = signed(match[1], match[2]);
     const b = signed(match[3], match[4]);
     const discriminant = a * a - 4 * b;
-    const format = (value: number) => Number.isInteger(value) ? String(value) : String(Number(value.toFixed(6)));
+    const format = (value: number) =>
+      Number.isInteger(value)
+        ? String(value)
+        : String(Number(value.toFixed(6)));
     const equation = `r^{2} ${a < 0 ? '- ' + format(Math.abs(a)) : '+ ' + format(a)}r ${b < 0 ? '- ' + format(Math.abs(b)) : '+ ' + format(b)} = 0`;
     // e^{rx}：r=0 时该项就是常数 1，r=1 时写作 e^{x}
     const exponential = (r: number): string => {
@@ -657,7 +694,7 @@ export class LocalComputationService {
       {
         name: '常系数线性齐次微分方程',
         description: "形如 y'' + a y' + b y = 0 的微分方程",
-        formulas: ["y'' + a y' + b y = 0", "r² + a r + b = 0"],
+        formulas: ["y'' + a y' + b y = 0", 'r² + a r + b = 0'],
         importance: 5,
       },
       {
@@ -745,7 +782,9 @@ export class LocalComputationService {
   }
 
   /** 数值形式的项列表，供只需比较大小的分支（如极限）使用 */
-  private parsePolynomial(expr: string): { coeff: number; exp: number }[] | null {
+  private parsePolynomial(
+    expr: string,
+  ): { coeff: number; exp: number }[] | null {
     const poly = this.parsePolynomialFraction(expr);
     if (!poly) return null;
     if (!poly.length) return [{ coeff: 0, exp: 0 }];
@@ -812,12 +851,20 @@ export class LocalComputationService {
 
   // ========== 增强后的结果计算方法 ==========
 
-  private computeDerivativeResult(problem: string): { formula: string; result: string; process: string } {
+  private computeDerivativeResult(problem: string): {
+    formula: string;
+    result: string;
+    process: string;
+  } {
     const lower = problem.toLowerCase();
 
     // 优先按“整段多项式”逐项求导：early-return 单个 x^n 会丢掉其余项（如 x^3 + 2x → 只算 x^3）
     const polyExpr = this.extractFunctionExpression(problem);
-    if (polyExpr && /^[\dx\s\+\-\^\.\*\/\(\)a-z]+$/.test(polyExpr.replace(/\s/g, '')) && polyExpr.includes('x')) {
+    if (
+      polyExpr &&
+      /^[\dx\s\+\-\^\.\*\/\(\)a-z]+$/.test(polyExpr.replace(/\s/g, '')) &&
+      polyExpr.includes('x')
+    ) {
       const result = this.differentiatePolynomial(polyExpr);
       if (result && result !== '0') {
         return {
@@ -832,41 +879,76 @@ export class LocalComputationService {
     if (pwrMatch) {
       const n = parseInt(pwrMatch[1]);
       return {
-        formula: `\\frac{d}{dx}(x^{${n}}) = ${n}x^{${n-1}}`,
-        result: `${n}x^{${n-1}}`,
+        formula: `\\frac{d}{dx}(x^{${n}}) = ${n}x^{${n - 1}}`,
+        result: `${n}x^{${n - 1}}`,
         process: `幂法则: d/dx(x^n) = n·x^(n-1), 此处 n=${n}`,
       };
     }
     if (lower.includes('sin')) {
       const inner = lower.match(/sin\(?([^)]*)\)?/)?.[1] || 'x';
       if (inner === 'x') {
-        return { formula: '\\frac{d}{dx}(\\sin x) = \\cos x', result: '\\cos x', process: '基本公式: sin的导数是cos' };
+        return {
+          formula: '\\frac{d}{dx}(\\sin x) = \\cos x',
+          result: '\\cos x',
+          process: '基本公式: sin的导数是cos',
+        };
       }
-      return { formula: `\\frac{d}{dx}(\\sin(${inner})) = \\cos(${inner}) \\cdot ${inner}'`, result: `\\cos(${inner}) · (${inner})'`, process: '链式法则: 外导cos×内导' };
+      return {
+        formula: `\\frac{d}{dx}(\\sin(${inner})) = \\cos(${inner}) \\cdot ${inner}'`,
+        result: `\\cos(${inner}) · (${inner})'`,
+        process: '链式法则: 外导cos×内导',
+      };
     }
     if (lower.includes('cos')) {
-      return { formula: '\\frac{d}{dx}(\\cos x) = -\\sin x', result: '-\\sin x', process: '基本公式: cos的导数是-sin, 注意负号' };
+      return {
+        formula: '\\frac{d}{dx}(\\cos x) = -\\sin x',
+        result: '-\\sin x',
+        process: '基本公式: cos的导数是-sin, 注意负号',
+      };
     }
     if (lower.includes('e^') || lower.includes('exp')) {
       const em = lower.match(/(?:e\^|exp\()([^)]+)/);
       const inner = em?.[1] || 'x';
       if (inner === 'x') {
-        return { formula: '\\frac{d}{dx}(e^x) = e^x', result: 'e^x', process: 'e^x的导数等于自身' };
+        return {
+          formula: '\\frac{d}{dx}(e^x) = e^x',
+          result: 'e^x',
+          process: 'e^x的导数等于自身',
+        };
       }
-      return { formula: `\\frac{d}{dx}(e^{${inner}}) = e^{${inner}} \\cdot ${inner}'`, result: `e^${inner} · (${inner})'`, process: '链式法则: e^u导数=e^u·u\'' };
+      return {
+        formula: `\\frac{d}{dx}(e^{${inner}}) = e^{${inner}} \\cdot ${inner}'`,
+        result: `e^${inner} · (${inner})'`,
+        process: "链式法则: e^u导数=e^u·u'",
+      };
     }
-    if (lower.includes('ln') || (lower.includes('log') && !lower.includes('log10'))) {
+    if (
+      lower.includes('ln') ||
+      (lower.includes('log') && !lower.includes('log10'))
+    ) {
       const lm = lower.match(/(?:ln|log)\(?([^)]*)\)?/);
       const inner = lm?.[1] || 'x';
       if (inner === 'x') {
-        return { formula: '\\frac{d}{dx}(\\ln x) = \\frac{1}{x}', result: '1/x', process: 'ln x的导数是1/x' };
+        return {
+          formula: '\\frac{d}{dx}(\\ln x) = \\frac{1}{x}',
+          result: '1/x',
+          process: 'ln x的导数是1/x',
+        };
       }
-      return { formula: `\\frac{d}{dx}(\\ln(${inner})) = \\frac{${inner}'}{${inner}}`, result: `(${inner})'/${inner}`, process: 'ln(u)导数=u\'/u' };
+      return {
+        formula: `\\frac{d}{dx}(\\ln(${inner})) = \\frac{${inner}'}{${inner}}`,
+        result: `(${inner})'/${inner}`,
+        process: "ln(u)导数=u'/u",
+      };
     }
     if (lower.includes('tan')) {
-      return { formula: '\\frac{d}{dx}(\\tan x) = \\sec^2 x', result: '\\sec^2 x', process: 'tan的导数是sec²x' };
+      return {
+        formula: '\\frac{d}{dx}(\\tan x) = \\sec^2 x',
+        result: '\\sec^2 x',
+        process: 'tan的导数是sec²x',
+      };
     }
-    
+
     // 精确的表达式求值：用数值差分验证 + 给出明确的未求解标记
     return {
       formula: "f'(x) = ...",
@@ -875,12 +957,20 @@ export class LocalComputationService {
     };
   }
 
-  private computeIntegralResult(problem: string): { formula: string; result: string; process: string } {
+  private computeIntegralResult(problem: string): {
+    formula: string;
+    result: string;
+    process: string;
+  } {
     const lower = problem.toLowerCase();
-    
+
     // 优先按“整段多项式”逐项积分：early-return 单个 x^n 会丢掉其余项（如 x^2 + 3x → 只算 x^2）
     const polyExpr = this.extractFunctionExpression(problem);
-    if (polyExpr && /^[\dx\s\+\-\^\.\*\/\(\)a-z]+$/.test(polyExpr.replace(/\s/g, '')) && polyExpr.includes('x')) {
+    if (
+      polyExpr &&
+      /^[\dx\s\+\-\^\.\*\/\(\)a-z]+$/.test(polyExpr.replace(/\s/g, '')) &&
+      polyExpr.includes('x')
+    ) {
       const result = this.integratePolynomial(polyExpr);
       if (result && result !== 'C' && result !== '0 + C') {
         return {
@@ -903,21 +993,41 @@ export class LocalComputationService {
     }
 
     if (lower.includes('sin')) {
-      return { formula: '\\int \\sin x \\,dx = -\\cos x + C', result: '-cos x + C', process: '基本积分: ∫sin x dx = -cos x + C' };
+      return {
+        formula: '\\int \\sin x \\,dx = -\\cos x + C',
+        result: '-cos x + C',
+        process: '基本积分: ∫sin x dx = -cos x + C',
+      };
     }
     if (lower.includes('cos')) {
-      return { formula: '\\int \\cos x \\,dx = \\sin x + C', result: 'sin x + C', process: '基本积分: ∫cos x dx = sin x + C' };
+      return {
+        formula: '\\int \\cos x \\,dx = \\sin x + C',
+        result: 'sin x + C',
+        process: '基本积分: ∫cos x dx = sin x + C',
+      };
     }
     if (lower.includes('1/x') || lower.includes('1÷x')) {
-      return { formula: '\\int \\frac{1}{x} \\,dx = \\ln|x| + C', result: 'ln|x| + C', process: '1/x积分得ln|x|, 注意绝对值' };
+      return {
+        formula: '\\int \\frac{1}{x} \\,dx = \\ln|x| + C',
+        result: 'ln|x| + C',
+        process: '1/x积分得ln|x|, 注意绝对值',
+      };
     }
     if (lower.includes('e^')) {
-      return { formula: '\\int e^x \\,dx = e^x + C', result: 'e^x + C', process: 'e^x积分等于自身, 加C' };
+      return {
+        formula: '\\int e^x \\,dx = e^x + C',
+        result: 'e^x + C',
+        process: 'e^x积分等于自身, 加C',
+      };
     }
     if (lower.includes('sec^2') || lower.includes('sec²')) {
-      return { formula: '\\int \\sec^2 x \\,dx = \\tan x + C', result: 'tan x + C', process: 'sec²x积分为tan x' };
+      return {
+        formula: '\\int \\sec^2 x \\,dx = \\tan x + C',
+        result: 'tan x + C',
+        process: 'sec²x积分为tan x',
+      };
     }
-    
+
     return {
       formula: '\\int f(x) \\,dx = ...',
       result: LocalComputationService.UNSOLVED,
@@ -925,20 +1035,40 @@ export class LocalComputationService {
     };
   }
 
-  private computeLimitResult(problem: string): { formula: string; result: string; process: string } {
+  private computeLimitResult(problem: string): {
+    formula: string;
+    result: string;
+    process: string;
+  } {
     const lower = problem.toLowerCase();
-    
-    if (lower.includes('sin') && lower.includes('/') && (lower.includes('→0') || lower.includes('->0'))) {
-      return { formula: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1', result: '1', process: '重要极限: lim(x→0) sin(x)/x = 1' };
+
+    if (
+      lower.includes('sin') &&
+      lower.includes('/') &&
+      (lower.includes('→0') || lower.includes('->0'))
+    ) {
+      return {
+        formula: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1',
+        result: '1',
+        process: '重要极限: lim(x→0) sin(x)/x = 1',
+      };
     }
-    if (lower.includes('(1+') && lower.includes('^') && (lower.includes('→∞') || lower.includes('->∞'))) {
-      return { formula: '\\lim_{x \\to \\infty} (1+\\frac{1}{x})^x = e', result: 'e', process: '重要极限: lim(x→∞)(1+1/x)^x = e' };
+    if (
+      lower.includes('(1+') &&
+      lower.includes('^') &&
+      (lower.includes('→∞') || lower.includes('->∞'))
+    ) {
+      return {
+        formula: '\\lim_{x \\to \\infty} (1+\\frac{1}{x})^x = e',
+        result: 'e',
+        process: '重要极限: lim(x→∞)(1+1/x)^x = e',
+      };
     }
     if (lower.includes('→0') || lower.includes('->0')) {
       const polyExpr = this.extractFunctionExpression(problem);
       if (polyExpr && /^[\dx\s\+\-\^]+$/.test(polyExpr)) {
         const terms = this.parsePolynomial(polyExpr) ?? [];
-        const constTerm = terms.find(t => t.exp === 0);
+        const constTerm = terms.find((t) => t.exp === 0);
         return {
           formula: `\\lim_{x \\to 0} (${polyExpr}) = ${constTerm?.coeff ?? 0}`,
           result: `${constTerm?.coeff ?? 0}`,
@@ -951,26 +1081,36 @@ export class LocalComputationService {
       if (polyExpr) {
         try {
           const polyStr = polyExpr.replace(/\s/g, '');
-          if (/^[\dx\+\-\^\.\*\/\(\)]+$/.test(polyStr) && polyStr.includes('x')) {
+          if (
+            /^[\dx\+\-\^\.\*\/\(\)]+$/.test(polyStr) &&
+            polyStr.includes('x')
+          ) {
             const terms = this.parsePolynomial(polyExpr) ?? [];
             if (terms.length > 0) {
-              const maxExp = Math.max(...terms.map(t => t.exp));
-              const leading = terms.find(t => t.exp === maxExp);
+              const maxExp = Math.max(...terms.map((t) => t.exp));
+              const leading = terms.find((t) => t.exp === maxExp);
               const sign = (leading?.coeff ?? 0) > 0 ? '+∞' : '-∞';
               return {
                 formula: `\\lim_{x \\to \\infty} (${polyExpr})`,
-                result: maxExp > 0 ? (leading?.coeff ?? 0) > 0 ? '∞' : '-∞' : `${leading?.coeff ?? 0}`,
+                result:
+                  maxExp > 0
+                    ? (leading?.coeff ?? 0) > 0
+                      ? '∞'
+                      : '-∞'
+                    : `${leading?.coeff ?? 0}`,
                 process: `x→∞时最高次项x^${maxExp}主导, 极限为${sign}`,
               };
             }
           }
         } catch (e) {
           // 多项式解析失败视为不可解，降级到通用结论；记录原因便于排查
-          this.logger.debug(`computeLimitResult 解析异常: ${(e as Error).message}`);
+          this.logger.debug(
+            `computeLimitResult 解析异常: ${(e as Error).message}`,
+          );
         }
       }
     }
-    
+
     return {
       formula: `lim ${problem.replace(/→/g, '→')}`,
       result: LocalComputationService.UNSOLVED,
@@ -978,7 +1118,11 @@ export class LocalComputationService {
     };
   }
 
-  private computeEquationResult(problem: string): { formula: string; result: string; process: string } {
+  private computeEquationResult(problem: string): {
+    formula: string;
+    result: string;
+    process: string;
+  } {
     // 先剥掉“解方程/求解/解:”这类中文引导词，再交给表达式引擎。
     const cleaned = problem
       .replace(/^(?:解方程|求解方程|方程式|解|求解|求)\s*[:：]?\s*/i, '')
@@ -1004,10 +1148,10 @@ export class LocalComputationService {
 
     if (solution.kind === 'roots') {
       const { roots, degree } = solution;
-      const allComplex = roots.every(root => Number.isNaN(root.numeric));
+      const allComplex = roots.every((root) => Number.isNaN(root.numeric));
       const result = allComplex
-        ? `无实数解，复数解：${roots.map(root => root.latex).join('，')}`
-        : roots.map(root => root.latex).join('，');
+        ? `无实数解，复数解：${roots.map((root) => root.latex).join('，')}`
+        : roots.map((root) => root.latex).join('，');
       const formula =
         degree === 1
           ? 'ax + b = 0 \\implies x = -\\frac{b}{a}'
@@ -1121,13 +1265,18 @@ export class LocalComputationService {
       {
         name: '洛必达法则',
         description: '用于计算0/0或∞/∞型不定式的极限',
-        formulas: ['\\lim_{x \to a} \\frac{f(x)}{g(x)} = \\lim_{x \to a} \\frac{f\'(x)}{g\'(x)}'],
+        formulas: [
+          "\\lim_{x \to a} \\frac{f(x)}{g(x)} = \\lim_{x \to a} \\frac{f'(x)}{g'(x)}",
+        ],
         importance: 0.8,
       },
       {
         name: '重要极限',
         description: '常见的重要极限公式',
-        formulas: ['\\lim_{x \to 0} \\frac{\\sin x}{x} = 1', '\\lim_{x \to \infty} (1 + \\frac{1}{x})^x = e'],
+        formulas: [
+          '\\lim_{x \to 0} \\frac{\\sin x}{x} = 1',
+          '\\lim_{x \to \infty} (1 + \\frac{1}{x})^x = e',
+        ],
         importance: 0.7,
       },
     ];
@@ -1139,19 +1288,22 @@ export class LocalComputationService {
       {
         name: '导数定义',
         description: '函数在某一点的导数是函数在该点的变化率',
-        formulas: ['f\'(x) = \\lim_{h \to 0} \\frac{f(x+h) - f(x)}{h}'],
+        formulas: ["f'(x) = \\lim_{h \to 0} \\frac{f(x+h) - f(x)}{h}"],
         importance: 0.9,
       },
       {
         name: '基本求导公式',
         description: '常见函数的导数公式',
-        formulas: ['\\frac{d}{dx}(x^n) = nx^{n-1}', '\\frac{d}{dx}(\\sin x) = \\cos x'],
+        formulas: [
+          '\\frac{d}{dx}(x^n) = nx^{n-1}',
+          '\\frac{d}{dx}(\\sin x) = \\cos x',
+        ],
         importance: 0.8,
       },
       {
         name: '链式法则',
         description: '用于计算复合函数的导数',
-        formulas: ['\\frac{d}{dx}(f(g(x))) = f\'(g(x)) \\cdot g\'(x)'],
+        formulas: ["\\frac{d}{dx}(f(g(x))) = f'(g(x)) \\cdot g'(x)"],
         importance: 0.8,
       },
     ];
@@ -1224,12 +1376,18 @@ export class LocalComputationService {
 
   private getOperationLabel(problemType: MathProblemType): string {
     switch (problemType) {
-      case MathProblemType.DERIVATIVE: return '求导';
-      case MathProblemType.INTEGRAL: return '积分';
-      case MathProblemType.LIMIT: return '求极限';
-      case MathProblemType.EQUATION: return '解方程';
-      case MathProblemType.ODE: return '解微分方程';
-      default: return '计算';
+      case MathProblemType.DERIVATIVE:
+        return '求导';
+      case MathProblemType.INTEGRAL:
+        return '积分';
+      case MathProblemType.LIMIT:
+        return '求极限';
+      case MathProblemType.EQUATION:
+        return '解方程';
+      case MathProblemType.ODE:
+        return '解微分方程';
+      default:
+        return '计算';
     }
   }
 
@@ -1248,7 +1406,7 @@ export class LocalComputationService {
     const result = responseData.result || '';
     const rawLatex = responseData.latex || '';
     // SymPy 有时会把 latex 直接返回成最终答案，此时改用题目表达式充当“表达式”更有信息量
-    const latex = rawLatex && rawLatex !== result ? rawLatex : (expr || rawLatex);
+    const latex = rawLatex && rawLatex !== result ? rawLatex : expr || rawLatex;
 
     // 对于微分方程（ODE），使用SymPy返回的steps直接构建
     if (problemType === MathProblemType.ODE) {
@@ -1257,7 +1415,9 @@ export class LocalComputationService {
         odeSteps.push({
           id: `step${index + 1}`,
           title: `步骤${index + 1}`,
-          description: stepText.includes('【') ? stepText.split('】')[0].replace('【', '') : `解题步骤${index + 1}`,
+          description: stepText.includes('【')
+            ? stepText.split('】')[0].replace('【', '')
+            : `解题步骤${index + 1}`,
           formula: index === 0 ? latex : '',
           process: stepText,
           result: index === sympySteps.length - 1 ? result : '',
@@ -1326,17 +1486,25 @@ export class LocalComputationService {
   private extractODEEquation(problem: string): string {
     // 移除中文描述，只保留方程部分
     let equation = problem;
-    
+
     // 移除开头的中文描述（如"求解"、"求"等）
-    equation = equation.replace(/^(求解|求|解|请|试)?\s*(微分方程|方程|常微分方程|ODE)?\s*/i, '').trim();
-    
+    equation = equation
+      .replace(/^(求解|求|解|请|试)?\s*(微分方程|方程|常微分方程|ODE)?\s*/i, '')
+      .trim();
+
     return equation;
   }
 
   // 使用SymPy增强解题结果
-  private async enhanceWithSymPy(solution: ProblemSolution, problem: string): Promise<ProblemSolution> {
+  private async enhanceWithSymPy(
+    solution: ProblemSolution,
+    problem: string,
+  ): Promise<ProblemSolution> {
     try {
-      let expr = this.extractFunctionExpression(problem) || this.sanitizeMathExpression(problem) || problem;
+      let expr =
+        this.extractFunctionExpression(problem) ||
+        this.sanitizeMathExpression(problem) ||
+        problem;
       const variable = this.detectVariable(problem);
 
       let endpoint: string;
@@ -1356,7 +1524,12 @@ export class LocalComputationService {
           endpoint = '/limit';
           // 不带 direction 时 SymPy 服务默认求**双侧**极限（数学上更常用）。
           // 题面显式写了单侧（如 x→0⁺ / 0-）才传 direction。
-          payload = { expr, variable, approach, direction: this.extractLimitDirection(problem) };
+          payload = {
+            expr,
+            variable,
+            approach,
+            direction: this.extractLimitDirection(problem),
+          };
           break;
         case MathProblemType.EQUATION:
           expr = this.stripChinesePrefix(expr);
@@ -1367,10 +1540,10 @@ export class LocalComputationService {
           // 对于微分方程，直接发送原始问题
           const odeEquation = this.extractODEEquation(problem);
           endpoint = '/ode';
-          payload = { 
+          payload = {
             equation: odeEquation,
             dependent_var: 'y',
-            independent_var: 'x'
+            independent_var: 'x',
           };
           break;
         default:
@@ -1378,7 +1551,9 @@ export class LocalComputationService {
           payload = { expr: expr };
       }
 
-      this.logger.log(`SymPy增强: ${endpoint} ← expr="${expr.substring(0, 50)}", type=${solution.problemType}`);
+      this.logger.log(
+        `SymPy增强: ${endpoint} ← expr="${expr.substring(0, 50)}", type=${solution.problemType}`,
+      );
 
       let data: any;
       try {
@@ -1401,7 +1576,12 @@ export class LocalComputationService {
 
       if (data.success && data.result) {
         solution.finalAnswer = data.result;
-        solution.steps = this.createSymPySteps(solution.problemType, expr, variable, data);
+        solution.steps = this.createSymPySteps(
+          solution.problemType,
+          expr,
+          variable,
+          data,
+        );
         solution.problemType = solution.problemType;
         solution.difficulty = solution.difficulty;
         // 符号计算服务给出了真实结果 → 清除本地引擎的 unsolved 标记
@@ -1414,10 +1594,17 @@ export class LocalComputationService {
         solution.finalAnswer = '极限不存在（左右极限不相等）';
         solution.status = 'solved';
         solution.reason = undefined;
-        solution.steps = this.createSymPySteps(solution.problemType, expr, variable, data);
+        solution.steps = this.createSymPySteps(
+          solution.problemType,
+          expr,
+          variable,
+          data,
+        );
         this.logger.log('SymPy增强: 双侧极限不存在（左右极限不相等）');
       } else if (data.error) {
-        this.logger.warn(`SymPy增强返回错误 [${data.error_code || 'UNKNOWN'}]: ${data.error}`);
+        this.logger.warn(
+          `SymPy增强返回错误 [${data.error_code || 'UNKNOWN'}]: ${data.error}`,
+        );
       }
 
       return solution;
@@ -1469,7 +1656,10 @@ export class LocalComputationService {
   }
 
   // 验证解题步骤
-  validateSolutionSteps(steps: SolutionStep[]): { isValid: boolean; errors: string[] } {
+  validateSolutionSteps(steps: SolutionStep[]): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
     let isValid = true;
 
@@ -1502,13 +1692,15 @@ export class LocalComputationService {
   // 生成详细的解题步骤说明
   generateStepExplanations(steps: SolutionStep[]): string[] {
     return steps.map((step, index) => {
-      return `步骤 ${index + 1}: ${step.title}\n` +
-             `描述: ${step.description}\n` +
-             `公式: ${step.formula || '无'}\n` +
-             `过程: ${step.process}\n` +
-             `结果: ${step.result}\n` +
-             `注意: ${step.highlight}\n` +
-             `知识点: ${step.keyPoint}\n`;
+      return (
+        `步骤 ${index + 1}: ${step.title}\n` +
+        `描述: ${step.description}\n` +
+        `公式: ${step.formula || '无'}\n` +
+        `过程: ${step.process}\n` +
+        `结果: ${step.result}\n` +
+        `注意: ${step.highlight}\n` +
+        `知识点: ${step.keyPoint}\n`
+      );
     });
   }
 }

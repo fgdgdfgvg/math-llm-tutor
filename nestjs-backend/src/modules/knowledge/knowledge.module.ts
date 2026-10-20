@@ -10,7 +10,17 @@ import { LearningModule } from '../learning/learning.module';
   // LearningModule → StudentModule → KnowledgeModule 构成模块环，需要 forwardRef
   imports: [forwardRef(() => LearningModule)],
   controllers: [KnowledgeController],
-  providers: [KnowledgeService, Neo4jService, KnowledgeGraphService, KnowledgePointMappingService],
-  exports: [KnowledgeService, Neo4jService, KnowledgeGraphService, KnowledgePointMappingService],
+  providers: [
+    KnowledgeService,
+    Neo4jService,
+    KnowledgeGraphService,
+    KnowledgePointMappingService,
+  ],
+  exports: [
+    KnowledgeService,
+    Neo4jService,
+    KnowledgeGraphService,
+    KnowledgePointMappingService,
+  ],
 })
 export class KnowledgeModule {}

@@ -20,9 +20,13 @@ export class FeedbackAgent extends BaseAgent {
     super(config);
   }
 
-  protected async process(input: AgentInput, context: AgentContext): Promise<FeedbackResult> {
+  protected async process(
+    input: AgentInput,
+    context: AgentContext,
+  ): Promise<FeedbackResult> {
     const { problem } = input;
-    const { solutionSteps, finalAnswer, verificationResults, knowledgePoints } = context;
+    const { solutionSteps, finalAnswer, verificationResults, knowledgePoints } =
+      context;
 
     if (!solutionSteps || solutionSteps.length === 0) {
       this.logger.warn('解题步骤不存在，生成基于规则的反馈');
@@ -35,7 +39,8 @@ export class FeedbackAgent extends BaseAgent {
     let referenceSolution: any = null;
     try {
       this.logger.log('获取本地计算服务的参考解决方案');
-      referenceSolution = await this.localComputationService.solveProblem(problem);
+      referenceSolution =
+        await this.localComputationService.solveProblem(problem);
     } catch (error) {
       this.logger.warn('获取参考解决方案失败', error.message);
     }
@@ -53,30 +58,51 @@ export class FeedbackAgent extends BaseAgent {
       );
     } catch (error) {
       this.logger.warn('AI生成反馈失败，使用规则引擎', error.message);
-      feedback = this.generateRuleBasedFeedback(problem, solutionSteps, verificationResults, referenceSolution);
+      feedback = this.generateRuleBasedFeedback(
+        problem,
+        solutionSteps,
+        verificationResults,
+        referenceSolution,
+      );
     }
 
     // 分析用户错误模式
-    const errorPatterns = this.analyzeErrorPatterns(verificationResults || [], problem);
+    const errorPatterns = this.analyzeErrorPatterns(
+      verificationResults || [],
+      problem,
+    );
     if (errorPatterns.length > 0) {
       feedback.suggestions = [...feedback.suggestions, ...errorPatterns];
     }
 
     // 生成个性化学习建议
-    const personalizedSuggestions = this.generatePersonalizedSuggestions(problem, knowledgePoints || []);
+    const personalizedSuggestions = this.generatePersonalizedSuggestions(
+      problem,
+      knowledgePoints || [],
+    );
     if (personalizedSuggestions.length > 0) {
-      feedback.improvements = [...feedback.improvements, ...personalizedSuggestions];
+      feedback.improvements = [
+        ...feedback.improvements,
+        ...personalizedSuggestions,
+      ];
     }
 
     // 确保feedback字段完整（兜底）
     if (!feedback.suggestions || feedback.suggestions.length === 0) {
-      feedback.suggestions = this.generateDefaultSuggestions(solutionSteps, problem);
+      feedback.suggestions = this.generateDefaultSuggestions(
+        solutionSteps,
+        problem,
+      );
     }
     if (!feedback.improvements || feedback.improvements.length === 0) {
       feedback.improvements = this.generateDefaultImprovements(problem);
     }
     if (!feedback.rating) {
-      feedback.rating = this.calculateRating(verificationResults || []) as 'excellent' | 'good' | 'average' | 'poor';
+      feedback.rating = this.calculateRating(verificationResults || []) as
+        | 'excellent'
+        | 'good'
+        | 'average'
+        | 'poor';
     }
 
     context.feedback = feedback;
@@ -93,7 +119,8 @@ export class FeedbackAgent extends BaseAgent {
     const stepCount = solutionSteps?.length || 0;
     const verifiedCount = verificationResults?.length || 0;
 
-    const passedCount = verificationResults?.filter((v: any) => v.isValid).length || 0;
+    const passedCount =
+      verificationResults?.filter((v: any) => v.isValid).length || 0;
     const passRate = verifiedCount > 0 ? passedCount / verifiedCount : 0.7;
 
     // 使用参考解决方案调整评分
@@ -122,15 +149,22 @@ export class FeedbackAgent extends BaseAgent {
       clarity,
       suggestions,
       improvements,
-      rating: this.calculateRatingFromScores(accuracy, completeness, clarity) as 'excellent' | 'good' | 'average' | 'poor',
+      rating: this.calculateRatingFromScores(
+        accuracy,
+        completeness,
+        clarity,
+      ) as 'excellent' | 'good' | 'average' | 'poor',
     };
   }
 
   // 从验证结果计算评级
   private calculateRating(verificationResults: any[]): string {
-    if (!verificationResults || verificationResults.length === 0) return 'average';
+    if (!verificationResults || verificationResults.length === 0)
+      return 'average';
 
-    const passedCount = verificationResults.filter((v: any) => v.isValid).length;
+    const passedCount = verificationResults.filter(
+      (v: any) => v.isValid,
+    ).length;
     const rate = passedCount / verificationResults.length;
 
     if (rate >= 0.9) return 'excellent';
@@ -140,7 +174,11 @@ export class FeedbackAgent extends BaseAgent {
   }
 
   // 从分数计算评级
-  private calculateRatingFromScores(accuracy: number, completeness: number, clarity: number): string {
+  private calculateRatingFromScores(
+    accuracy: number,
+    completeness: number,
+    clarity: number,
+  ): string {
     const avg = (accuracy + completeness + clarity) / 3;
     if (avg >= 0.85) return 'excellent';
     if (avg >= 0.7) return 'good';
@@ -149,18 +187,33 @@ export class FeedbackAgent extends BaseAgent {
   }
 
   // 生成默认建议
-  private generateDefaultSuggestions(solutionSteps?: string[], problem?: string): string[] {
+  private generateDefaultSuggestions(
+    solutionSteps?: string[],
+    problem?: string,
+  ): string[] {
     const suggestions: string[] = [];
 
     if (problem && (problem.includes('极限') || problem.includes('limit'))) {
-      suggestions.push('建议复习重要极限公式：$\\lim_{x\\to 0}\\frac{\\sin x}{x}=1$, $\\lim_{x\\to 0}\\frac{1-\\cos x}{x}=0$');
-      suggestions.push('注意区分不同类型的不定式（0/0、∞/∞、0·∞等）并选择对应方法');
-      suggestions.push('洛必达法则使用前必须确认满足条件，可尝试等价无穷小替换简化');
-    } else if (problem && (problem.includes('导数') || problem.includes('derivative'))) {
+      suggestions.push(
+        '建议复习重要极限公式：$\\lim_{x\\to 0}\\frac{\\sin x}{x}=1$, $\\lim_{x\\to 0}\\frac{1-\\cos x}{x}=0$',
+      );
+      suggestions.push(
+        '注意区分不同类型的不定式（0/0、∞/∞、0·∞等）并选择对应方法',
+      );
+      suggestions.push(
+        '洛必达法则使用前必须确认满足条件，可尝试等价无穷小替换简化',
+      );
+    } else if (
+      problem &&
+      (problem.includes('导数') || problem.includes('derivative'))
+    ) {
       suggestions.push('复合函数求导时务必使用链式法则，从外到内逐层求导');
       suggestions.push('记住基本初等函数的求导公式表，这是所有求导的基础');
-      suggestions.push('注意隐函数求导时两边对x求导，不要遗漏y\'项');
-    } else if (problem && (problem.includes('积分') || problem.includes('integral'))) {
+      suggestions.push("注意隐函数求导时两边对x求导，不要遗漏y'项");
+    } else if (
+      problem &&
+      (problem.includes('积分') || problem.includes('integral'))
+    ) {
       suggestions.push('积分结果别忘了加常数C');
       suggestions.push('选择换元法时要同时换元和换微分（dx部分也要变换）');
       suggestions.push('分部积分法适用于"多项式×三角/指数函数"型被积函数');
@@ -170,7 +223,7 @@ export class FeedbackAgent extends BaseAgent {
       suggestions.push('对于复杂问题，可以尝试从多个角度验证结果的正确性');
     }
 
-    if ((!solutionSteps || solutionSteps.length < 3)) {
+    if (!solutionSteps || solutionSteps.length < 3) {
       suggestions.push('解题步骤过于简略，建议增加中间推导细节以提高完整性');
     }
 
@@ -214,7 +267,10 @@ export class FeedbackAgent extends BaseAgent {
       }
 
       const verificationSummary = verificationResults
-        .map((v) => `${v.stepId}: ${v.isValid ? '✓' : '✗'}${v.errorMessage ? `(${v.errorMessage})` : ''}`)
+        .map(
+          (v) =>
+            `${v.stepId}: ${v.isValid ? '✓' : '✗'}${v.errorMessage ? `(${v.errorMessage})` : ''}`,
+        )
         .join('\n');
 
       // 注意：模板里的占位值必须是合法 JSON（不能写 0-1），
@@ -264,23 +320,40 @@ ${verificationSummary}`;
     const parsed = extractAiJson(content);
     if (parsed) {
       return {
-        accuracy: Math.max(0, Math.min(1, Number(parsed.accuracy ?? 0.6)) || 0.6),
-        completeness: Math.max(0, Math.min(1, Number(parsed.completeness ?? 0.6)) || 0.6),
+        accuracy: Math.max(
+          0,
+          Math.min(1, Number(parsed.accuracy ?? 0.6)) || 0.6,
+        ),
+        completeness: Math.max(
+          0,
+          Math.min(1, Number(parsed.completeness ?? 0.6)) || 0.6,
+        ),
         clarity: Math.max(0, Math.min(1, Number(parsed.clarity ?? 0.6)) || 0.6),
-        suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.map(String) : [],
-        improvements: Array.isArray(parsed.improvements) ? parsed.improvements.map(String) : [],
-        rating: ['excellent', 'good', 'average', 'poor'].includes(parsed.rating) ? parsed.rating : 'average',
+        suggestions: Array.isArray(parsed.suggestions)
+          ? parsed.suggestions.map(String)
+          : [],
+        improvements: Array.isArray(parsed.improvements)
+          ? parsed.improvements.map(String)
+          : [],
+        rating: ['excellent', 'good', 'average', 'poor'].includes(parsed.rating)
+          ? parsed.rating
+          : 'average',
       };
     }
 
-    this.logger.warn(`解析反馈结果失败，无法从 AI 输出提取 JSON（前 200 字符: ${String(content).slice(0, 200).replace(/\s+/g, ' ')}）`);
+    this.logger.warn(
+      `解析反馈结果失败，无法从 AI 输出提取 JSON（前 200 字符: ${String(content).slice(0, 200).replace(/\s+/g, ' ')}）`,
+    );
     throw new Error('无法解析AI反馈结果');
   }
 
   // 分析用户错误模式
-  private analyzeErrorPatterns(verificationResults: any[], problem: string): string[] {
+  private analyzeErrorPatterns(
+    verificationResults: any[],
+    problem: string,
+  ): string[] {
     const errorPatterns: string[] = [];
-    const errors = verificationResults.filter(v => !v.isValid);
+    const errors = verificationResults.filter((v) => !v.isValid);
 
     if (errors.length === 0) {
       return errorPatterns;
@@ -288,7 +361,7 @@ ${verificationSummary}`;
 
     // 分析错误类型
     const errorTypes: Record<string, number> = {};
-    errors.forEach(error => {
+    errors.forEach((error) => {
       const errorMessage = error.errorMessage || '未知错误';
       if (errorMessage.includes('计算错误')) {
         errorTypes['计算错误'] = (errorTypes['计算错误'] || 0) + 1;
@@ -316,20 +389,29 @@ ${verificationSummary}`;
   }
 
   // 生成个性化学习建议
-  private generatePersonalizedSuggestions(problem: string, knowledgePoints: any[]): string[] {
+  private generatePersonalizedSuggestions(
+    problem: string,
+    knowledgePoints: any[],
+  ): string[] {
     const suggestions: string[] = [];
 
     // 基于知识点生成建议
     if (knowledgePoints.length > 0) {
       const keyKnowledge = knowledgePoints[0];
-      suggestions.push(`深入理解"${keyKnowledge.name}"概念，这是解决此类问题的基础`);
+      suggestions.push(
+        `深入理解"${keyKnowledge.name}"概念，这是解决此类问题的基础`,
+      );
     }
 
     // 基于问题类型生成建议
     const p = problem.toLowerCase();
     if (p.includes('极限')) {
-      suggestions.push('建议系统学习极限的定义和各种求解方法，特别是不定式的处理');
-      suggestions.push('多练习不同类型的极限题目，培养对极限类型的快速识别能力');
+      suggestions.push(
+        '建议系统学习极限的定义和各种求解方法，特别是不定式的处理',
+      );
+      suggestions.push(
+        '多练习不同类型的极限题目，培养对极限类型的快速识别能力',
+      );
     } else if (p.includes('导数')) {
       suggestions.push('加强对基本求导公式的记忆，这是所有求导问题的基础');
       suggestions.push('练习复合函数的分解和链式法则的应用');

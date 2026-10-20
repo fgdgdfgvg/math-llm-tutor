@@ -1,4 +1,9 @@
-import { createServer, Server, get as httpGet, request as httpRequest } from 'http';
+import {
+  createServer,
+  Server,
+  get as httpGet,
+  request as httpRequest,
+} from 'http';
 import express from 'express';
 import { gzipSync, gunzipSync } from 'zlib';
 import { gzipCompression } from './compression.middleware';
@@ -12,7 +17,13 @@ describe('gzipCompression', () => {
   let port: number;
   let app: express.Express;
 
-  const bigPayload = { items: Array.from({ length: 200 }, (_, i) => ({ id: i, name: `concept-${i}`, desc: 'x'.repeat(40) })) };
+  const bigPayload = {
+    items: Array.from({ length: 200 }, (_, i) => ({
+      id: i,
+      name: `concept-${i}`,
+      desc: 'x'.repeat(40),
+    })),
+  };
 
   beforeAll(async () => {
     app = express();
@@ -48,20 +59,33 @@ describe('gzipCompression', () => {
 
   /** 发起请求；acceptGzip=false 时显式声明不支持压缩 */
   const call = (path: string, acceptGzip = true) =>
-    new Promise<{ headers: any; raw: Buffer; status: number }>((resolve, reject) => {
-      const req = httpRequest(
-        { host: '127.0.0.1', port, path, headers: { 'accept-encoding': acceptGzip ? 'gzip, deflate' : 'identity' } },
-        (res) => {
-          const chunks: Buffer[] = [];
-          res.on('data', (c) => chunks.push(c));
-          res.on('end', () =>
-            resolve({ headers: res.headers, raw: Buffer.concat(chunks), status: res.statusCode! }),
-          );
-        },
-      );
-      req.on('error', reject);
-      req.end();
-    });
+    new Promise<{ headers: any; raw: Buffer; status: number }>(
+      (resolve, reject) => {
+        const req = httpRequest(
+          {
+            host: '127.0.0.1',
+            port,
+            path,
+            headers: {
+              'accept-encoding': acceptGzip ? 'gzip, deflate' : 'identity',
+            },
+          },
+          (res) => {
+            const chunks: Buffer[] = [];
+            res.on('data', (c) => chunks.push(c));
+            res.on('end', () =>
+              resolve({
+                headers: res.headers,
+                raw: Buffer.concat(chunks),
+                status: res.statusCode!,
+              }),
+            );
+          },
+        );
+        req.on('error', reject);
+        req.end();
+      },
+    );
 
   it('大响应会被 gzip 压缩，且带 Content-Encoding 与 Vary', async () => {
     const r = await call('/big');
@@ -100,7 +124,10 @@ describe('gzipCompression', () => {
         res.on('end', () => resolve());
       });
       req.on('error', reject);
-      setTimeout(() => reject(new Error('SSE 未在预期时间内推送首条数据')), 2000);
+      setTimeout(
+        () => reject(new Error('SSE 未在预期时间内推送首条数据')),
+        2000,
+      );
     });
     expect(chunks.join('')).toContain('第一条');
     expect(chunks.length).toBeGreaterThan(0);

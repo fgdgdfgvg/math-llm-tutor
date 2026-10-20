@@ -77,7 +77,9 @@ export class LeanVerificationService {
   private leanAvailable = false;
 
   constructor() {
-    this.leanWorkspace = process.env.LEAN_WORKSPACE_DIR || path.join(process.cwd(), 'lean_workspace');
+    this.leanWorkspace =
+      process.env.LEAN_WORKSPACE_DIR ||
+      path.join(process.cwd(), 'lean_workspace');
     this.proofsDir = path.join(this.leanWorkspace, 'proofs');
     this.verificationStandards = this.initializeVerificationStandards();
     this.ensureWorkspace();
@@ -86,7 +88,9 @@ export class LeanVerificationService {
 
   private async checkLeanAvailability(): Promise<void> {
     try {
-      const { stdout, stderr } = await execAsync('lake --version', { timeout: 5000 });
+      const { stdout, stderr } = await execAsync('lake --version', {
+        timeout: 5000,
+      });
       this.leanAvailable = !stderr || stdout.includes('Lake');
       if (this.leanAvailable) {
         this.logger.log(`Lean 4 (Lake) 可用: ${stdout.trim()}`);
@@ -96,8 +100,8 @@ export class LeanVerificationService {
     } catch {
       this.logger.log(
         'Lean 4 未安装，形式化验证将以模拟模式运行。如需启用完整验证，请安装 Lean 4:\n' +
-        '  1. 安装 elan: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh\n' +
-        '  2. 或访问: https://leanprover.github.io/lean4/doc/setup.html',
+          '  1. 安装 elan: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh\n' +
+          '  2. 或访问: https://leanprover.github.io/lean4/doc/setup.html',
       );
       this.leanAvailable = false;
     }
@@ -112,7 +116,9 @@ export class LeanVerificationService {
       fs.mkdirSync(this.proofsDir, { recursive: true });
       return;
     } catch (error) {
-      this.logger.warn(`无法使用 Lean 工作目录 ${this.leanWorkspace}（${(error as Error).message}），改用临时目录`);
+      this.logger.warn(
+        `无法使用 Lean 工作目录 ${this.leanWorkspace}（${(error as Error).message}），改用临时目录`,
+      );
     }
 
     const fallback = path.join(os.tmpdir(), 'lean_workspace');
@@ -121,7 +127,9 @@ export class LeanVerificationService {
       this.proofsDir = path.join(fallback, 'proofs');
       fs.mkdirSync(this.proofsDir, { recursive: true });
     } catch (error) {
-      this.logger.error(`连临时目录也不可用，形式化验证将不可用：${(error as Error).message}`);
+      this.logger.error(
+        `连临时目录也不可用，形式化验证将不可用：${(error as Error).message}`,
+      );
     }
   }
 
@@ -136,18 +144,42 @@ export class LeanVerificationService {
         expectedTactics: ['intro', 'apply', 'linarith', 'have'],
         minProofSteps: 5,
         maxProofSteps: 20,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'nlinarith', 'calc', 'rw', 'simpa', 'exact'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'nlinarith',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+        ],
       },
       {
         id: 'squeeze_theorem',
         name: '夹逼定理（三明治定理）',
         description: '若g(x)≤f(x)≤h(x)且lim g=lim h=L，则lim f=L',
         category: TheoremCategory.LIMIT,
-        requiredAxioms: ['Real.instLE', 'Filter.Tendsto', 'Filter.eventually_of_forall'],
+        requiredAxioms: [
+          'Real.instLE',
+          'Filter.Tendsto',
+          'Filter.eventually_of_forall',
+        ],
         expectedTactics: ['intro', 'apply', 'filter_upwards', 'linarith'],
         minProofSteps: 8,
         maxProofSteps: 30,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'filter_upwards', 'calc', 'rw', 'simpa', 'exact'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'filter_upwards',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+        ],
       },
       {
         id: 'ivt',
@@ -158,7 +190,18 @@ export class LeanVerificationService {
         expectedTactics: ['intro', 'apply', 'have', 'by_cases', 'set'],
         minProofSteps: 10,
         maxProofSteps: 40,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'by_cases', 'set', 'calc', 'rw', 'simpa', 'exact'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'by_cases',
+          'set',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+        ],
       },
       {
         id: 'extreme_value_theorem',
@@ -169,57 +212,132 @@ export class LeanVerificationService {
         expectedTactics: ['intro', 'apply', 'have', 'rcases', 'obtain'],
         minProofSteps: 12,
         maxProofSteps: 45,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'rcases', 'obtain', 'calc', 'rw', 'simpa', 'exact'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'rcases',
+          'obtain',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+        ],
       },
       {
         id: 'rolle_theorem',
-        name: '罗尔定理（Rolle\'s Theorem）',
-        description: '若f在[a,b]上连续、(a,b)内可导、f(a)=f(b)，则存在c∈(a,b)使f\'(c)=0',
+        name: "罗尔定理（Rolle's Theorem）",
+        description:
+          "若f在[a,b]上连续、(a,b)内可导、f(a)=f(b)，则存在c∈(a,b)使f'(c)=0",
         category: TheoremCategory.DERIVATIVE,
         requiredAxioms: ['ContinuousOn', 'HasDerivAt', 'isMaxOn', 'isMinOn'],
         expectedTactics: ['intro', 'have', 'rcases', 'apply', 'exact'],
         minProofSteps: 15,
         maxProofSteps: 50,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'rcases', 'obtain', 'calc', 'rw', 'simpa', 'exact', 'refine'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'rcases',
+          'obtain',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+          'refine',
+        ],
       },
       {
         id: 'mvt',
         name: '拉格朗日中值定理（Mean Value Theorem）',
-        description: '若f在[a,b]上连续、(a,b)内可导，则存在c∈(a,b)使f\'(c)=[f(b)-f(a)]/(b-a)',
+        description:
+          "若f在[a,b]上连续、(a,b)内可导，则存在c∈(a,b)使f'(c)=[f(b)-f(a)]/(b-a)",
         category: TheoremCategory.DERIVATIVE,
         requiredAxioms: ['ContinuousOn', 'HasDerivAt', 'Real.instDiv'],
         expectedTactics: ['intro', 'have', 'set', 'apply', 'use'],
         minProofSteps: 15,
         maxProofSteps: 55,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'rcases', 'set', 'calc', 'rw', 'simpa', 'exact', 'use', 'refine', 'field_simp'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'rcases',
+          'set',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+          'use',
+          'refine',
+          'field_simp',
+        ],
       },
       {
         id: 'ftc_part1',
         name: '微积分基本定理（第一部分）',
-        description: '若f连续，则F(x)=∫_a^x f(t)dt可导且F\'(x)=f(x)',
+        description: "若f连续，则F(x)=∫_a^x f(t)dt可导且F'(x)=f(x)",
         category: TheoremCategory.INTEGRAL,
-        requiredAxioms: ['intervalIntegral', 'ContinuousOn', 'HasDerivAt', 'measureTheory'],
+        requiredAxioms: [
+          'intervalIntegral',
+          'ContinuousOn',
+          'HasDerivAt',
+          'measureTheory',
+        ],
         expectedTactics: ['intro', 'apply', 'have', 'calc', 'rw'],
         minProofSteps: 12,
         maxProofSteps: 45,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'calc', 'rw', 'simpa', 'exact', 'refine'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+          'refine',
+        ],
       },
       {
         id: 'greens_theorem_plane',
         name: '格林公式（平面形式）',
         description: '平面闭区域上的二重积分等于其边界曲线上的曲线积分',
         category: TheoremCategory.MULTIVARIABLE,
-        requiredAxioms: ['Measure.prod', 'integral_divergence', 'intervalIntegral'],
+        requiredAxioms: [
+          'Measure.prod',
+          'integral_divergence',
+          'intervalIntegral',
+        ],
         expectedTactics: ['intro', 'apply', 'have', 'calc', 'rw'],
         minProofSteps: 20,
         maxProofSteps: 80,
-        acceptedTactics: ['intro', 'apply', 'have', 'linarith', 'calc', 'rw', 'simpa', 'exact', 'refine', 'positivity'],
+        acceptedTactics: [
+          'intro',
+          'apply',
+          'have',
+          'linarith',
+          'calc',
+          'rw',
+          'simpa',
+          'exact',
+          'refine',
+          'positivity',
+        ],
       },
     ];
   }
 
-  generateLeanCode(theoremName: string, statement: string, category: TheoremCategory): string {
-    const standard = this.verificationStandards.find((s) => s.category === category);
+  generateLeanCode(
+    theoremName: string,
+    statement: string,
+    category: TheoremCategory,
+  ): string {
+    const standard = this.verificationStandards.find(
+      (s) => s.category === category,
+    );
     const imports = this.generateImports(category);
 
     return `${imports}
@@ -261,7 +379,10 @@ by
     return imports.join('\n');
   }
 
-  private translateToLeanTypes(statement: string, category: TheoremCategory): string {
+  private translateToLeanTypes(
+    statement: string,
+    category: TheoremCategory,
+  ): string {
     const lower = statement.toLowerCase();
 
     if (lower.includes('极限') && lower.includes('唯一')) {
@@ -301,8 +422,11 @@ by
     const startTime = Date.now();
     const attemptId = `lean_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
 
-    const code = leanCode || this.generateLeanCode(theoremName, statement, category);
-    const standard = this.verificationStandards.find((s) => s.category === category);
+    const code =
+      leanCode || this.generateLeanCode(theoremName, statement, category);
+    const standard = this.verificationStandards.find(
+      (s) => s.category === category,
+    );
 
     const attempt: LeanProofAttempt = {
       id: attemptId,
@@ -347,7 +471,10 @@ by
           .filter((l) => l.includes('error'))
           .map((l) => parseInt((l.match(/:(\d+):/) || ['', '0'])[1], 10));
 
-        attempt.status = errorLines.length > 0 ? VerificationStatus.FAILED : VerificationStatus.VERIFIED;
+        attempt.status =
+          errorLines.length > 0
+            ? VerificationStatus.FAILED
+            : VerificationStatus.VERIFIED;
         attempt.feedback = stderr.split('\n').filter((l) => l.trim());
         attempt.errorLines = errorLines;
       } else {
@@ -385,9 +512,22 @@ by
     if (code.includes(':= by') && !code.includes('sorry')) {
       const proofBody = code.split(':= by')[1] || '';
       const tacticKeywords = [
-        'intro', 'apply', 'have', 'calc', 'rw', 'simp', 'exact',
-        'refine', 'rcases', 'linarith', 'nlinarith', 'positivity',
-        'field_simp', 'ring', 'omega', 'nlinarith',
+        'intro',
+        'apply',
+        'have',
+        'calc',
+        'rw',
+        'simp',
+        'exact',
+        'refine',
+        'rcases',
+        'linarith',
+        'nlinarith',
+        'positivity',
+        'field_simp',
+        'ring',
+        'omega',
+        'nlinarith',
       ];
       const tactics = tacticKeywords.filter((t) => proofBody.includes(t));
 
@@ -417,7 +557,9 @@ by
 
     if (issues.length === 0 && !code.includes('sorry')) {
       attempt.status = VerificationStatus.VERIFIED;
-      attempt.feedback = ['模拟验证通过（Lean 4环境未安装，基于语法和策略分析）'];
+      attempt.feedback = [
+        '模拟验证通过（Lean 4环境未安装，基于语法和策略分析）',
+      ];
     } else if (issues.length > 0 && !code.includes('sorry')) {
       attempt.status = VerificationStatus.FAILED;
       attempt.feedback = issues;
@@ -431,7 +573,9 @@ by
     return this.verificationStandards;
   }
 
-  getVerificationStandard(category: TheoremCategory): VerificationStandard | undefined {
+  getVerificationStandard(
+    category: TheoremCategory,
+  ): VerificationStandard | undefined {
     return this.verificationStandards.find((s) => s.category === category);
   }
 
@@ -451,7 +595,10 @@ by
     const successRate =
       total > 0 ? ((verified / total) * 100).toFixed(1) + '%' : 'N/A';
 
-    const categoryBreakdown: Record<string, { total: number; verified: number }> = {};
+    const categoryBreakdown: Record<
+      string,
+      { total: number; verified: number }
+    > = {};
     for (const attempt of this.proofHistory) {
       const cat = attempt.category;
       if (!categoryBreakdown[cat]) {
@@ -493,7 +640,12 @@ by
   }
 
   async verifyBatch(
-    theorems: { name: string; statement: string; category: TheoremCategory; leanCode?: string }[],
+    theorems: {
+      name: string;
+      statement: string;
+      category: TheoremCategory;
+      leanCode?: string;
+    }[],
   ): Promise<LeanProofAttempt[]> {
     const results: LeanProofAttempt[] = [];
     for (const thm of theorems) {

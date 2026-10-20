@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Question } from './schemas/question.schema';
@@ -26,8 +31,11 @@ export class QuestionsService {
     @InjectModel(Question.name) private questionModel: Model<Question>,
     @InjectModel(Mistake.name) private mistakeModel: Model<Mistake>,
   ) {
-    this.loadKnowledgeMapping().catch(error => {
-      this.logger.error('Failed to load knowledge mapping during initialization:', describeErrorForLog(error));
+    this.loadKnowledgeMapping().catch((error) => {
+      this.logger.error(
+        'Failed to load knowledge mapping during initialization:',
+        describeErrorForLog(error),
+      );
     });
   }
 
@@ -36,9 +44,13 @@ export class QuestionsService {
       // 智能路径查找
       let currentDir = __dirname;
       let mappingPath = '';
-      
+
       for (let i = 0; i < 5; i++) {
-        const potentialPath = path.join(currentDir, 'datasets', 'knowledge-point-mapping.json');
+        const potentialPath = path.join(
+          currentDir,
+          'datasets',
+          'knowledge-point-mapping.json',
+        );
         try {
           await fs.access(potentialPath);
           mappingPath = potentialPath;
@@ -49,24 +61,26 @@ export class QuestionsService {
       }
 
       if (!mappingPath) {
-        throw new Error('knowledge-point-mapping.json not found in any parent directory');
+        throw new Error(
+          'knowledge-point-mapping.json not found in any parent directory',
+        );
       }
 
       this.logger.log(`Found mapping file path: ${mappingPath}`);
 
       const mappingData = await fs.readFile(mappingPath, 'utf8');
       const mapping = JSON.parse(mappingData);
-      
+
       // 加载知识点映射
       if (mapping['知识点映射']) {
         this.knowledgeMapping = mapping['知识点映射'];
       }
-      
+
       // 加载子概念映射（用于将子概念 ID 映射到标准子概念 ID）
       if (mapping['子概念映射']) {
         this.subConceptMapping = mapping['子概念映射'];
       }
-      
+
       // 加载知识点别名映射（用于处理数据库中不同的知识点名称）
       if (mapping['知识点别名映射']) {
         this.knowledgeAliasMapping = mapping['知识点别名映射'];
@@ -74,22 +88,36 @@ export class QuestionsService {
 
       // 打印加载结果
       const keys = Object.keys(this.knowledgeMapping);
-      this.logger.log(`Successfully loaded knowledge mapping with ${keys.length} knowledge points`);
-      this.logger.log(`Sub-concept mapping count: ${Object.keys(this.subConceptMapping).length}`);
-      this.logger.log(`Knowledge point alias count: ${Object.keys(this.knowledgeAliasMapping).length}`);
-      
+      this.logger.log(
+        `Successfully loaded knowledge mapping with ${keys.length} knowledge points`,
+      );
+      this.logger.log(
+        `Sub-concept mapping count: ${Object.keys(this.subConceptMapping).length}`,
+      );
+      this.logger.log(
+        `Knowledge point alias count: ${Object.keys(this.knowledgeAliasMapping).length}`,
+      );
+
       if (keys.length > 0) {
         this.logger.log('Knowledge points list:', keys);
-        keys.forEach(key => {
-          this.logger.log(`${key}: [ ${this.knowledgeMapping[key].slice(0, 3).join(', ')} ${this.knowledgeMapping[key].length > 3 ? '...' : ''} ]`);
+        keys.forEach((key) => {
+          this.logger.log(
+            `${key}: [ ${this.knowledgeMapping[key].slice(0, 3).join(', ')} ${this.knowledgeMapping[key].length > 3 ? '...' : ''} ]`,
+          );
         });
       } else {
-        this.logger.error('Knowledge mapping is empty! Please check JSON file content or path.');
+        this.logger.error(
+          'Knowledge mapping is empty! Please check JSON file content or path.',
+        );
       }
-
     } catch (error) {
-      this.logger.error('Critical: Failed to load knowledge mapping:', error.message);
-      this.logger.error('Please ensure datasets/knowledge-point-mapping.json exists in project root or parent directory');
+      this.logger.error(
+        'Critical: Failed to load knowledge mapping:',
+        error.message,
+      );
+      this.logger.error(
+        'Please ensure datasets/knowledge-point-mapping.json exists in project root or parent directory',
+      );
       this.knowledgeMapping = {};
       this.subConceptMapping = {};
       this.knowledgeAliasMapping = {};
@@ -101,73 +129,89 @@ export class QuestionsService {
    */
   private findKnowledgePointName(knowledgePointId: string): string | null {
     if (!knowledgePointId) return null;
-    
+
     const cleanId = knowledgePointId.trim();
-    
+
     // 1. 直接匹配中文知识点名称
     if (this.knowledgeMapping[cleanId]) {
       this.logger.log(`Direct match found for knowledge point: "${cleanId}"`);
       return cleanId;
     }
-    
+
     // 2. 遍历知识点映射，查找子概念 ID
-    for (const [chinesePoint, conceptIds] of Object.entries(this.knowledgeMapping)) {
-      const idsAsString = conceptIds.map(id => String(id).trim());
+    for (const [chinesePoint, conceptIds] of Object.entries(
+      this.knowledgeMapping,
+    )) {
+      const idsAsString = conceptIds.map((id) => String(id).trim());
       if (idsAsString.includes(cleanId)) {
-        this.logger.log(`Match found! ID "${cleanId}" belongs to knowledge point "${chinesePoint}"`);
+        this.logger.log(
+          `Match found! ID "${cleanId}" belongs to knowledge point "${chinesePoint}"`,
+        );
         return chinesePoint;
       }
     }
-    
+
     // 3. 通过子概念映射间接查找
     if (this.subConceptMapping[cleanId]) {
       const standardSubConcept = this.subConceptMapping[cleanId];
-      this.logger.log(`Sub-concept mapping: "${cleanId}" -> "${standardSubConcept}"`);
+      this.logger.log(
+        `Sub-concept mapping: "${cleanId}" -> "${standardSubConcept}"`,
+      );
       // 递归查找标准子概念属于哪个知识点
-      for (const [chinesePoint, conceptIds] of Object.entries(this.knowledgeMapping)) {
-        if (conceptIds.map(id => String(id).trim()).includes(standardSubConcept)) {
-          this.logger.log(`Found knowledge point through sub-concept mapping: "${chinesePoint}"`);
+      for (const [chinesePoint, conceptIds] of Object.entries(
+        this.knowledgeMapping,
+      )) {
+        if (
+          conceptIds.map((id) => String(id).trim()).includes(standardSubConcept)
+        ) {
+          this.logger.log(
+            `Found knowledge point through sub-concept mapping: "${chinesePoint}"`,
+          );
           return chinesePoint;
         }
       }
     }
-    
+
     // 4. 硬编码映射兜底
     const frontEndToBackendMap: Record<string, string> = {
-      'limit': '极限计算',
-      'derivative': '导数与微分',
-      'integral': '积分计算',
-      'series': '级数与幂级数',
-      'differential_equation': '微分方程',
-      'vector': '向量与空间解析几何',
-      'linear_algebra': '线性代数与矩阵',
+      limit: '极限计算',
+      derivative: '导数与微分',
+      integral: '积分计算',
+      series: '级数与幂级数',
+      differential_equation: '微分方程',
+      vector: '向量与空间解析几何',
+      linear_algebra: '线性代数与矩阵',
       // 新增映射
-      'function': '极限计算',
-      'function_limit': '极限计算',
-      'partial_derivative': '导数与微分',
-      'multivariable_function': '向量与空间解析几何',
-      'hessian': '导数与微分',
-      'gradient': '导数与微分',
-      'double_integral': '积分计算',
-      'triple_integral': '积分计算',
-      'eigenvalue': '线性代数与矩阵',
-      'eigenvector': '线性代数与矩阵',
-      'matrix': '线性代数与矩阵',
-      'determinant': '线性代数与矩阵',
-      'fourier': '级数与幂级数',
-      'laplace': '微分方程',
-      'ode': '微分方程',
-      'pde': '微分方程',
+      function: '极限计算',
+      function_limit: '极限计算',
+      partial_derivative: '导数与微分',
+      multivariable_function: '向量与空间解析几何',
+      hessian: '导数与微分',
+      gradient: '导数与微分',
+      double_integral: '积分计算',
+      triple_integral: '积分计算',
+      eigenvalue: '线性代数与矩阵',
+      eigenvector: '线性代数与矩阵',
+      matrix: '线性代数与矩阵',
+      determinant: '线性代数与矩阵',
+      fourier: '级数与幂级数',
+      laplace: '微分方程',
+      ode: '微分方程',
+      pde: '微分方程',
     };
-    
+
     if (frontEndToBackendMap[cleanId]) {
-      this.logger.log(`Hardcoded mapping hit: "${cleanId}" -> "${frontEndToBackendMap[cleanId]}"`);
+      this.logger.log(
+        `Hardcoded mapping hit: "${cleanId}" -> "${frontEndToBackendMap[cleanId]}"`,
+      );
       return frontEndToBackendMap[cleanId];
     }
-    
+
     // 5. 知识点别名映射（处理数据库中的不同名称）
     if (this.knowledgeAliasMapping[cleanId]) {
-      this.logger.log(`Knowledge point alias mapping hit: "${cleanId}" -> "${this.knowledgeAliasMapping[cleanId]}"`);
+      this.logger.log(
+        `Knowledge point alias mapping hit: "${cleanId}" -> "${this.knowledgeAliasMapping[cleanId]}"`,
+      );
       return this.knowledgeAliasMapping[cleanId];
     }
 
@@ -176,7 +220,9 @@ export class QuestionsService {
     //    否则请求会被当成“无法识别”而退化成全库随机出题（表现为无论点哪个知识点都是同一批题）。
     const keywordMatch = this.matchKnowledgePointByKeyword(cleanId);
     if (keywordMatch) {
-      this.logger.log(`Keyword fallback hit: "${cleanId}" -> "${keywordMatch}"`);
+      this.logger.log(
+        `Keyword fallback hit: "${cleanId}" -> "${keywordMatch}"`,
+      );
       return keywordMatch;
     }
 
@@ -263,7 +309,10 @@ export class QuestionsService {
     const haystack = input.toLowerCase();
     let best: { keyword: string; knowledgePoint: string } | null = null;
 
-    for (const [keyword, knowledgePoint] of QuestionsService.KNOWLEDGE_KEYWORDS) {
+    for (const [
+      keyword,
+      knowledgePoint,
+    ] of QuestionsService.KNOWLEDGE_KEYWORDS) {
       if (!haystack.includes(keyword)) continue;
       if (!this.knowledgeMapping[knowledgePoint]) continue;
       if (!best || keyword.length > best.keyword.length) {
@@ -278,7 +327,9 @@ export class QuestionsService {
    * 解析前端传来的知识点标识：既支持题库中文知识点 / 子概念 ID，
    * 也支持知识图谱的节点 ID 与节点名称。
    */
-  private resolveKnowledgePoint(input?: string | Array<string | undefined>): string | null {
+  private resolveKnowledgePoint(
+    input?: string | Array<string | undefined>,
+  ): string | null {
     const candidates = (Array.isArray(input) ? input : [input])
       .filter((value): value is string => typeof value === 'string')
       .map((value) => value.trim())
@@ -295,66 +346,104 @@ export class QuestionsService {
   /**
    * 根据知识点名称查询数据库，处理别名映射
    */
-  private async queryQuestionsByKnowledgePoint(knowledgePointName: string): Promise<Question[]> {
+  private async queryQuestionsByKnowledgePoint(
+    knowledgePointName: string,
+  ): Promise<Question[]> {
     this.logger.log(`Querying knowledge point: ${knowledgePointName}`);
-    
+
     // 精确匹配
-    let questions = await this.questionModel.find({ knowledgePoint: knowledgePointName }).limit(50).exec();
-    
+    let questions = await this.questionModel
+      .find({ knowledgePoint: knowledgePointName })
+      .limit(50)
+      .exec();
+
     if (questions.length > 0) {
-      this.logger.log(`Exact match successful, found ${questions.length} questions`);
+      this.logger.log(
+        `Exact match successful, found ${questions.length} questions`,
+      );
       return questions;
     }
-    
+
     // 尝试别名匹配（双向）
     // 1. 检查knowledgePointName是否是标准名称，查找对应的别名
-    for (const [alias, standardName] of Object.entries(this.knowledgeAliasMapping)) {
+    for (const [alias, standardName] of Object.entries(
+      this.knowledgeAliasMapping,
+    )) {
       if (standardName === knowledgePointName) {
         this.logger.log(`Trying alias match (standard to alias): ${alias}`);
-        questions = await this.questionModel.find({ knowledgePoint: alias }).limit(50).exec();
+        questions = await this.questionModel
+          .find({ knowledgePoint: alias })
+          .limit(50)
+          .exec();
         if (questions.length > 0) {
-          this.logger.log(`Alias match successful, found ${questions.length} questions`);
+          this.logger.log(
+            `Alias match successful, found ${questions.length} questions`,
+          );
           return questions;
         }
       }
     }
-    
+
     // 2. 检查knowledgePointName是否是别名，查找对应的标准名称
     if (this.knowledgeAliasMapping[knowledgePointName]) {
       const standardName = this.knowledgeAliasMapping[knowledgePointName];
-      this.logger.log(`Trying standard name match (alias to standard): ${standardName}`);
-      questions = await this.questionModel.find({ knowledgePoint: standardName }).limit(50).exec();
+      this.logger.log(
+        `Trying standard name match (alias to standard): ${standardName}`,
+      );
+      questions = await this.questionModel
+        .find({ knowledgePoint: standardName })
+        .limit(50)
+        .exec();
       if (questions.length > 0) {
-        this.logger.log(`Standard name match successful, found ${questions.length} questions`);
+        this.logger.log(
+          `Standard name match successful, found ${questions.length} questions`,
+        );
         return questions;
       }
     }
-    
+
     // 模糊匹配兜底（转义正则元字符，避免 ReDoS 与意外匹配）
-    this.logger.log(`Exact match failed, trying fuzzy match: ${knowledgePointName}`);
-    questions = await this.questionModel.find({
-      knowledgePoint: { $regex: new RegExp(this.escapeRegex(knowledgePointName), 'i') },
-    }).limit(50).exec();
-    
+    this.logger.log(
+      `Exact match failed, trying fuzzy match: ${knowledgePointName}`,
+    );
+    questions = await this.questionModel
+      .find({
+        knowledgePoint: {
+          $regex: new RegExp(this.escapeRegex(knowledgePointName), 'i'),
+        },
+      })
+      .limit(50)
+      .exec();
+
     if (questions.length > 0) {
-      this.logger.log(`Fuzzy match successful, found ${questions.length} questions`);
+      this.logger.log(
+        `Fuzzy match successful, found ${questions.length} questions`,
+      );
       return questions;
     }
-    
+
     return [];
   }
 
   async getRandomQuestionByKnowledgePoint(
     knowledgePoint?: string | Array<string | undefined>,
   ): Promise<Question> {
-    this.logger.log(`Received knowledge point: ${JSON.stringify(knowledgePoint)}`);
+    this.logger.log(
+      `Received knowledge point: ${JSON.stringify(knowledgePoint)}`,
+    );
 
     let questions;
 
     // 1. 解析知识点（题库中文名 / 子概念 ID / 图谱节点 ID / 图谱节点名）
     const targetKnowledgePoint = this.resolveKnowledgePoint(knowledgePoint);
     const requestedKnowledgePoint = Array.isArray(knowledgePoint)
-      ? knowledgePoint.some((value) => typeof value === 'string' && value.trim() && value !== 'undefined' && value !== 'null')
+      ? knowledgePoint.some(
+          (value) =>
+            typeof value === 'string' &&
+            value.trim() &&
+            value !== 'undefined' &&
+            value !== 'null',
+        )
       : typeof knowledgePoint === 'string' && !!knowledgePoint.trim();
 
     if (requestedKnowledgePoint && !targetKnowledgePoint) {
@@ -362,13 +451,18 @@ export class QuestionsService {
     }
 
     if (targetKnowledgePoint) {
-      questions = await this.queryQuestionsByKnowledgePoint(targetKnowledgePoint);
+      questions =
+        await this.queryQuestionsByKnowledgePoint(targetKnowledgePoint);
 
       if (questions.length === 0) {
-        this.logger.warn(`No questions found for knowledge point "${targetKnowledgePoint}"`);
+        this.logger.warn(
+          `No questions found for knowledge point "${targetKnowledgePoint}"`,
+        );
       } else {
         const randomIndex = Math.floor(Math.random() * questions.length);
-        this.logger.log(`Returning random question: ${questions[randomIndex].questionId}`);
+        this.logger.log(
+          `Returning random question: ${questions[randomIndex].questionId}`,
+        );
         return questions[randomIndex];
       }
     } else {
@@ -381,42 +475,50 @@ export class QuestionsService {
       throw new NotFoundException('No questions found in database');
     }
     const randomIndex = Math.floor(Math.random() * questions.length);
-    this.logger.log(`Returning random question: ${questions[randomIndex].questionId}`);
+    this.logger.log(
+      `Returning random question: ${questions[randomIndex].questionId}`,
+    );
     return questions[randomIndex];
   }
 
   async getQuestionById(id: string): Promise<Question> {
     this.logger.log(`Requesting question by ID: ${id}`);
-    
+
     // 验证ID有效性
     if (!id || id === 'undefined' || id === 'null' || id.trim() === '') {
       this.logger.error(`Invalid question ID: ${id}`);
       throw new NotFoundException(`Invalid question ID: ${id}`);
     }
-    
+
     // 尝试通过questionId字段查找
     let question = await this.questionModel.findOne({ questionId: id }).exec();
-    
+
     // 只有形如 ObjectId 的字符串才尝试 _id 查询，否则 mongoose 会抛 CastError（500）
     if (!question && /^[a-f\d]{24}$/i.test(id)) {
       this.logger.log(`Not found by questionId, trying by _id: ${id}`);
       question = await this.questionModel.findById(id).exec();
     }
-    
+
     if (!question) {
       this.logger.error(`Question not found: ${id}`);
       throw new NotFoundException(`Question with ID ${id} not found`);
     }
-    
-    this.logger.log(`Successfully found question: ${question.questionId || question._id}`);
+
+    this.logger.log(
+      `Successfully found question: ${question.questionId || question._id}`,
+    );
     return question;
   }
 
-  async getQuestionsByConcept(conceptId: string, page: number = 1, limit: number = 10): Promise<{ questions: Question[]; total: number }> {
+  async getQuestionsByConcept(
+    conceptId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ questions: Question[]; total: number }> {
     this.logger.log(`Requesting concept questions list, ID: "${conceptId}"`);
-    
+
     const targetKnowledgePoint = this.resolveKnowledgePoint(conceptId);
-    
+
     if (!targetKnowledgePoint) {
       this.logger.warn(`No knowledge point mapping found: ${conceptId}`);
       return { questions: [], total: 0 };
@@ -424,16 +526,28 @@ export class QuestionsService {
 
     const skip = (page - 1) * limit;
     const [questions, total] = await Promise.all([
-      this.questionModel.find({ knowledgePoint: targetKnowledgePoint }).skip(skip).limit(limit).exec(),
-      this.questionModel.countDocuments({ knowledgePoint: targetKnowledgePoint }).exec(),
+      this.questionModel
+        .find({ knowledgePoint: targetKnowledgePoint })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.questionModel
+        .countDocuments({ knowledgePoint: targetKnowledgePoint })
+        .exec(),
     ]);
 
     // 如果精确匹配为空，尝试别名
     if (questions.length === 0) {
-      for (const [alias, standardName] of Object.entries(this.knowledgeAliasMapping)) {
+      for (const [alias, standardName] of Object.entries(
+        this.knowledgeAliasMapping,
+      )) {
         if (standardName === targetKnowledgePoint) {
           const [aliasQuestions, aliasTotal] = await Promise.all([
-            this.questionModel.find({ knowledgePoint: alias }).skip(skip).limit(limit).exec(),
+            this.questionModel
+              .find({ knowledgePoint: alias })
+              .skip(skip)
+              .limit(limit)
+              .exec(),
             this.questionModel.countDocuments({ knowledgePoint: alias }).exec(),
           ]);
           if (aliasQuestions.length > 0) {
@@ -446,7 +560,9 @@ export class QuestionsService {
     return { questions, total };
   }
 
-  async getQuestions(query: GetQuestionsQuery): Promise<{ questions: Question[]; total: number }> {
+  async getQuestions(
+    query: GetQuestionsQuery,
+  ): Promise<{ questions: Question[]; total: number }> {
     const { knowledgePoint, difficulty, type, page = 1, limit = 10 } = query;
     const filter: any = {};
 
@@ -464,11 +580,7 @@ export class QuestionsService {
 
     const skip = (page - 1) * limit;
     const [questions, total] = await Promise.all([
-      this.questionModel
-        .find(filter)
-        .skip(skip)
-        .limit(limit)
-        .exec(),
+      this.questionModel.find(filter).skip(skip).limit(limit).exec(),
       this.questionModel.countDocuments(filter).exec(),
     ]);
 
@@ -481,15 +593,20 @@ export class QuestionsService {
    */
   private knowledgePointVariants(standardName: string): string[] {
     const variants = new Set<string>([standardName]);
-    for (const [alias, standard] of Object.entries(this.knowledgeAliasMapping)) {
+    for (const [alias, standard] of Object.entries(
+      this.knowledgeAliasMapping,
+    )) {
       if (standard === standardName) variants.add(alias);
     }
     return Array.from(variants);
   }
 
-  async getMistakesByConcept(userId: string, conceptId: string): Promise<Mistake[]> {
+  async getMistakesByConcept(
+    userId: string,
+    conceptId: string,
+  ): Promise<Mistake[]> {
     const targetKnowledgePoint = this.resolveKnowledgePoint(conceptId);
-    
+
     if (!targetKnowledgePoint) {
       return [];
     }
@@ -497,29 +614,35 @@ export class QuestionsService {
     return this.mistakeModel
       .find({
         userId,
-        knowledgePoint: { $in: this.knowledgePointVariants(targetKnowledgePoint) },
+        knowledgePoint: {
+          $in: this.knowledgePointVariants(targetKnowledgePoint),
+        },
       })
       .sort({ attemptedAt: -1 })
       .exec();
   }
 
-  async getMistakesByCategory(userId: string, category?: string): Promise<Mistake[]> {
-    this.logger.log(`Getting mistakes for user: ${userId}, category: ${category}`);
-    
+  async getMistakesByCategory(
+    userId: string,
+    category?: string,
+  ): Promise<Mistake[]> {
+    this.logger.log(
+      `Getting mistakes for user: ${userId}, category: ${category}`,
+    );
+
     const filter: any = { userId };
-    
+
     // 如果指定了分类，添加分类过滤
     if (category && category !== 'all' && category !== '') {
       const targetKnowledgePoint = this.resolveKnowledgePoint(category);
       if (targetKnowledgePoint) {
-        filter.knowledgePoint = { $in: this.knowledgePointVariants(targetKnowledgePoint) };
+        filter.knowledgePoint = {
+          $in: this.knowledgePointVariants(targetKnowledgePoint),
+        };
       }
     }
 
-    return this.mistakeModel
-      .find(filter)
-      .sort({ attemptedAt: -1 })
-      .exec();
+    return this.mistakeModel.find(filter).sort({ attemptedAt: -1 }).exec();
   }
 
   async createMistake(mistakeData: {
@@ -540,7 +663,10 @@ export class QuestionsService {
     return mistake.save();
   }
 
-  async markMistakeAsReviewed(mistakeId: string, userId: string): Promise<Mistake> {
+  async markMistakeAsReviewed(
+    mistakeId: string,
+    userId: string,
+  ): Promise<Mistake> {
     const mistake = await this.mistakeModel.findById(mistakeId).exec();
     if (!mistake) {
       throw new NotFoundException(`Mistake with ID ${mistakeId} not found`);
@@ -548,7 +674,9 @@ export class QuestionsService {
 
     // 验证用户权限
     if (mistake.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to modify this mistake');
+      throw new ForbiddenException(
+        'You do not have permission to modify this mistake',
+      );
     }
 
     mistake.reviewed = true;
@@ -556,7 +684,11 @@ export class QuestionsService {
     return mistake.save();
   }
 
-  async updateMistakeNotes(mistakeId: string, notes: string, userId: string): Promise<Mistake> {
+  async updateMistakeNotes(
+    mistakeId: string,
+    notes: string,
+    userId: string,
+  ): Promise<Mistake> {
     const mistake = await this.mistakeModel.findById(mistakeId).exec();
     if (!mistake) {
       throw new NotFoundException(`Mistake with ID ${mistakeId} not found`);
@@ -564,7 +696,9 @@ export class QuestionsService {
 
     // 验证用户权限
     if (mistake.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to modify this mistake');
+      throw new ForbiddenException(
+        'You do not have permission to modify this mistake',
+      );
     }
 
     mistake.notes = notes;
@@ -587,9 +721,7 @@ export class QuestionsService {
 
     const byKnowledgePoint: Record<string, number> = {};
     const knowledgePoints = await this.questionModel
-      .aggregate([
-        { $group: { _id: '$knowledgePoint', count: { $sum: 1 } } },
-      ])
+      .aggregate([{ $group: { _id: '$knowledgePoint', count: { $sum: 1 } } }])
       .exec();
 
     knowledgePoints.forEach((item) => {
@@ -598,9 +730,7 @@ export class QuestionsService {
 
     const byDifficulty: Record<string, number> = {};
     const difficulties = await this.questionModel
-      .aggregate([
-        { $group: { _id: '$difficulty', count: { $sum: 1 } } },
-      ])
+      .aggregate([{ $group: { _id: '$difficulty', count: { $sum: 1 } } }])
       .exec();
 
     difficulties.forEach((item) => {
@@ -616,7 +746,10 @@ export class QuestionsService {
    * @param limit 题目数量
    * @returns 题目列表
    */
-  async getSimilarQuestions(category: string, limit: number = 3): Promise<Question[]> {
+  async getSimilarQuestions(
+    category: string,
+    limit: number = 3,
+  ): Promise<Question[]> {
     this.logger.log(`Requesting similar questions, category: ${category}`);
 
     try {
@@ -628,15 +761,19 @@ export class QuestionsService {
       }
 
       // 2. 查询该知识点下的题目
-      let questions = await this.questionModel.find({ knowledgePoint: targetKnowledgePoint })
+      let questions = await this.questionModel
+        .find({ knowledgePoint: targetKnowledgePoint })
         .limit(limit)
         .exec();
 
       // 3. 如果精确查询为空，尝试别名
       if (questions.length === 0) {
-        for (const [alias, standardName] of Object.entries(this.knowledgeAliasMapping)) {
+        for (const [alias, standardName] of Object.entries(
+          this.knowledgeAliasMapping,
+        )) {
           if (standardName === targetKnowledgePoint) {
-            questions = await this.questionModel.find({ knowledgePoint: alias })
+            questions = await this.questionModel
+              .find({ knowledgePoint: alias })
               .limit(limit)
               .exec();
             if (questions.length > 0) break;
@@ -646,10 +783,15 @@ export class QuestionsService {
 
       // 4. 如果仍为空，尝试模糊匹配
       if (questions.length === 0) {
-        questions = await this.questionModel.find({
-          // 用户可控的查询参数直接拼进 RegExp 会产生 ReDoS 与意外匹配，先转义
-          knowledgePoint: { $regex: new RegExp(this.escapeRegex(targetKnowledgePoint), 'i') },
-        }).limit(limit).exec();
+        questions = await this.questionModel
+          .find({
+            // 用户可控的查询参数直接拼进 RegExp 会产生 ReDoS 与意外匹配，先转义
+            knowledgePoint: {
+              $regex: new RegExp(this.escapeRegex(targetKnowledgePoint), 'i'),
+            },
+          })
+          .limit(limit)
+          .exec();
       }
 
       // 5. 同一知识点内轮换题目，避免每次“举一反三”都返回同几道
@@ -659,7 +801,10 @@ export class QuestionsService {
       // 前端会据此展示“暂无该知识点题目”，而不是把无关题目伪装成举一反三。
       return rotated;
     } catch (error) {
-      this.logger.error('Error in getSimilarQuestions:', describeErrorForLog(error));
+      this.logger.error(
+        'Error in getSimilarQuestions:',
+        describeErrorForLog(error),
+      );
       return [];
     }
   }
@@ -702,14 +847,23 @@ export class QuestionsService {
         .exec();
       if (sampled && sampled.length > 0) return sampled as Question[];
     } catch (error: any) {
-      this.logger.warn(`$sample 随机抽取失败，回退到 skip 抽样: ${error?.message}`);
+      this.logger.warn(
+        `$sample 随机抽取失败，回退到 skip 抽样: ${error?.message}`,
+      );
     }
 
     try {
       const total = await this.questionModel.estimatedDocumentCount().exec();
       if (total > 0) {
-        const skip = Math.max(0, Math.floor(Math.random() * Math.max(1, total - safeLimit)));
-        const page = await this.questionModel.find().skip(skip).limit(safeLimit).exec();
+        const skip = Math.max(
+          0,
+          Math.floor(Math.random() * Math.max(1, total - safeLimit)),
+        );
+        const page = await this.questionModel
+          .find()
+          .skip(skip)
+          .limit(safeLimit)
+          .exec();
         if (page.length > 0) return page;
       }
     } catch (error: any) {
@@ -726,60 +880,83 @@ export class QuestionsService {
    * @param limit 题目数量
    * @returns 题目列表
    */
-  async getSpecialPracticeQuestions(knowledgePointId: string, difficulty?: string, limit: number = 10): Promise<Question[]> {
-    this.logger.log(`Requesting special practice questions for knowledge point: ${knowledgePointId}, difficulty: ${difficulty}`);
-    
+  async getSpecialPracticeQuestions(
+    knowledgePointId: string,
+    difficulty?: string,
+    limit: number = 10,
+  ): Promise<Question[]> {
+    this.logger.log(
+      `Requesting special practice questions for knowledge point: ${knowledgePointId}, difficulty: ${difficulty}`,
+    );
+
     try {
       // 查找对应的中文知识点名称
       const targetKnowledgePoint = this.resolveKnowledgePoint(knowledgePointId);
-      
+
       if (!targetKnowledgePoint) {
-        this.logger.warn(`No knowledge point mapping found: ${knowledgePointId}`);
+        this.logger.warn(
+          `No knowledge point mapping found: ${knowledgePointId}`,
+        );
         return [];
       }
-      
+
       // 构建查询条件
       const filter: any = { knowledgePoint: targetKnowledgePoint };
-      
+
       // 添加难度过滤
       if (difficulty && difficulty !== 'all') {
         filter.difficulty = difficulty;
       }
-      
+
       // 查询数据库
       let questions = await this.questionModel.find(filter).limit(limit).exec();
-      
+
       // 如果精确匹配为空，尝试别名
       if (questions.length === 0) {
-        for (const [alias, standardName] of Object.entries(this.knowledgeAliasMapping)) {
+        for (const [alias, standardName] of Object.entries(
+          this.knowledgeAliasMapping,
+        )) {
           if (standardName === targetKnowledgePoint) {
             const aliasFilter: any = { knowledgePoint: alias };
             if (difficulty && difficulty !== 'all') {
               aliasFilter.difficulty = difficulty;
             }
-            questions = await this.questionModel.find(aliasFilter).limit(limit).exec();
+            questions = await this.questionModel
+              .find(aliasFilter)
+              .limit(limit)
+              .exec();
             if (questions.length > 0) {
               break;
             }
           }
         }
       }
-      
+
       // 如果仍然为空，尝试模糊匹配
       if (questions.length === 0) {
         const fuzzyFilter: any = {
-          knowledgePoint: { $regex: new RegExp(this.escapeRegex(targetKnowledgePoint), 'i') },
+          knowledgePoint: {
+            $regex: new RegExp(this.escapeRegex(targetKnowledgePoint), 'i'),
+          },
         };
         if (difficulty && difficulty !== 'all') {
           fuzzyFilter.difficulty = difficulty;
         }
-        questions = await this.questionModel.find(fuzzyFilter).limit(limit).exec();
+        questions = await this.questionModel
+          .find(fuzzyFilter)
+          .limit(limit)
+          .exec();
       }
-      
-      this.logger.log(`Successfully found ${questions.length} special practice questions`);
+
+      this.logger.log(
+        `Successfully found ${questions.length} special practice questions`,
+      );
       return questions;
     } catch (error) {
-      this.logger.error('Error getting special practice questions:', describeErrorForLog(error));
+      this.logger.error(
+        'Error getting special practice questions:',
+        describeErrorForLog(error),
+      );
       return [];
     }
   }
@@ -791,9 +968,15 @@ export class QuestionsService {
    * @param limit 每页数量
    * @returns 错题列表和总数
    */
-  async getUserMistakes(userId: string, page: number = 1, limit: number = 10): Promise<{ mistakes: Mistake[]; total: number }> {
-    this.logger.log(`Getting mistakes for user: ${userId}, page: ${page}, limit: ${limit}`);
-    
+  async getUserMistakes(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ mistakes: Mistake[]; total: number }> {
+    this.logger.log(
+      `Getting mistakes for user: ${userId}, page: ${page}, limit: ${limit}`,
+    );
+
     const skip = (page - 1) * limit;
     const [mistakes, total] = await Promise.all([
       this.mistakeModel
@@ -802,9 +985,9 @@ export class QuestionsService {
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.mistakeModel.countDocuments({ userId }).exec()
+      this.mistakeModel.countDocuments({ userId }).exec(),
     ]);
-    
+
     return { mistakes, total };
   }
 
@@ -813,22 +996,24 @@ export class QuestionsService {
    * @param userId 用户ID
    * @returns 按知识点分类的错题
    */
-  async getMistakesByKnowledgePoint(userId: string): Promise<Record<string, Mistake[]>> {
+  async getMistakesByKnowledgePoint(
+    userId: string,
+  ): Promise<Record<string, Mistake[]>> {
     this.logger.log(`Getting mistakes by knowledge point for user: ${userId}`);
-    
+
     const mistakes = await this.mistakeModel.find({ userId }).exec();
-    
+
     // 按知识点分类
     const mistakesByKnowledgePoint: Record<string, Mistake[]> = {};
-    
-    mistakes.forEach(mistake => {
+
+    mistakes.forEach((mistake) => {
       const knowledgePoint = mistake.knowledgePoint || '未分类';
       if (!mistakesByKnowledgePoint[knowledgePoint]) {
         mistakesByKnowledgePoint[knowledgePoint] = [];
       }
       mistakesByKnowledgePoint[knowledgePoint].push(mistake);
     });
-    
+
     return mistakesByKnowledgePoint;
   }
 }

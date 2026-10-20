@@ -57,7 +57,10 @@ export interface ModelSelectionStrategy {
 @Injectable()
 export class ModelExpansionService {
   private readonly logger = new Logger(ModelExpansionService.name);
-  private readonly specializedModels: Map<SpecializedModelType, SpecializedModelConfig>;
+  private readonly specializedModels: Map<
+    SpecializedModelType,
+    SpecializedModelConfig
+  >;
   private readonly benchmarks: ModelBenchmark[] = [];
   private selectionHistory: ModelSelectionStrategy[] = [];
 
@@ -71,13 +74,26 @@ export class ModelExpansionService {
       {
         type: SpecializedModelType.MATHGLM,
         name: 'MathGLM',
-        description: '专门针对数学推理优化的GLM系列模型，在算术、代数、微积分等方面表现优异',
-        strengths: ['代数运算', '方程求解', '级数展开', '积分计算', '中文数学题'],
+        description:
+          '专门针对数学推理优化的GLM系列模型，在算术、代数、微积分等方面表现优异',
+        strengths: [
+          '代数运算',
+          '方程求解',
+          '级数展开',
+          '积分计算',
+          '中文数学题',
+        ],
         weaknesses: ['几何证明', '拓扑推理', '复杂符号推导'],
         targetCategories: [
-          'integral_indefinite_basic', 'integral_substitution', 'integral_by_parts',
-          'de_first_order', 'de_higher_order', 'series_power', 'series_taylor',
-          'multiple_integral_double', 'multiple_integral_triple',
+          'integral_indefinite_basic',
+          'integral_substitution',
+          'integral_by_parts',
+          'de_first_order',
+          'de_higher_order',
+          'series_power',
+          'series_taylor',
+          'multiple_integral_double',
+          'multiple_integral_triple',
         ],
         modelId: 'THUDM/MathGLM-R1-0528-9B',
         maxTokens: 4096,
@@ -91,12 +107,17 @@ export class ModelExpansionService {
       {
         type: SpecializedModelType.LLEMMA,
         name: 'LLEMMA-34B',
-        description: '基于CodeLlama在数学证明数据集上微调，擅长形式化推理和定理证明',
+        description:
+          '基于CodeLlama在数学证明数据集上微调，擅长形式化推理和定理证明',
         strengths: ['定理证明', '逻辑推理', '形式化推导', '符号计算'],
         weaknesses: ['应用计算', '几何直观', '数值近似'],
         targetCategories: [
-          'proof_theorem', 'proof_inequality', 'multivariable_lagrange',
-          'multivariable_implicit', 'de_higher_order', 'de_system',
+          'proof_theorem',
+          'proof_inequality',
+          'multivariable_lagrange',
+          'multivariable_implicit',
+          'de_higher_order',
+          'de_system',
         ],
         modelId: 'EleutherAI/llemma_34b',
         maxTokens: 8192,
@@ -114,9 +135,15 @@ export class ModelExpansionService {
         strengths: ['复杂推理', '多步骤问题', '多变量问题', '微分方程'],
         weaknesses: ['小众数学领域', '领域特定符号', '超长链式推理'],
         targetCategories: [
-          'de_system', 'de_laplace', 'de_series', 'series_fourier',
-          'application_physics', 'application_engineering',
-          'curve_integral_green', 'surface_integral_gauss', 'field_theory',
+          'de_system',
+          'de_laplace',
+          'de_series',
+          'series_fourier',
+          'application_physics',
+          'application_engineering',
+          'curve_integral_green',
+          'surface_integral_gauss',
+          'field_theory',
         ],
         modelId: 'WizardLM/WizardLM-2-8x22B-Math',
         maxTokens: 6144,
@@ -130,13 +157,19 @@ export class ModelExpansionService {
       {
         type: SpecializedModelType.GEMMA_MATH,
         name: 'Gemma-Math-27B',
-        description: 'Google Gemma系列专门针对数学推理优化的模型，计算速度和中文理解优秀',
+        description:
+          'Google Gemma系列专门针对数学推理优化的模型，计算速度和中文理解优秀',
         strengths: ['中文高数题', '快速计算', '应用题建模', '重积分计算'],
         weaknesses: ['前沿数学研究', '特殊形式化符号'],
         targetCategories: [
-          'application_geometry', 'application_physics', 'application_economics',
-          'multiple_integral_double', 'multiple_integral_triple',
-          'vector_algebra_dot', 'vector_algebra_cross', 'spatial_geometry_plane',
+          'application_geometry',
+          'application_physics',
+          'application_economics',
+          'multiple_integral_double',
+          'multiple_integral_triple',
+          'vector_algebra_dot',
+          'vector_algebra_cross',
+          'spatial_geometry_plane',
         ],
         modelId: 'google/gemma-math-27b',
         maxTokens: 4096,
@@ -150,12 +183,17 @@ export class ModelExpansionService {
       {
         type: SpecializedModelType.DEEPSEEK_MATH,
         name: 'DeepSeek-Math-67B',
-        description: 'DeepSeek专为数学问题优化的模型，在竞赛数学和高等数学中表现突出',
+        description:
+          'DeepSeek专为数学问题优化的模型，在竞赛数学和高等数学中表现突出',
         strengths: ['高等数学推理', '证明题', '竞赛题', '复杂级数'],
         weaknesses: ['简单计算过度复杂化', '有时过度推理'],
         targetCategories: [
-          'proof_theorem', 'proof_inequality', 'series_convergence',
-          'curve_surface_comprehensive', 'stokes_theorem', 'gauss_divergence',
+          'proof_theorem',
+          'proof_inequality',
+          'series_convergence',
+          'curve_surface_comprehensive',
+          'stokes_theorem',
+          'gauss_divergence',
           'rolle_mvt',
         ],
         modelId: 'deepseek-ai/DeepSeek-Math-67B',
@@ -211,7 +249,11 @@ export class ModelExpansionService {
 
     const benchmark = this.benchmarks
       .filter((b) => b.modelType === primary.type && b.category === category)
-      .sort((a, b) => new Date(b.lastBenchmarked).getTime() - new Date(a.lastBenchmarked).getTime())[0];
+      .sort(
+        (a, b) =>
+          new Date(b.lastBenchmarked).getTime() -
+          new Date(a.lastBenchmarked).getTime(),
+      )[0];
 
     const accuracyEstimate = benchmark ? benchmark.accuracy : 0.85;
     const latencyEstimate = benchmark ? benchmark.averageLatencyMs : 3000;
@@ -252,15 +294,18 @@ export class ModelExpansionService {
   }
 
   generateModelComparisonReport(): any {
-    const modelPerformance = new Map<SpecializedModelType, {
-      totalTests: number;
-      totalPassed: number;
-      avgAccuracy: number;
-      avgLatency: number;
-      avgHallucination: number;
-      avgFormalVerification: number;
-      categories: string[];
-    }>();
+    const modelPerformance = new Map<
+      SpecializedModelType,
+      {
+        totalTests: number;
+        totalPassed: number;
+        avgAccuracy: number;
+        avgLatency: number;
+        avgHallucination: number;
+        avgFormalVerification: number;
+        categories: string[];
+      }
+    >();
 
     for (const bm of this.benchmarks) {
       let perf = modelPerformance.get(bm.modelType);
@@ -294,10 +339,13 @@ export class ModelExpansionService {
         type,
         name: model?.name || type,
         totalTests: perf.totalTests,
-        overallAccuracy: (perf.totalPassed / Math.max(1, perf.totalTests) * 100).toFixed(1) + '%',
+        overallAccuracy:
+          ((perf.totalPassed / Math.max(1, perf.totalTests)) * 100).toFixed(1) +
+          '%',
         averageLatency: perf.avgLatency + 'ms',
         hallucinationRate: (perf.avgHallucination * 100).toFixed(1) + '%',
-        formalVerificationRate: (perf.avgFormalVerification * 100).toFixed(1) + '%',
+        formalVerificationRate:
+          (perf.avgFormalVerification * 100).toFixed(1) + '%',
         coveredCategories: perf.categories.length,
         available: model?.isAvailable ?? false,
       });
@@ -312,9 +360,13 @@ export class ModelExpansionService {
 
   generateSampleBenchmarks(): void {
     const categories = [
-      'multiple_integral_double', 'multiple_integral_triple',
-      'curve_integral_green', 'surface_integral_gauss',
-      'field_theory', 'vector_algebra_dot', 'vector_algebra_cross',
+      'multiple_integral_double',
+      'multiple_integral_triple',
+      'curve_integral_green',
+      'surface_integral_gauss',
+      'field_theory',
+      'vector_algebra_dot',
+      'vector_algebra_cross',
       'spatial_geometry_plane',
     ];
 
@@ -338,9 +390,11 @@ export class ModelExpansionService {
           averageLatencyMs: 1000 + Math.floor(Math.random() * 4000),
           averageTokenUsage: 500 + Math.floor(Math.random() * 2000),
           hallucinationRate: 0.02 + Math.random() * 0.08,
-          formalVerificationRate: mt === SpecializedModelType.DEEPSEEK_MATH || mt === SpecializedModelType.LLEMMA
-            ? 0.6 + Math.random() * 0.35
-            : 0.1 + Math.random() * 0.2,
+          formalVerificationRate:
+            mt === SpecializedModelType.DEEPSEEK_MATH ||
+            mt === SpecializedModelType.LLEMMA
+              ? 0.6 + Math.random() * 0.35
+              : 0.1 + Math.random() * 0.2,
           lastBenchmarked: new Date().toISOString(),
         });
       }

@@ -1,8 +1,14 @@
-import { describeErrorForLog, describeHttpError, redactSecrets } from './redact';
+import {
+  describeErrorForLog,
+  describeHttpError,
+  redactSecrets,
+} from './redact';
 
 describe('redactSecrets', () => {
   it('遮蔽字符串里的 sk- 密钥与 Bearer 令牌', () => {
-    const out = redactSecrets('Authorization: Bearer sk-abcdefghijklmnopqrstuvwxyz012345');
+    const out = redactSecrets(
+      'Authorization: Bearer sk-abcdefghijklmnopqrstuvwxyz012345',
+    );
     expect(out).not.toContain('sk-abcdefghijklmnopqrstuvwxyz012345');
     expect(out).toContain('Bearer');
   });
@@ -20,7 +26,10 @@ describe('redactSecrets', () => {
   });
 
   it('遮蔽 HTTP 头对象（大小写不敏感）', () => {
-    const out = redactSecrets({ Authorization: 'Bearer sk-xxx', 'X-Api-Key': 'yyy' }) as any;
+    const out = redactSecrets({
+      Authorization: 'Bearer sk-xxx',
+      'X-Api-Key': 'yyy',
+    }) as any;
     expect(out.Authorization).toBe('[REDACTED]');
     expect(out['X-Api-Key']).toBe('[REDACTED]');
   });
@@ -41,7 +50,11 @@ describe('redactSecrets', () => {
   });
 
   it('数组逐元素脱敏', () => {
-    const out = redactSecrets(['ok', 'Bearer sk-abcdefghijklmnop', 'plain']) as string[];
+    const out = redactSecrets([
+      'ok',
+      'Bearer sk-abcdefghijklmnop',
+      'plain',
+    ]) as string[];
     expect(out[0]).toBe('ok');
     expect(out[1]).not.toContain('sk-abcdefghijklmnop');
     expect(out[2]).toBe('plain');
@@ -52,9 +65,17 @@ describe('describeHttpError', () => {
   it('抽取 status 与上游错误码，且不携带 config/request', () => {
     const axiosError: any = new Error('Request failed with status code 504');
     axiosError.isAxiosError = true;
-    axiosError.config = { headers: { Authorization: 'Bearer sk-shouldnotleak123456' } };
-    axiosError.request = { _header: 'POST /v1 HTTP/1.1\r\nAuthorization: Bearer sk-shouldnotleak123456' };
-    axiosError.response = { status: 504, data: { code: 'TIMEOUT', message: 'compute timeout' } };
+    axiosError.config = {
+      headers: { Authorization: 'Bearer sk-shouldnotleak123456' },
+    };
+    axiosError.request = {
+      _header:
+        'POST /v1 HTTP/1.1\r\nAuthorization: Bearer sk-shouldnotleak123456',
+    };
+    axiosError.response = {
+      status: 504,
+      data: { code: 'TIMEOUT', message: 'compute timeout' },
+    };
 
     const summary = describeHttpError(axiosError);
     expect(summary.isHttpError).toBe(true);
@@ -75,7 +96,12 @@ describe('describeHttpError', () => {
 
   it('describeErrorForLog 输出单行、可直接进日志', () => {
     const axiosError: any = new Error('boom');
-    axiosError.response = { status: 400, data: { code: 'PARSE_ERROR', message: 'bad expr' } };
-    expect(describeErrorForLog(axiosError)).toBe('status=400 code=PARSE_ERROR message=bad expr');
+    axiosError.response = {
+      status: 400,
+      data: { code: 'PARSE_ERROR', message: 'bad expr' },
+    };
+    expect(describeErrorForLog(axiosError)).toBe(
+      'status=400 code=PARSE_ERROR message=bad expr',
+    );
   });
 });

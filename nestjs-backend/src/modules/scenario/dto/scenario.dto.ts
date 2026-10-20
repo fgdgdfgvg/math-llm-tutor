@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+} from 'class-validator';
 
 export class CompleteGameLevelDto {
   @IsString()

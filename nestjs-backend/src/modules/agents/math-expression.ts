@@ -46,7 +46,8 @@ function decimalToFraction(value: number): Frac {
 }
 
 export function frac(n: number, d = 1): Frac {
-  if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0) return { n: NaN, d: 1 };
+  if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0)
+    return { n: NaN, d: 1 };
   if (d < 0) {
     n = -n;
     d = -d;
@@ -66,8 +67,10 @@ export function frac(n: number, d = 1): Frac {
   return { n, d };
 }
 
-export const fAdd = (a: Frac, b: Frac): Frac => frac(a.n * b.d + b.n * a.d, a.d * b.d);
-export const fSub = (a: Frac, b: Frac): Frac => frac(a.n * b.d - b.n * a.d, a.d * b.d);
+export const fAdd = (a: Frac, b: Frac): Frac =>
+  frac(a.n * b.d + b.n * a.d, a.d * b.d);
+export const fSub = (a: Frac, b: Frac): Frac =>
+  frac(a.n * b.d - b.n * a.d, a.d * b.d);
 export const fMul = (a: Frac, b: Frac): Frac => frac(a.n * b.n, a.d * b.d);
 export const fDiv = (a: Frac, b: Frac): Frac => frac(a.n * b.d, a.d * b.n);
 
@@ -101,14 +104,34 @@ export function fEquals(a: Frac, b: Frac): boolean {
 // ============================ 文本归一化 ============================
 
 const SUPERSCRIPT: Record<string, string> = {
-  '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
-  '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+  '⁰': '0',
+  '¹': '1',
+  '²': '2',
+  '³': '3',
+  '⁴': '4',
+  '⁵': '5',
+  '⁶': '6',
+  '⁷': '7',
+  '⁸': '8',
+  '⁹': '9',
 };
 
 const FULL_WIDTH: Record<string, string> = {
-  '（': '(', '）': ')', '＋': '+', '－': '-', '×': '*', '÷': '/',
-  '＝': '=', '，': ',', '：': ':', '·': '*', '−': '-',
-  '＾': '^', '｛': '{', '｝': '}', '％': '%',
+  '（': '(',
+  '）': ')',
+  '＋': '+',
+  '－': '-',
+  '×': '*',
+  '÷': '/',
+  '＝': '=',
+  '，': ',',
+  '：': ':',
+  '·': '*',
+  '−': '-',
+  '＾': '^',
+  '｛': '{',
+  '｝': '}',
+  '％': '%',
 };
 
 /**
@@ -120,7 +143,10 @@ export function normalizeMathText(input: string): string {
   let s = String(input);
 
   // Unicode 上标：x² → x^2
-  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (m) => `^(${[...m].map((c) => SUPERSCRIPT[c]).join('')})`);
+  s = s.replace(
+    /[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,
+    (m) => `^(${[...m].map((c) => SUPERSCRIPT[c]).join('')})`,
+  );
 
   // Python/程序式幂运算符：`3*x**2` 是本地引擎与 SymPy 的输出格式，
   // 不归一化的话等价判定会退化为 unknown（学生写对了却说无法判定）
@@ -154,7 +180,10 @@ export function normalizeMathText(input: string): string {
 
   // 函数名去反斜杠，^{...} → ^(...)，_{...} → 丢弃（下标属命名约定）
   s = s
-    .replace(/\\(sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|max|min)\b/g, '$1')
+    .replace(
+      /\\(sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|max|min)\b/g,
+      '$1',
+    )
     .replace(/\^\{([^{}]*)\}/g, '^($1)')
     .replace(/_\{([^{}]*)\}/g, '')
     .replace(/_([0-9A-Za-z])/g, '$1');
@@ -166,7 +195,10 @@ export function normalizeMathText(input: string): string {
   return s;
 }
 
-function readGroup(s: string, start: number): { content: string; end: number } | null {
+function readGroup(
+  s: string,
+  start: number,
+): { content: string; end: number } | null {
   if (s[start] !== '{') return null;
   let depth = 0;
   for (let i = start; i < s.length; i++) {
@@ -195,10 +227,12 @@ function foldSqrt(s: string): string {
   const at = s.indexOf('\\sqrt');
   if (at < 0) return s;
   const group = readGroup(s, at + 5);
-  if (group) return `${s.slice(0, at)}sqrt(${group.content})${s.slice(group.end)}`;
+  if (group)
+    return `${s.slice(0, at)}sqrt(${group.content})${s.slice(group.end)}`;
   // \sqrt3 / \sqrt x
   const m = s.slice(at + 5).match(/^([0-9A-Za-z.]+)/);
-  if (m) return `${s.slice(0, at)}sqrt(${m[1]})${s.slice(at + 5 + m[1].length)}`;
+  if (m)
+    return `${s.slice(0, at)}sqrt(${m[1]})${s.slice(at + 5 + m[1].length)}`;
   return s.replace('\\sqrt', 'sqrt');
 }
 
@@ -221,10 +255,27 @@ type Token =
   | { k: 'op'; v: string };
 
 const SUPPORTED_FUNCTIONS = new Set([
-  'sin', 'cos', 'tan', 'cot', 'sec', 'csc',
-  'arcsin', 'arccos', 'arctan', 'asin', 'acos', 'atan',
-  'sinh', 'cosh', 'tanh',
-  'ln', 'log', 'log10', 'exp', 'sqrt', 'abs',
+  'sin',
+  'cos',
+  'tan',
+  'cot',
+  'sec',
+  'csc',
+  'arcsin',
+  'arccos',
+  'arctan',
+  'asin',
+  'acos',
+  'atan',
+  'sinh',
+  'cosh',
+  'tanh',
+  'ln',
+  'log',
+  'log10',
+  'exp',
+  'sqrt',
+  'abs',
 ]);
 
 function tokenize(src: string): Token[] {
@@ -255,7 +306,12 @@ function tokenize(src: string): Token[] {
     }
     if ('+-*/^()[]{}|'.includes(c)) {
       // 中括号统一当圆括号，绝对值符号 | 也当括号（简化处理）
-      const normalized = c === '[' || c === '{' || c === '|' ? '(' : c === ']' || c === '}' ? ')' : c;
+      const normalized =
+        c === '[' || c === '{' || c === '|'
+          ? '('
+          : c === ']' || c === '}'
+            ? ')'
+            : c;
       tokens.push({ k: 'op', v: normalized });
       i++;
       continue;
@@ -294,8 +350,10 @@ class Parser {
   private parseAdditive(): MathNode {
     let left = this.parseMultiplicative();
     for (;;) {
-      if (this.eatOp('+')) left = { t: 'add', a: left, b: this.parseMultiplicative() };
-      else if (this.eatOp('-')) left = { t: 'sub', a: left, b: this.parseMultiplicative() };
+      if (this.eatOp('+'))
+        left = { t: 'add', a: left, b: this.parseMultiplicative() };
+      else if (this.eatOp('-'))
+        left = { t: 'sub', a: left, b: this.parseMultiplicative() };
       else return left;
     }
   }
@@ -313,7 +371,10 @@ class Parser {
       }
       // 隐式乘法：2x、3(x+1)、x sin(x)、2π
       const t = this.peek();
-      if (t && (t.k === 'num' || t.k === 'ident' || (t.k === 'op' && t.v === '('))) {
+      if (
+        t &&
+        (t.k === 'num' || t.k === 'ident' || (t.k === 'op' && t.v === '('))
+      ) {
         left = { t: 'mul', a: left, b: this.parseUnary() };
         continue;
       }
@@ -355,7 +416,10 @@ class Parser {
     if (t.k === 'ident') {
       this.pos++;
       const name = t.v.toLowerCase();
-      const isFunctionCall = !!this.peek() && this.peek()!.k === 'op' && (this.peek() as any).v === '(';
+      const isFunctionCall =
+        !!this.peek() &&
+        this.peek()!.k === 'op' &&
+        (this.peek() as any).v === '(';
 
       if (SUPPORTED_FUNCTIONS.has(name) && isFunctionCall) {
         this.pos++; // 吃掉 '('
@@ -369,7 +433,8 @@ class Parser {
         return { t: 'fn', name, arg };
       }
       if (name === 'pi') return { t: 'var', name: 'pi' };
-      if (name === 'infinity' || name === 'inf') return { t: 'var', name: 'infinity' };
+      if (name === 'infinity' || name === 'inf')
+        return { t: 'var', name: 'infinity' };
       if (name === 'e') return { t: 'var', name: 'e' };
       return { t: 'var', name };
     }
@@ -488,7 +553,10 @@ function trimPoly(p: Polynomial): Polynomial {
  * 变量只允许 `variable`，幂次必须是非负整数，除数必须是常数，
  * 函数参数必须是与变量无关的常量（如 sin(0)）。其余情况返回 null——绝不猜。
  */
-export function astToPolynomial(node: MathNode, variable = 'x'): Polynomial | null {
+export function astToPolynomial(
+  node: MathNode,
+  variable = 'x',
+): Polynomial | null {
   switch (node.t) {
     case 'num':
       return [node.v];
@@ -529,7 +597,8 @@ export function astToPolynomial(node: MathNode, variable = 'x'): Polynomial | nu
       const constantExponent = astToPolynomial(node.b, variable);
       if (!constantExponent || polyDegree(constantExponent) > 0) return null;
       const expValue = fToNumber(constantExponent[0]);
-      if (!Number.isInteger(expValue) || expValue < 0 || expValue > 64) return null;
+      if (!Number.isInteger(expValue) || expValue < 0 || expValue > 64)
+        return null;
       let acc: Polynomial = [frac(1)];
       for (let i = 0; i < expValue; i++) acc = polyMul(acc, base);
       return acc;
@@ -540,7 +609,10 @@ export function astToPolynomial(node: MathNode, variable = 'x'): Polynomial | nu
 }
 
 /** 直接把文本解析成多项式；不成功返回 null */
-export function parsePolynomialExact(input: string, variable = 'x'): Polynomial | null {
+export function parsePolynomialExact(
+  input: string,
+  variable = 'x',
+): Polynomial | null {
   const ast = parseMathExpression(input);
   if (!ast) return null;
   return astToPolynomial(ast, variable);
@@ -585,17 +657,28 @@ export function evaluateAst(node: MathNode, x: number, variable = 'x'): number {
       return NaN;
     }
     case 'add':
-      return evaluateAst(node.a, x, variable) + evaluateAst(node.b, x, variable);
+      return (
+        evaluateAst(node.a, x, variable) + evaluateAst(node.b, x, variable)
+      );
     case 'sub':
-      return evaluateAst(node.a, x, variable) - evaluateAst(node.b, x, variable);
+      return (
+        evaluateAst(node.a, x, variable) - evaluateAst(node.b, x, variable)
+      );
     case 'mul':
-      return evaluateAst(node.a, x, variable) * evaluateAst(node.b, x, variable);
+      return (
+        evaluateAst(node.a, x, variable) * evaluateAst(node.b, x, variable)
+      );
     case 'div':
-      return evaluateAst(node.a, x, variable) / evaluateAst(node.b, x, variable);
+      return (
+        evaluateAst(node.a, x, variable) / evaluateAst(node.b, x, variable)
+      );
     case 'neg':
       return -evaluateAst(node.a, x, variable);
     case 'pow':
-      return Math.pow(evaluateAst(node.a, x, variable), evaluateAst(node.b, x, variable));
+      return Math.pow(
+        evaluateAst(node.a, x, variable),
+        evaluateAst(node.b, x, variable),
+      );
     case 'fn': {
       const fn = FUNCS[node.name];
       if (!fn) return NaN;
@@ -607,7 +690,10 @@ export function evaluateAst(node: MathNode, x: number, variable = 'x'): number {
 }
 
 /** 把文本编译成数值函数；失败返回 null */
-export function compileEvaluator(input: string, variable = 'x'): ((x: number) => number) | null {
+export function compileEvaluator(
+  input: string,
+  variable = 'x',
+): ((x: number) => number) | null {
   const ast = parseMathExpression(input);
   if (!ast) return null;
   return (x: number) => evaluateAst(ast, x, variable);
@@ -625,8 +711,8 @@ export interface EquationRoot {
 }
 
 export type EquationSolution =
-  | { kind: 'identity' }                       // 恒等式：无穷多解
-  | { kind: 'none' }                           // 无解
+  | { kind: 'identity' } // 恒等式：无穷多解
+  | { kind: 'none' } // 无解
   | { kind: 'roots'; roots: EquationRoot[]; degree: number }
   | { kind: 'unsolved'; reason: string };
 
@@ -647,7 +733,13 @@ export function solvePolynomialEquation(p: Polynomial): EquationSolution {
     return {
       kind: 'roots',
       degree: 1,
-      roots: [{ exact: root, latex: `x = ${fToLatex(root)}`, numeric: fToNumber(root) }],
+      roots: [
+        {
+          exact: root,
+          latex: `x = ${fToLatex(root)}`,
+          numeric: fToNumber(root),
+        },
+      ],
     };
   }
 
@@ -662,7 +754,10 @@ export function solvePolynomialEquation(p: Polynomial): EquationSolution {
     if (discNum < 0) {
       const real = fDiv({ n: -b.n, d: b.d }, fMul(frac(2), a));
       const imagNum = Math.sqrt(-discNum);
-      const imag = fDiv({ n: Math.round(imagNum * 1e6), d: 1e6 }, fMul(frac(2), a));
+      const imag = fDiv(
+        { n: Math.round(imagNum * 1e6), d: 1e6 },
+        fMul(frac(2), a),
+      );
       return {
         kind: 'roots',
         degree: 2,
@@ -680,12 +775,20 @@ export function solvePolynomialEquation(p: Polynomial): EquationSolution {
       return {
         kind: 'roots',
         degree: 2,
-        roots: [{ exact: root, latex: `x = ${fToLatex(root)}（二重根）`, numeric: fToNumber(root) }],
+        roots: [
+          {
+            exact: root,
+            latex: `x = ${fToLatex(root)}（二重根）`,
+            numeric: fToNumber(root),
+          },
+        ],
       };
     }
 
     // 判别式为完全平方 → 精确有理根；否则保留根式精确形式
-    const perfectSquare = Number.isInteger(discNum) ? integerSqrt(discNum) : null;
+    const perfectSquare = Number.isInteger(discNum)
+      ? integerSqrt(discNum)
+      : null;
     const twoA = fMul(frac(2), a);
     if (perfectSquare !== null) {
       const r1 = fDiv(fAdd({ n: -b.n, d: b.d }, frac(perfectSquare)), twoA);
@@ -703,38 +806,57 @@ export function solvePolynomialEquation(p: Polynomial): EquationSolution {
     const sqrtLatex = `\\sqrt{${fToLatex(disc)}}`;
     const minusB = fToLatex({ n: -b.n, d: b.d });
     const denom = fToLatex(twoA);
-    const n1 = ((-b.n / b.d + Math.sqrt(discNum)) / (2 * fToNumber(a)));
-    const n2 = ((-b.n / b.d - Math.sqrt(discNum)) / (2 * fToNumber(a)));
+    const n1 = (-b.n / b.d + Math.sqrt(discNum)) / (2 * fToNumber(a));
+    const n2 = (-b.n / b.d - Math.sqrt(discNum)) / (2 * fToNumber(a));
     return {
       kind: 'roots',
       degree: 2,
       roots: [
-        { latex: `x_1 = \\frac{${minusB} + ${sqrtLatex}}{${denom}}`, numeric: n1 },
-        { latex: `x_2 = \\frac{${minusB} - ${sqrtLatex}}{${denom}}`, numeric: n2 },
+        {
+          latex: `x_1 = \\frac{${minusB} + ${sqrtLatex}}{${denom}}`,
+          numeric: n1,
+        },
+        {
+          latex: `x_2 = \\frac{${minusB} - ${sqrtLatex}}{${denom}}`,
+          numeric: n2,
+        },
       ],
     };
   }
 
-  return { kind: 'unsolved', reason: `本地规则引擎仅支持一次/二次方程（本题为 ${degree} 次）` };
+  return {
+    kind: 'unsolved',
+    reason: `本地规则引擎仅支持一次/二次方程（本题为 ${degree} 次）`,
+  };
 }
 
 /**
  * 把"左边 = 右边"形式的方程移项成 p(x) = 0 并求解。
  * 支持小数系数、隐式系数 1、Unicode 上标、LaTeX 分数、括号展开。
  */
-export function solveEquationString(input: string): EquationSolution & { moved?: string } {
+export function solveEquationString(
+  input: string,
+): EquationSolution & { moved?: string } {
   const normalized = normalizeMathText(input);
   const parts = normalized.split('=');
-  if (parts.length < 2) return { kind: 'unsolved', reason: '未找到等号，无法作为方程求解' };
+  if (parts.length < 2)
+    return { kind: 'unsolved', reason: '未找到等号，无法作为方程求解' };
   // 支持连等号 A = B = C 时只取前两段
   const lhsAst = parseMathExpression(parts[0]);
   const rhsAst = parseMathExpression(parts.slice(1).join('='));
 
   // 右侧含变量时，用"差值多项式"求解，无需手写移项
-  const lhsPoly = astToPolynomial(lhsAst ?? ({ t: 'num', v: frac(0) } as MathNode));
-  const rhsPoly = astToPolynomial(rhsAst ?? ({ t: 'num', v: frac(0) } as MathNode));
+  const lhsPoly = astToPolynomial(
+    lhsAst ?? ({ t: 'num', v: frac(0) } as MathNode),
+  );
+  const rhsPoly = astToPolynomial(
+    rhsAst ?? ({ t: 'num', v: frac(0) } as MathNode),
+  );
   if (!lhsPoly || !rhsPoly) {
-    return { kind: 'unsolved', reason: '表达式中含非多项式成分（三角函数/分式/根式等）' };
+    return {
+      kind: 'unsolved',
+      reason: '表达式中含非多项式成分（三角函数/分式/根式等）',
+    };
   }
   const moved = polySub(lhsPoly, rhsPoly);
   const solution = solvePolynomialEquation(moved);

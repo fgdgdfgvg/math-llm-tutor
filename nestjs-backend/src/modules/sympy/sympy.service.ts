@@ -80,7 +80,9 @@ export class SympyService {
           ? `HTTP_${axiosError.response.status}`
           : 'NETWORK');
       // 只记录错误码与 message：axios 错误对象整体序列化会把 Authorization 头写进日志。
-      this.logger.error(`SymPy service error [${code}]: ${body?.error || axiosError.message}`);
+      this.logger.error(
+        `SymPy service error [${code}]: ${body?.error || axiosError.message}`,
+      );
       if (code === 'PARSE_ERROR') {
         throw new BadRequestException(body?.error || '表达式无法解析');
       }
@@ -143,7 +145,9 @@ export class SympyService {
     approach: string,
     direction: string = '+-',
   ): Promise<SympyResponse> {
-    this.logger.log(`Computing limit: ${expr} as ${variable} -> ${approach} (${direction})`);
+    this.logger.log(
+      `Computing limit: ${expr} as ${variable} -> ${approach} (${direction})`,
+    );
     return this.post<SympyResponse>('/limit', {
       expr,
       variable,

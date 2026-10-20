@@ -7,7 +7,14 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class RecordPracticeDto {
@@ -67,10 +74,7 @@ export class StudentKnowledgeController {
   }
 
   @Post('practice')
-  async recordPractice(
-    @Request() req: any,
-    @Body() body: RecordPracticeDto,
-  ) {
+  async recordPractice(@Request() req: any, @Body() body: RecordPracticeDto) {
     return this.studentKnowledgeService.recordPractice(
       req.user.userId,
       body.conceptId,

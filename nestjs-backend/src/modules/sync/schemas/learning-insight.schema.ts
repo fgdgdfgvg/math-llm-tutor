@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({
   timestamps: true,
-  expires: '30d' // 30天过期
+  expires: '30d', // 30天过期
 })
 export class LearningInsight {
   @Prop({ required: true })
@@ -32,4 +32,5 @@ export class LearningInsight {
 }
 
 export type LearningInsightDocument = LearningInsight & Document;
-export const LearningInsightSchema = SchemaFactory.createForClass(LearningInsight);
+export const LearningInsightSchema =
+  SchemaFactory.createForClass(LearningInsight);

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Param, Query, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Query,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
 import { Public } from '../../core/auth/guards/global-auth.guard';
 import { QuestionsService } from './questions.service';
@@ -143,7 +154,10 @@ export class QuestionsController {
     @Query('category') category?: string,
   ): Promise<Mistake[]> {
     // 错题是用户私有数据，始终使用 JWT 身份，忽略客户端传入的 userId。
-    return this.questionsService.getMistakesByCategory(req.user.username, category);
+    return this.questionsService.getMistakesByCategory(
+      req.user.username,
+      category,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -162,7 +176,10 @@ export class QuestionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('mistakes/:id/review')
-  async markMistakeAsReviewed(@Request() req, @Param('id') id: string): Promise<Mistake> {
+  async markMistakeAsReviewed(
+    @Request() req,
+    @Param('id') id: string,
+  ): Promise<Mistake> {
     const userId = req.user.username;
     return this.questionsService.markMistakeAsReviewed(id, userId);
   }
@@ -185,7 +202,11 @@ export class QuestionsController {
     @Query('difficulty') difficulty?: string,
     @Query('limit') limit: number = 10,
   ): Promise<Question[]> {
-    return this.questionsService.getSpecialPracticeQuestions(knowledgePointId, difficulty, limit);
+    return this.questionsService.getSpecialPracticeQuestions(
+      knowledgePointId,
+      difficulty,
+      limit,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -201,7 +222,9 @@ export class QuestionsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('mistakes/by-knowledge-point')
-  async getMistakesByKnowledgePoint(@Request() req): Promise<Record<string, Mistake[]>> {
+  async getMistakesByKnowledgePoint(
+    @Request() req,
+  ): Promise<Record<string, Mistake[]>> {
     const userId = req.user.username;
     return this.questionsService.getMistakesByKnowledgePoint(userId);
   }

@@ -24,7 +24,10 @@ export function securityHeaders(isProduction: boolean) {
     res.setHeader('Referrer-Policy', 'no-referrer');
 
     if (isProduction) {
-      res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+      res.setHeader(
+        'Strict-Transport-Security',
+        'max-age=15552000; includeSubDomains',
+      );
     }
     next();
   };

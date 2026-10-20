@@ -1,4 +1,7 @@
-import { HallucinationGuardService, HallucinationType } from './hallucination-guard.service';
+import {
+  HallucinationGuardService,
+  HallucinationType,
+} from './hallucination-guard.service';
 
 /**
  * 幻觉防控服务边界单测。
@@ -13,56 +16,86 @@ describe('HallucinationGuardService 幻觉防控', () => {
 
   describe('verifyTheoremUsage — 虚构定理检测', () => {
     it('引用不存在的定理名 → 判 FALSE_THEOREM', () => {
-      const issues = guard.verifyTheoremUsage('根据量子中值定理，函数在区间上取得极值');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(true);
+      const issues = guard.verifyTheoremUsage(
+        '根据量子中值定理，函数在区间上取得极值',
+      );
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(true);
     });
 
     it('引用真实定理（罗尔定理）→ 不判虚构定理', () => {
-      const issues = guard.verifyTheoremUsage('由罗尔定理可知，存在 ξ 使 f\'(ξ)=0');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+      const issues = guard.verifyTheoremUsage(
+        "由罗尔定理可知，存在 ξ 使 f'(ξ)=0",
+      );
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(false);
     });
 
     it('引用真实法则（洛必达）→ 不判虚构定理', () => {
       const issues = guard.verifyTheoremUsage('应用洛必达法则求该极限');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(false);
     });
 
     // 回归：删除 lowerClaimed.includes(alias) 后，以下三个合法上位概念曾被误判为虚构定理。
     // 它们现已被补入 THEOREM_DATABASE（事实源），必须稳定不误判。
     it('回归：引用"微分中值定理"（拉格朗日上位概念）→ 不判虚构', () => {
-      const issues = guard.verifyTheoremUsage('根据微分中值定理，存在 ξ 使 f\'(ξ) 等于平均变化率');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+      const issues = guard.verifyTheoremUsage(
+        "根据微分中值定理，存在 ξ 使 f'(ξ) 等于平均变化率",
+      );
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(false);
     });
 
     it('回归：引用"介值定理"（连续函数介值性）→ 不判虚构', () => {
-      const issues = guard.verifyTheoremUsage('由介值定理，连续函数必取到端点值之间的任意值');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+      const issues = guard.verifyTheoremUsage(
+        '由介值定理，连续函数必取到端点值之间的任意值',
+      );
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(false);
     });
 
     it('回归：引用"零点存在定理"（零点定理别称）→ 不判虚构', () => {
-      const issues = guard.verifyTheoremUsage('利用零点存在定理证明方程在区间内有根');
-      expect(issues.some(i => i.type === HallucinationType.FALSE_THEOREM)).toBe(false);
+      const issues =
+        guard.verifyTheoremUsage('利用零点存在定理证明方程在区间内有根');
+      expect(
+        issues.some((i) => i.type === HallucinationType.FALSE_THEOREM),
+      ).toBe(false);
     });
 
     it('空步骤不产生任何 issue', () => {
       expect(guard.verifyTheoremUsage('')).toHaveLength(0);
-      expect(guard.verifyTheoremUsage('这是一个普通的代数计算步骤')).toHaveLength(0);
+      expect(
+        guard.verifyTheoremUsage('这是一个普通的代数计算步骤'),
+      ).toHaveLength(0);
     });
   });
 
   describe('verifyTheoremUsage — 条件未验证检测', () => {
     it('引用罗尔定理但未验证 f(a)=f(b) → 判 MISAPPLIED_CONDITION', () => {
-      const issues = guard.verifyTheoremUsage('由罗尔定理得 f\'(ξ)=0');
-      expect(issues.some(i => i.type === HallucinationType.MISAPPLIED_CONDITION)).toBe(true);
+      const issues = guard.verifyTheoremUsage("由罗尔定理得 f'(ξ)=0");
+      expect(
+        issues.some((i) => i.type === HallucinationType.MISAPPLIED_CONDITION),
+      ).toBe(true);
     });
 
     it('引用罗尔定理且验证了全部条件 → 不误判 critical', () => {
       // extractConditionKeywords 将条件按非中英文字符分词，长度≥2 的词才作为关键词：
       //   "f在[a,b]上连续" → 连续；"f在(a,b)内可导" → 可导；"f(a)=f(b)（端点值相等）" → 端点值相等
-      const content = '因为 f 在 [a,b] 上连续，在 (a,b) 内可导，且满足端点值相等，由罗尔定理得 f\'(ξ)=0';
+      const content =
+        "因为 f 在 [a,b] 上连续，在 (a,b) 内可导，且满足端点值相等，由罗尔定理得 f'(ξ)=0";
       const issues = guard.verifyTheoremUsage(content);
       // 三个前提关键词均已出现，不应再因"未验证条件"报 critical
-      const criticals = issues.filter(i => i.type === HallucinationType.MISAPPLIED_CONDITION && i.severity === 'critical');
+      const criticals = issues.filter(
+        (i) =>
+          i.type === HallucinationType.MISAPPLIED_CONDITION &&
+          i.severity === 'critical',
+      );
       expect(criticals).toHaveLength(0);
     });
   });

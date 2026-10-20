@@ -1,4 +1,11 @@
-import { Controller, Get, HttpStatus, Inject, Logger, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Inject,
+  Logger,
+  Res,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
@@ -31,8 +38,14 @@ interface SystemMetrics {
   cpuWarning?: string;
 }
 
-const MEMORY_WARNING_THRESHOLD_MB = parseInt(process.env.MEMORY_WARNING_THRESHOLD_MB || '1024', 10);
-const CPU_WARNING_THRESHOLD_PERCENT = parseInt(process.env.CPU_WARNING_THRESHOLD_PERCENT || '80', 10);
+const MEMORY_WARNING_THRESHOLD_MB = parseInt(
+  process.env.MEMORY_WARNING_THRESHOLD_MB || '1024',
+  10,
+);
+const CPU_WARNING_THRESHOLD_PERCENT = parseInt(
+  process.env.CPU_WARNING_THRESHOLD_PERCENT || '80',
+  10,
+);
 
 @Controller('health')
 export class HealthController {
@@ -185,12 +198,18 @@ export class HealthController {
     const heapUsedMB = memoryUsage.heapUsed / (1024 * 1024);
     const rssMB = memoryUsage.rss / (1024 * 1024);
 
-    if (heapUsedMB > MEMORY_WARNING_THRESHOLD_MB || rssMB > MEMORY_WARNING_THRESHOLD_MB * 1.5) {
+    if (
+      heapUsedMB > MEMORY_WARNING_THRESHOLD_MB ||
+      rssMB > MEMORY_WARNING_THRESHOLD_MB * 1.5
+    ) {
       metrics.memoryWarning = `内存使用过高: heap=${heapUsedMB.toFixed(1)}MB, rss=${rssMB.toFixed(1)}MB`;
       this.logger.warn(metrics.memoryWarning);
     }
 
-    const cpuPercent = (process.cpuUsage().user + process.cpuUsage().system) / (uptime * 1000000) * 100;
+    const cpuPercent =
+      ((process.cpuUsage().user + process.cpuUsage().system) /
+        (uptime * 1000000)) *
+      100;
     if (cpuPercent > CPU_WARNING_THRESHOLD_PERCENT) {
       metrics.cpuWarning = `CPU使用率过高: ${cpuPercent.toFixed(1)}%`;
       this.logger.warn(metrics.cpuWarning);
@@ -211,7 +230,10 @@ export class HealthController {
         mistakeCount,
       };
     } catch (error) {
-      this.logger.error('Error getting database stats:', describeErrorForLog(error));
+      this.logger.error(
+        'Error getting database stats:',
+        describeErrorForLog(error),
+      );
       return {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
@@ -245,7 +267,10 @@ export class HealthController {
       return { status: 'healthy' };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('MongoDB health check failed:', describeErrorForLog(error));
+      this.logger.error(
+        'MongoDB health check failed:',
+        describeErrorForLog(error),
+      );
       return { status: 'unhealthy', message };
     }
   }
@@ -275,7 +300,10 @@ export class HealthController {
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
           continue;
         }
-        this.logger.error('SymPy health check failed:', describeErrorForLog(error));
+        this.logger.error(
+          'SymPy health check failed:',
+          describeErrorForLog(error),
+        );
         return { status: 'unhealthy', message: '服务未启动或无法连接' };
       }
     }
@@ -285,10 +313,16 @@ export class HealthController {
 
   private async checkNeo4jConnection(): Promise<HealthStatus> {
     try {
-      if (!(this.neo4jService as any).isConfigured || !(this.neo4jService as any).isConfigured()) {
+      if (
+        !(this.neo4jService as any).isConfigured ||
+        !(this.neo4jService as any).isConfigured()
+      ) {
         return { status: 'healthy', message: '未配置（使用内存降级模式）' };
       }
-      if ((this.neo4jService as any).isAuthFailed && (this.neo4jService as any).isAuthFailed()) {
+      if (
+        (this.neo4jService as any).isAuthFailed &&
+        (this.neo4jService as any).isAuthFailed()
+      ) {
         return { status: 'unhealthy', message: '认证失败，请检查凭据配置' };
       }
       if (!this.neo4jService.isInitialized()) {
@@ -302,7 +336,10 @@ export class HealthController {
       return { status: 'healthy' };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Neo4j health check failed:', describeErrorForLog(error));
+      this.logger.error(
+        'Neo4j health check failed:',
+        describeErrorForLog(error),
+      );
       return { status: 'unhealthy', message };
     }
   }

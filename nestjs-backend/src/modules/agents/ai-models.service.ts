@@ -3,12 +3,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { 
-  AIModelProvider, 
-  AIModelConfig, 
-  AIModelRequest, 
+import {
+  AIModelProvider,
+  AIModelConfig,
+  AIModelRequest,
   AIModelResponse,
-  AIModelService 
+  AIModelService,
 } from './ai-models.types';
 
 @Injectable()
@@ -30,9 +30,18 @@ export class AIModelsService {
     // SiliconFlow 命名（deepseek-ai/DeepSeek-V3）以适配第三方网关。
     const deepSeekConfig: AIModelConfig = {
       provider: AIModelProvider.DEEPSEEK,
-      apiKey: this.configService.get<string>('AI_DEEPSEEK_API_KEY') || this.configService.get<string>('DEEPSEEK_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_DEEPSEEK_BASE_URL') || this.configService.get<string>('DEEPSEEK_BASE_URL') || 'https://api.deepseek.com/v1',
-      model: this.configService.get<string>('AI_DEEPSEEK_MODEL') || this.configService.get<string>('DEEPSEEK_MODEL') || 'deepseek-chat',
+      apiKey:
+        this.configService.get<string>('AI_DEEPSEEK_API_KEY') ||
+        this.configService.get<string>('DEEPSEEK_API_KEY') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_DEEPSEEK_BASE_URL') ||
+        this.configService.get<string>('DEEPSEEK_BASE_URL') ||
+        'https://api.deepseek.com/v1',
+      model:
+        this.configService.get<string>('AI_DEEPSEEK_MODEL') ||
+        this.configService.get<string>('DEEPSEEK_MODEL') ||
+        'deepseek-chat',
       timeout: 60000,
       maxRetries: 2,
     };
@@ -41,8 +50,14 @@ export class AIModelsService {
     // GPT → SiliconFlow Qwen2.5-72B（实测可用，复杂问题分析）
     const gptConfig: AIModelConfig = {
       provider: AIModelProvider.GPT,
-      apiKey: this.configService.get<string>('AI_GPT_API_KEY') || this.configService.get<string>('GPT_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_GPT_BASE_URL') || this.configService.get<string>('GPT_BASE_URL') || '',
+      apiKey:
+        this.configService.get<string>('AI_GPT_API_KEY') ||
+        this.configService.get<string>('GPT_API_KEY') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_GPT_BASE_URL') ||
+        this.configService.get<string>('GPT_BASE_URL') ||
+        '',
       model: 'Qwen/Qwen2.5-72B-Instruct',
       timeout: 30000,
       maxRetries: 2,
@@ -52,8 +67,14 @@ export class AIModelsService {
     // KatCoder → SiliconFlow DeepSeek-V3（实测可用，最强数学推理）
     const katCoderConfig: AIModelConfig = {
       provider: AIModelProvider.KATCODER,
-      apiKey: this.configService.get<string>('AI_KATCODER_API_KEY') || this.configService.get<string>('KATCODER_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_KATCODER_BASE_URL') || this.configService.get<string>('KATCODER_BASE_URL') || '',
+      apiKey:
+        this.configService.get<string>('AI_KATCODER_API_KEY') ||
+        this.configService.get<string>('KATCODER_API_KEY') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_KATCODER_BASE_URL') ||
+        this.configService.get<string>('KATCODER_BASE_URL') ||
+        '',
       model: 'deepseek-ai/DeepSeek-V3',
       timeout: 30000,
       maxRetries: 2,
@@ -63,8 +84,13 @@ export class AIModelsService {
     // ModelScope → SiliconFlow Qwen2.5-7B（实测可用，快速规划）
     const modelScopeConfig: AIModelConfig = {
       provider: AIModelProvider.MODELSCOPE,
-      apiKey: this.configService.get<string>('AI_MODELSCOPE_API_KEY') || this.configService.get<string>('MODELSCOPE_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_MODELSCOPE_BASE_URL') || 'https://api.siliconflow.cn/v1',
+      apiKey:
+        this.configService.get<string>('AI_MODELSCOPE_API_KEY') ||
+        this.configService.get<string>('MODELSCOPE_API_KEY') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_MODELSCOPE_BASE_URL') ||
+        'https://api.siliconflow.cn/v1',
       model: 'Qwen/Qwen2.5-7B-Instruct',
       timeout: 60000,
       maxRetries: 3,
@@ -76,9 +102,18 @@ export class AIModelsService {
     // 此处 baseUrl 默认 SiliconFlow，借用会把 DeepSeek 密钥泄露给第三方网关。
     const qwenConfig: AIModelConfig = {
       provider: AIModelProvider.QWEN,
-      apiKey: this.configService.get<string>('AI_QWEN_API_KEY') || this.configService.get<string>('QWEN_API_KEY') || this.configService.get<string>('HF_TOKEN') || '',
-      baseUrl: this.configService.get<string>('AI_QWEN_BASE_URL') || this.configService.get<string>('QWEN_BASE_URL') || 'https://api.siliconflow.cn/v1',
-      model: this.configService.get<string>('AI_QWEN_MODEL') || 'Qwen/Qwen2.5-32B-Instruct',
+      apiKey:
+        this.configService.get<string>('AI_QWEN_API_KEY') ||
+        this.configService.get<string>('QWEN_API_KEY') ||
+        this.configService.get<string>('HF_TOKEN') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_QWEN_BASE_URL') ||
+        this.configService.get<string>('QWEN_BASE_URL') ||
+        'https://api.siliconflow.cn/v1',
+      model:
+        this.configService.get<string>('AI_QWEN_MODEL') ||
+        'Qwen/Qwen2.5-32B-Instruct',
       timeout: 45000,
       maxRetries: 3,
     };
@@ -87,8 +122,13 @@ export class AIModelsService {
     // GLM → SiliconFlow GLM-4-9B（实测可用，超快速诊断+反馈）
     const glmConfig: AIModelConfig = {
       provider: AIModelProvider.GLM,
-      apiKey: this.configService.get<string>('AI_GLM_API_KEY') || this.configService.get<string>('GLM_API_KEY') || '',
-      baseUrl: this.configService.get<string>('AI_GLM_BASE_URL') || 'https://api.siliconflow.cn/v1',
+      apiKey:
+        this.configService.get<string>('AI_GLM_API_KEY') ||
+        this.configService.get<string>('GLM_API_KEY') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_GLM_BASE_URL') ||
+        'https://api.siliconflow.cn/v1',
       model: 'THUDM/GLM-4-9B-0414',
       timeout: 20000,
       maxRetries: 3,
@@ -99,9 +139,18 @@ export class AIModelsService {
     // 不得借用 AI_DEEPSEEK_API_KEY（同上，防 DeepSeek 官方 key 发往第三方）。
     const huggingFaceConfig: AIModelConfig = {
       provider: AIModelProvider.HUGGINGFACE,
-      apiKey: this.configService.get<string>('AI_HUGGINGFACE_API_KEY') || this.configService.get<string>('HUGGINGFACE_API_KEY') || this.configService.get<string>('HF_TOKEN') || '',
-      baseUrl: this.configService.get<string>('AI_HUGGINGFACE_BASE_URL') || this.configService.get<string>('HUGGINGFACE_BASE_URL') || 'https://api.siliconflow.cn/v1',
-      model: this.configService.get<string>('AI_HUGGINGFACE_MODEL') || 'deepseek-ai/DeepSeek-V3',
+      apiKey:
+        this.configService.get<string>('AI_HUGGINGFACE_API_KEY') ||
+        this.configService.get<string>('HUGGINGFACE_API_KEY') ||
+        this.configService.get<string>('HF_TOKEN') ||
+        '',
+      baseUrl:
+        this.configService.get<string>('AI_HUGGINGFACE_BASE_URL') ||
+        this.configService.get<string>('HUGGINGFACE_BASE_URL') ||
+        'https://api.siliconflow.cn/v1',
+      model:
+        this.configService.get<string>('AI_HUGGINGFACE_MODEL') ||
+        'deepseek-ai/DeepSeek-V3',
       timeout: 60000,
       maxRetries: 3,
     };
@@ -120,8 +169,8 @@ export class AIModelsService {
   }
 
   async chat(
-    provider: AIModelProvider, 
-    request: AIModelRequest
+    provider: AIModelProvider,
+    request: AIModelRequest,
   ): Promise<AIModelResponse> {
     const config = this.modelConfigs.get(provider);
     if (!config) {
@@ -156,7 +205,9 @@ export class AIModelsService {
 
         const content = response.data.choices?.[0]?.message?.content || '';
         if (content) {
-          this.logger.log(`AI model ${provider} call success (attempt ${attempt})`);
+          this.logger.log(
+            `AI model ${provider} call success (attempt ${attempt})`,
+          );
           return {
             content,
             usage: response.data.usage,
@@ -168,27 +219,35 @@ export class AIModelsService {
       } catch (error: any) {
         lastError = error;
         const statusCode = error.response?.status;
-        const errorMessage = error.response?.data?.error?.message || error.message;
-        
-        this.logger.warn(`AI model ${provider} call failed (attempt ${attempt}/${config.maxRetries || 3}): ${errorMessage} (status: ${statusCode})`);
-        
+        const errorMessage =
+          error.response?.data?.error?.message || error.message;
+
+        this.logger.warn(
+          `AI model ${provider} call failed (attempt ${attempt}/${config.maxRetries || 3}): ${errorMessage} (status: ${statusCode})`,
+        );
+
         // 对于 429 限流错误，等待后重试
         if (statusCode === 429) {
           const delay = Math.pow(2, attempt) * 1000; // 指数退避
           this.logger.log(`Rate limited, waiting ${delay}ms before retry...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         } else if (statusCode === 404 || statusCode === 401) {
           // 404 或 401 错误直接失败，不再重试
           break;
         } else {
           // 其他错误短暂延迟后重试
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
     }
 
-    this.logger.error(`AI model ${provider} call failed after ${config.maxRetries || 3} attempts`, lastError);
-    throw new Error(`AI model ${provider} call failed: ${lastError?.message || 'Unknown error'}`);
+    this.logger.error(
+      `AI model ${provider} call failed after ${config.maxRetries || 3} attempts`,
+      lastError,
+    );
+    throw new Error(
+      `AI model ${provider} call failed: ${lastError?.message || 'Unknown error'}`,
+    );
   }
 
   getModelConfig(provider: AIModelProvider): AIModelConfig | undefined {

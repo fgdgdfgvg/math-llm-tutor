@@ -13,18 +13,26 @@
  */
 
 /** 需要整体遮蔽的 HTTP 头 */
-const SENSITIVE_HEADERS = /^(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_]?key|x-auth-token|x-internal-token|x-csrf-token)$/i;
+const SENSITIVE_HEADERS =
+  /^(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_]?key|x-auth-token|x-internal-token|x-csrf-token)$/i;
 
 /** 需要整体遮蔽的字段名（对象 key） */
-const SENSITIVE_FIELDS = /(?:api[_-]?key|apikey|password|passwd|pwd|secret|token|authorization|cookie|credential|private[_-]?key|refresh[_-]?token|access[_-]?token)/i;
+const SENSITIVE_FIELDS =
+  /(?:api[_-]?key|apikey|password|passwd|pwd|secret|token|authorization|cookie|credential|private[_-]?key|refresh[_-]?token|access[_-]?token)/i;
 
 /** 字符串里形如密钥的片段 */
 const SECRET_LIKE_PATTERNS: Array<[RegExp, string]> = [
   [/(Bearer\s+)[A-Za-z0-9_\-\.]{8,}/gi, '$1<redacted>'],
   [/\b(sk-[A-Za-z0-9_\-]{8,})/g, '<redacted-sk-key>'],
-  [/\b(eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{4,}\.[A-Za-z0-9_\-]{4,})/g, '<redacted-jwt>'],
+  [
+    /\b(eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{4,}\.[A-Za-z0-9_\-]{4,})/g,
+    '<redacted-jwt>',
+  ],
   // key=value / key: value 形式（值里不含空白与引号）
-  [/((?:api[_-]?key|apikey|password|passwd|secret|token|access[_-]?token|refresh[_-]?token)\s*[:=]\s*)(["']?)([A-Za-z0-9_\-\.]{8,})\2/gi, '$1$2<redacted>$2'],
+  [
+    /((?:api[_-]?key|apikey|password|passwd|secret|token|access[_-]?token|refresh[_-]?token)\s*[:=]\s*)(["']?)([A-Za-z0-9_\-\.]{8,})\2/gi,
+    '$1$2<redacted>$2',
+  ],
 ];
 
 const MAX_DEPTH = 6;
@@ -42,7 +50,11 @@ function redactString(input: string): string {
  * 深度脱敏：字符串替换形如密钥的片段，对象按 key 遮蔽敏感字段，其余递归。
  * 自带深度上限与循环引用保护，绝不会因为一个奇怪的对象把进程拖死。
  */
-export function redactSecrets<T>(value: T, depth = 0, seen = new WeakSet<object>()): T {
+export function redactSecrets<T>(
+  value: T,
+  depth = 0,
+  seen = new WeakSet<object>(),
+): T {
   if (value == null) return value;
 
   if (typeof value === 'string') return redactString(value) as unknown as T;
@@ -55,7 +67,9 @@ export function redactSecrets<T>(value: T, depth = 0, seen = new WeakSet<object>
   seen.add(obj);
 
   if (Array.isArray(value)) {
-    return value.map((item) => redactSecrets(item, depth + 1, seen)) as unknown as T;
+    return value.map((item) =>
+      redactSecrets(item, depth + 1, seen),
+    ) as unknown as T;
   }
 
   // Error 对象：只保留名称与消息，不展开 stack（stack 里可能有局部变量快照）

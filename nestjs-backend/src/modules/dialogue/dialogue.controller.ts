@@ -1,6 +1,21 @@
-import { Controller, Post, Get, Body, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
-import { DialogueService, DialogueMessage, DialogueSession, StepFeedback } from './dialogue.service';
+import {
+  DialogueService,
+  DialogueMessage,
+  DialogueSession,
+  StepFeedback,
+} from './dialogue.service';
 
 @Controller('dialogue')
 @UseGuards(JwtAuthGuard)
@@ -10,7 +25,8 @@ export class DialogueController {
   @Post('sessions')
   async createSession(
     @Request() req: Request & { user: { userId: string } },
-    @Body() body: {
+    @Body()
+    body: {
       context?: {
         problemId?: string;
         relatedConcepts?: string[];
@@ -23,22 +39,20 @@ export class DialogueController {
   @Post('sessions/:sessionId/messages')
   async sendMessage(
     @Param('sessionId') sessionId: string,
-    @Body() body: {
+    @Body()
+    body: {
       message: string;
       type?: 'question' | 'answer' | 'hint' | 'feedback';
     },
   ): Promise<DialogueMessage[]> {
-    return this.dialogueService.sendMessage(
-      sessionId,
-      body.message,
-      body.type,
-    );
+    return this.dialogueService.sendMessage(sessionId, body.message, body.type);
   }
 
   @Post('sessions/:sessionId/analyze-step')
   async analyzeStep(
     @Param('sessionId') sessionId: string,
-    @Body() body: {
+    @Body()
+    body: {
       stepNumber: number;
       stepContent: string;
     },

@@ -30,7 +30,11 @@ export const TaskTypeEnum = z.enum([
   'assessment',
 ]);
 
-export const CheckPointEnum = z.enum(['after_task', 'after_phase', 'on_demand']);
+export const CheckPointEnum = z.enum([
+  'after_task',
+  'after_phase',
+  'on_demand',
+]);
 
 export const QuestionTypeEnum = z.enum([
   'multiple_choice',
@@ -49,7 +53,13 @@ export const VisualizationTypeEnum = z.enum([
   'vector_field',
 ]);
 
-export const ParameterTypeEnum = z.enum(['slider', 'dropdown', 'input', 'toggle', 'range']);
+export const ParameterTypeEnum = z.enum([
+  'slider',
+  'dropdown',
+  'input',
+  'toggle',
+  'range',
+]);
 
 export const InterventionTypeEnum = z.enum([
   'hint',
@@ -123,7 +133,9 @@ const YamlVisualizationSchema = z.object({
           max: z.number().optional(),
           step: z.number().optional(),
           default_value: z.any(),
-          options: z.array(z.object({ label: z.string(), value: z.any() })).optional(),
+          options: z
+            .array(z.object({ label: z.string(), value: z.any() }))
+            .optional(),
         }),
         binding: z.object({
           target: z.string(),
@@ -188,8 +200,12 @@ export type InterventionType = z.infer<typeof InterventionTypeEnum>;
 export type ValidatedYamlTask = z.infer<typeof YamlTaskSchema>;
 export type ValidatedYamlPhase = z.infer<typeof YamlPhaseSchema>;
 export type ValidatedYamlQuestion = z.infer<typeof YamlQuestionSchema>;
-export type ValidatedYamlFormativeCheck = z.infer<typeof YamlFormativeCheckSchema>;
-export type ValidatedYamlVisualization = z.infer<typeof YamlVisualizationSchema>;
+export type ValidatedYamlFormativeCheck = z.infer<
+  typeof YamlFormativeCheckSchema
+>;
+export type ValidatedYamlVisualization = z.infer<
+  typeof YamlVisualizationSchema
+>;
 export type ValidatedScenarioConfig = z.infer<typeof ScenarioYamlSchema>;
 
 export interface WeightConfig {

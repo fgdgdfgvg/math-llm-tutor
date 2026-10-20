@@ -6,7 +6,9 @@ import { ConfigService } from '@nestjs/config';
  * 略大于服务端单次计算预算（默认 12s，见 SYMPY_COMPUTE_TIMEOUT_SECONDS），
  * 这样超时会由服务端以 504 + TIMEOUT 错误码返回，而不是客户端 axios 直接断链。
  */
-export const SYMPY_HTTP_TIMEOUT_MS = Number(process.env.SYMPY_TIMEOUT_MS || 20000);
+export const SYMPY_HTTP_TIMEOUT_MS = Number(
+  process.env.SYMPY_TIMEOUT_MS || 20000,
+);
 
 /**
  * 内部令牌请求头。
@@ -28,6 +30,7 @@ export function sympyRequestHeaders(
  * 调用方需要用这里拿到的 `error_code` 决定降级策略（数值积分、转 AI、明确告知…）。
  */
 export function extractSympyErrorPayload(error: unknown): any | null {
-  const response = (error as { response?: { data?: unknown } } | undefined)?.response;
+  const response = (error as { response?: { data?: unknown } } | undefined)
+    ?.response;
   return (response?.data as any) ?? null;
 }

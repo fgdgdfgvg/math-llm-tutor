@@ -1,6 +1,15 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { getTraceId, newTraceId, runWithRequestContext } from '../utils/request-context';
+import {
+  getTraceId,
+  newTraceId,
+  runWithRequestContext,
+} from '../utils/request-context';
 
 /**
  * 为每个请求分配/透传 traceId。
@@ -22,19 +31,25 @@ export class TraceIdInterceptor implements NestInterceptor {
 
     const incoming: string | undefined =
       req?.headers?.['x-request-id'] || req?.headers?.['x-correlation-id'];
-    const traceId = typeof incoming === 'string' && incoming.trim() ? incoming.trim() : newTraceId();
+    const traceId =
+      typeof incoming === 'string' && incoming.trim()
+        ? incoming.trim()
+        : newTraceId();
 
     if (req) req.traceId = traceId;
     if (res?.setHeader) res.setHeader('X-Request-Id', traceId);
 
     return new Observable((subscriber) => {
-      runWithRequestContext({ traceId, path: req?.originalUrl || req?.url }, () => {
-        next.handle().subscribe({
-          next: (value) => subscriber.next(value),
-          error: (err) => subscriber.error(err),
-          complete: () => subscriber.complete(),
-        });
-      });
+      runWithRequestContext(
+        { traceId, path: req?.originalUrl || req?.url },
+        () => {
+          next.handle().subscribe({
+            next: (value) => subscriber.next(value),
+            error: (err) => subscriber.error(err),
+            complete: () => subscriber.complete(),
+          });
+        },
+      );
     });
   }
 }

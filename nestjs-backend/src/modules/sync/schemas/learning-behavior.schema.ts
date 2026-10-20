@@ -10,7 +10,7 @@ export interface LearningBehaviorDetails {
 
 @Schema({
   timestamps: true,
-  expires: '30d' // 30天过期
+  expires: '30d', // 30天过期
 })
 export class LearningBehavior {
   @Prop({ required: true })
@@ -19,7 +19,10 @@ export class LearningBehavior {
   @Prop({ required: true })
   conceptId: string;
 
-  @Prop({ required: true, enum: ['view', 'practice', 'master', 'review', 'error'] })
+  @Prop({
+    required: true,
+    enum: ['view', 'practice', 'master', 'review', 'error'],
+  })
   behaviorType: 'view' | 'practice' | 'master' | 'review' | 'error';
 
   @Prop({ required: true, default: 0 })
@@ -33,4 +36,5 @@ export class LearningBehavior {
 }
 
 export type LearningBehaviorDocument = LearningBehavior & Document;
-export const LearningBehaviorSchema = SchemaFactory.createForClass(LearningBehavior);
+export const LearningBehaviorSchema =
+  SchemaFactory.createForClass(LearningBehavior);

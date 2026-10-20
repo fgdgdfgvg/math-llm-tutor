@@ -7,7 +7,10 @@ import { AIModelsService } from '../ai-models.service';
 import { AIModelProvider } from '../ai-models.types';
 import { LocalComputationService } from '../local-computation/local-computation.service';
 import { RedisCacheService } from '../../../common/services/redis-cache.service';
-import { ModelRouterService, MathProblemCategory } from '../../../common/services/model-router.service';
+import {
+  ModelRouterService,
+  MathProblemCategory,
+} from '../../../common/services/model-router.service';
 import { HallucinationGuardService } from '../../../common/services/hallucination-guard.service';
 import { extractAiJson } from '../ai-json.utils';
 import {
@@ -34,16 +37,23 @@ export class SolverAgent extends BaseAgent {
     private readonly hallucinationGuardService: HallucinationGuardService,
   ) {
     super(config);
-    this.logger.log(`规则引擎已加载: ${CLASSIFICATION_PATTERNS.length} 种分类模式, ${RULE_STEP_TEMPLATES.length} 组步骤模板, ${KNOWLEDGE_METHOD_MAP.length} 条知识-方法映射`);
+    this.logger.log(
+      `规则引擎已加载: ${CLASSIFICATION_PATTERNS.length} 种分类模式, ${RULE_STEP_TEMPLATES.length} 组步骤模板, ${KNOWLEDGE_METHOD_MAP.length} 条知识-方法映射`,
+    );
   }
 
-  protected async process(input: AgentInput, context: AgentContext): Promise<any> {
+  protected async process(
+    input: AgentInput,
+    context: AgentContext,
+  ): Promise<any> {
     const { problem } = input;
     const { plan } = context;
 
     // 智能路由：根据题型选择最优求解方法
     const routingDecision = this.modelRouterService.route(problem);
-    this.logger.log(`智能路由: ${routingDecision.category} → ${routingDecision.selectedModel} (置信度: ${routingDecision.confidence.toFixed(2)})`);
+    this.logger.log(
+      `智能路由: ${routingDecision.category} → ${routingDecision.selectedModel} (置信度: ${routingDecision.confidence.toFixed(2)})`,
+    );
 
     const cacheKey = this.redisCacheService.generateKey(problem, 'solver');
     try {
@@ -65,27 +75,31 @@ export class SolverAgent extends BaseAgent {
       // 首先尝试使用本地计算服务（API零依赖）
       this.logger.log('使用本地计算服务求解问题');
       localSolution = await this.localComputationService.solveProblem(problem);
-      
+
       // 将本地计算结果转换为系统格式
-      const solutionSteps = localSolution.steps.map((step: any, index: number) => {
-        return JSON.stringify({
-          stepTitle: step.title,
-          keyPoint: step.keyPoint || this.inferKeyPoint(step.description),
-          formula: step.formula,
-          process: step.process,
-          result: step.result,
-          highlight: step.highlight || this.generateHighlight(step.title),
-        });
-      });
+      const solutionSteps = localSolution.steps.map(
+        (step: any, index: number) => {
+          return JSON.stringify({
+            stepTitle: step.title,
+            keyPoint: step.keyPoint || this.inferKeyPoint(step.description),
+            formula: step.formula,
+            process: step.process,
+            result: step.result,
+            highlight: step.highlight || this.generateHighlight(step.title),
+          });
+        },
+      );
 
       const finalAnswer = localSolution.finalAnswer;
-      const intermediateResults = localSolution.steps.map((step: any) => step.result);
+      const intermediateResults = localSolution.steps.map(
+        (step: any) => step.result,
+      );
 
       // 更新上下文
       context.solutionSteps = solutionSteps;
       context.intermediateResults = intermediateResults;
       context.finalAnswer = finalAnswer;
-      context.knowledgePoints = localSolution.knowledgePoints.map(kp => ({
+      context.knowledgePoints = localSolution.knowledgePoints.map((kp) => ({
         id: `kp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: kp.name,
         description: kp.description,
@@ -95,8 +109,12 @@ export class SolverAgent extends BaseAgent {
         tags: [],
       }));
 
-      this.logger.log(`本地计算服务求解成功，生成 ${solutionSteps.length} 个步骤`);
-      this.logger.log(`Local computation solution steps: ${JSON.stringify(solutionSteps)}`);
+      this.logger.log(
+        `本地计算服务求解成功，生成 ${solutionSteps.length} 个步骤`,
+      );
+      this.logger.log(
+        `Local computation solution steps: ${JSON.stringify(solutionSteps)}`,
+      );
       this.logger.log(`Local computation final answer: ${finalAnswer}`);
 
       const result = {
@@ -105,9 +123,9 @@ export class SolverAgent extends BaseAgent {
         finalAnswer,
       };
 
-      this.redisCacheService.set(cacheKey, JSON.stringify(result), 3600).catch(e =>
-        this.logger.warn(`缓存写入失败: ${e.message}`),
-      );
+      this.redisCacheService
+        .set(cacheKey, JSON.stringify(result), 3600)
+        .catch((e) => this.logger.warn(`缓存写入失败: ${e.message}`));
 
       return result;
     } catch (error) {
@@ -115,15 +133,17 @@ export class SolverAgent extends BaseAgent {
       // 保留本地计算可能已获取的部分上下文（如问题分类、知识点），避免完全空壳
       if (localSolution) {
         context.metadata.problemCategory = localSolution.problemType;
-        context.knowledgePoints = context.knowledgePoints || localSolution.knowledgePoints.map(kp => ({
-          id: `kp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          name: kp.name,
-          description: kp.description,
-          formula: kp.formulas?.[0] || '',
-          latex: '',
-          difficulty: 'medium',
-          tags: [],
-        }));
+        context.knowledgePoints =
+          context.knowledgePoints ||
+          localSolution.knowledgePoints.map((kp) => ({
+            id: `kp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            name: kp.name,
+            description: kp.description,
+            formula: kp.formulas?.[0] || '',
+            latex: '',
+            difficulty: 'medium',
+            tags: [],
+          }));
       }
     }
 
@@ -132,9 +152,9 @@ export class SolverAgent extends BaseAgent {
       this.logger.warn('解题计划不存在或为空，使用规则引擎生成步骤');
       const ruleBased = this.generateRuleBasedSolution(problem);
 
-      this.redisCacheService.set(cacheKey, JSON.stringify(ruleBased), 1800).catch(e =>
-        this.logger.warn(`缓存写入失败: ${e.message}`),
-      );
+      this.redisCacheService
+        .set(cacheKey, JSON.stringify(ruleBased), 1800)
+        .catch((e) => this.logger.warn(`缓存写入失败: ${e.message}`));
 
       return ruleBased;
     }
@@ -161,7 +181,6 @@ export class SolverAgent extends BaseAgent {
 
         solutionSteps.push(this.formatStepResult(step, result));
         intermediateResults.push(result);
-
       } catch (error) {
         this.logger.warn(`执行步骤失败: ${step.description}`, error.message);
         hasLLMFailed = true;
@@ -175,7 +194,11 @@ export class SolverAgent extends BaseAgent {
     // 生成最终答案
     let finalAnswer: string;
     try {
-      finalAnswer = await this.generateFinalAnswer(problem, solutionSteps, context);
+      finalAnswer = await this.generateFinalAnswer(
+        problem,
+        solutionSteps,
+        context,
+      );
     } catch (error) {
       this.logger.warn('AI生成最终答案失败，使用规则提取', error.message);
       finalAnswer = this.extractFinalAnswerFromSteps(solutionSteps, problem);
@@ -189,9 +212,9 @@ export class SolverAgent extends BaseAgent {
       context.intermediateResults = ruleBased.intermediateResults;
       context.finalAnswer = ruleBased.finalAnswer;
 
-      this.redisCacheService.set(cacheKey, JSON.stringify(ruleBased), 1800).catch(e =>
-        this.logger.warn(`缓存写入失败: ${e.message}`),
-      );
+      this.redisCacheService
+        .set(cacheKey, JSON.stringify(ruleBased), 1800)
+        .catch((e) => this.logger.warn(`缓存写入失败: ${e.message}`));
 
       return ruleBased;
     }
@@ -200,7 +223,9 @@ export class SolverAgent extends BaseAgent {
     context.intermediateResults = intermediateResults;
     context.finalAnswer = finalAnswer;
 
-    this.logger.log(`Generated solution steps: ${JSON.stringify(solutionSteps)}`);
+    this.logger.log(
+      `Generated solution steps: ${JSON.stringify(solutionSteps)}`,
+    );
     this.logger.log(`Final answer: ${finalAnswer}`);
 
     const result = {
@@ -211,18 +236,23 @@ export class SolverAgent extends BaseAgent {
 
     // 幻觉防控验证
     try {
-      const verificationResults = this.hallucinationGuardService.fullVerification(
-        solutionSteps, finalAnswer, problem,
-      );
-      const failedSteps = verificationResults.filter(r => !r.isVerified);
+      const verificationResults =
+        this.hallucinationGuardService.fullVerification(
+          solutionSteps,
+          finalAnswer,
+          problem,
+        );
+      const failedSteps = verificationResults.filter((r) => !r.isVerified);
       if (failedSteps.length > 0) {
-        this.logger.warn(`幻觉防控检测: ${failedSteps.length}步骤未通过验证, 置信度下降`);
+        this.logger.warn(
+          `幻觉防控检测: ${failedSteps.length}步骤未通过验证, 置信度下降`,
+        );
         result['hallucinationVerification'] = {
           passedSteps: verificationResults.length - failedSteps.length,
           totalSteps: verificationResults.length,
-          failedSteps: failedSteps.map(s => ({
+          failedSteps: failedSteps.map((s) => ({
             content: s.stepContent.substring(0, 100),
-            issues: s.theoremIssues.map(i => i.description),
+            issues: s.theoremIssues.map((i) => i.description),
           })),
         };
       } else {
@@ -232,9 +262,9 @@ export class SolverAgent extends BaseAgent {
       this.logger.warn(`幻觉防控验证失败: ${e.message}`);
     }
 
-    this.redisCacheService.set(cacheKey, JSON.stringify(result), 3600).catch(e =>
-      this.logger.warn(`缓存写入失败: ${e.message}`),
-    );
+    this.redisCacheService
+      .set(cacheKey, JSON.stringify(result), 3600)
+      .catch((e) => this.logger.warn(`缓存写入失败: ${e.message}`));
 
     return result;
   }
@@ -255,12 +285,21 @@ export class SolverAgent extends BaseAgent {
   // 推断关键知识点
   private inferKeyPoint(description: string): string {
     const pointMap: Record<string, string> = {
-      '极限': '极限定义与性质', '洛必达': '洛必达法则', '不定式': '不定式分类',
-      '导数': '求导法则', '求导': '导数定义', '微分': '微分运算',
-      '积分': '积分方法', '原函数': '不定积分', '定积分': '牛顿-莱布尼茨公式',
-      '级数': '级数收敛判别', '泰勒': '泰勒展开',
-      '方程': '方程求解', '因式分解': '代数恒等式',
-      '验证': '结果检验', '代入': '数值计算',
+      极限: '极限定义与性质',
+      洛必达: '洛必达法则',
+      不定式: '不定式分类',
+      导数: '求导法则',
+      求导: '导数定义',
+      微分: '微分运算',
+      积分: '积分方法',
+      原函数: '不定积分',
+      定积分: '牛顿-莱布尼茨公式',
+      级数: '级数收敛判别',
+      泰勒: '泰勒展开',
+      方程: '方程求解',
+      因式分解: '代数恒等式',
+      验证: '结果检验',
+      代入: '数值计算',
     };
 
     for (const [key, value] of Object.entries(pointMap)) {
@@ -304,11 +343,11 @@ export class SolverAgent extends BaseAgent {
   // 生成避坑提示
   private generateHighlight(description: string): string {
     const tips: Record<string, string> = {
-      '极限': '注意检查是否为不定式（0/0、∞/∞等）才能使用洛必达法则',
-      '导数': '注意复合函数需使用链式法则逐层求导',
-      '积分': '注意换元时不要遗漏dx项和常数C',
-      '级数': '注意先判断收敛性再求和',
-      '验证': '建议通过逆向运算（如对答案求导）来验证正确性',
+      极限: '注意检查是否为不定式（0/0、∞/∞等）才能使用洛必达法则',
+      导数: '注意复合函数需使用链式法则逐层求导',
+      积分: '注意换元时不要遗漏dx项和常数C',
+      级数: '注意先判断收敛性再求和',
+      验证: '建议通过逆向运算（如对答案求导）来验证正确性',
     };
 
     for (const [key, tip] of Object.entries(tips)) {
@@ -335,17 +374,27 @@ export class SolverAgent extends BaseAgent {
   // 规则引擎题目分类
   private classifyProblemForRules(problem: string): string {
     const p = problem.toLowerCase();
-    if (p.includes('极限') || p.includes('limit') || p.includes('lim')) return 'limit';
+    if (p.includes('极限') || p.includes('limit') || p.includes('lim'))
+      return 'limit';
     if (p.includes('导数') || p.includes('derivative')) return 'derivative';
     if (p.includes('积分') || p.includes('integral')) return 'integral';
-    if (p.includes('微分方程') || p.includes('differential equation') || p.includes("y''")) return 'ode';
-    if (p.includes('方程') || p.includes('equation') || /[a-z]\s*=/.test(p)) return 'equation';
+    if (
+      p.includes('微分方程') ||
+      p.includes('differential equation') ||
+      p.includes("y''")
+    )
+      return 'ode';
+    if (p.includes('方程') || p.includes('equation') || /[a-z]\s*=/.test(p))
+      return 'equation';
     return 'general';
   }
 
   // 规则引擎步骤生成
   private generateRuleSteps(problem: string, type: string): string[] {
-    const stepTemplates: Record<string, Array<{title: string; content: string}>> = {
+    const stepTemplates: Record<
+      string,
+      Array<{ title: string; content: string }>
+    > = {
       limit: [
         {
           title: '识别极限类型',
@@ -407,8 +456,14 @@ export class SolverAgent extends BaseAgent {
         { title: '得出结论', content: '汇总并报告方程的解集' },
       ],
       ode: [
-        { title: '识别微分方程类型', content: `分析方程的阶数、线性性和初始条件：${problem}` },
-        { title: '建立求解模型', content: '选择分离变量、特征方程或积分因子等标准方法' },
+        {
+          title: '识别微分方程类型',
+          content: `分析方程的阶数、线性性和初始条件：${problem}`,
+        },
+        {
+          title: '建立求解模型',
+          content: '选择分离变量、特征方程或积分因子等标准方法',
+        },
         { title: '求得通解', content: '执行符号求解并保留任意常数' },
         { title: '验证结论', content: '将结果代回微分方程检查' },
       ],
@@ -433,19 +488,34 @@ export class SolverAgent extends BaseAgent {
     };
 
     const template = stepTemplates[type] || stepTemplates.general;
-    return template.map((s, i) => JSON.stringify({
-      stepTitle: s.title,
-      keyPoint: this.inferKeyPoint(s.title),
-      formula: '',
-      process: s.content,
-      result: this.generateRuleStepResult(problem, type, i),
-      highlight: this.generateHighlight(s.title),
-    }));
+    return template.map((s, i) =>
+      JSON.stringify({
+        stepTitle: s.title,
+        keyPoint: this.inferKeyPoint(s.title),
+        formula: '',
+        process: s.content,
+        result: this.generateRuleStepResult(problem, type, i),
+        highlight: this.generateHighlight(s.title),
+      }),
+    );
   }
 
-  private generateRuleStepResult(problem: string, type: string, index: number): string {
+  private generateRuleStepResult(
+    problem: string,
+    type: string,
+    index: number,
+  ): string {
     if (index === 3) {
-      const content = this.generateStepContent(type === 'derivative' ? '导数' : type === 'integral' ? '积分' : type === 'limit' ? '极限' : '方程', problem);
+      const content = this.generateStepContent(
+        type === 'derivative'
+          ? '导数'
+          : type === 'integral'
+            ? '积分'
+            : type === 'limit'
+              ? '极限'
+              : '方程',
+        problem,
+      );
       return content.result;
     }
     return `已完成：${type}问题的第${index + 1}步分析`;
@@ -459,21 +529,35 @@ export class SolverAgent extends BaseAgent {
     if (!result) return true;
     const text = result.trim();
     if (!text) return true;
-    if (text.includes('执行中') || text.includes('...') || text.includes('…')) return true;
+    if (text.includes('执行中') || text.includes('...') || text.includes('…'))
+      return true;
     // 整体被中文括号包住的泛称：`（极限值）`、`（方程的解）`、`（计算完成）`
     if (/^（[^）]{1,20}）$/.test(text)) return true;
     const placeholderKeywords = [
-      '需逐项应用', '需部分分式', '取决于', '无法自动识别',
-      '无法自动提取', '无法从', '未能', '请补充', '待补充', '暂无法',
+      '需逐项应用',
+      '需部分分式',
+      '取决于',
+      '无法自动识别',
+      '无法自动提取',
+      '无法从',
+      '未能',
+      '请补充',
+      '待补充',
+      '暂无法',
       // 无信息泛化文本（A/B 消融实测：LaTeX 题面降级时 finalAnswer 全是这类输出，
       // 与 `（极限值）` 一样是"没有答案"的信号，绝不应原样透传给前端/错题本）
-      '已整理结论', '整理如下', '综上所述，已完成',
+      '已整理结论',
+      '整理如下',
+      '综上所述，已完成',
     ];
     return placeholderKeywords.some((keyword) => text.includes(keyword));
   }
 
   // 从步骤中提取最终答案
-  private extractFinalAnswerFromSteps(steps: string[], problem: string): string {
+  private extractFinalAnswerFromSteps(
+    steps: string[],
+    problem: string,
+  ): string {
     for (let i = steps.length - 1; i >= 0; i--) {
       try {
         const parsed = JSON.parse(steps[i]);
@@ -482,8 +566,10 @@ export class SolverAgent extends BaseAgent {
         }
       } catch (e) {
         // 非 JSON 步骤跳过；记录尝试过的位置便于排查"为何未提取到答案"
-        this.logger.debug(`步骤[${i}]非 JSON，跳过提取: ${(e as Error).message}`);
-        }
+        this.logger.debug(
+          `步骤[${i}]非 JSON，跳过提取: ${(e as Error).message}`,
+        );
+      }
     }
 
     // 不编造答案：编一个看似合理的假答案比诚实地说「未得出」危害大得多
@@ -511,25 +597,45 @@ export class SolverAgent extends BaseAgent {
     const lowerProb = problem.toLowerCase();
 
     // 导数相关
-    if (lowerDesc.includes('derivative') || lowerDesc.includes('导数') || lowerProb.includes('d/dx') || lowerProb.includes('导数')) {
+    if (
+      lowerDesc.includes('derivative') ||
+      lowerDesc.includes('导数') ||
+      lowerProb.includes('d/dx') ||
+      lowerProb.includes('导数')
+    ) {
       return this.generateDerivativeContent(problem);
     }
-    
+
     // 积分相关
-    if (lowerDesc.includes('integral') || lowerDesc.includes('积分') || lowerProb.includes('∫') || lowerProb.includes('积分')) {
+    if (
+      lowerDesc.includes('integral') ||
+      lowerDesc.includes('积分') ||
+      lowerProb.includes('∫') ||
+      lowerProb.includes('积分')
+    ) {
       return this.generateIntegralContent(problem);
     }
-    
+
     // 极限相关
-    if (lowerDesc.includes('limit') || lowerDesc.includes('极限') || lowerProb.includes('lim') || lowerProb.includes('极限')) {
+    if (
+      lowerDesc.includes('limit') ||
+      lowerDesc.includes('极限') ||
+      lowerProb.includes('lim') ||
+      lowerProb.includes('极限')
+    ) {
       return this.generateLimitContent(problem);
     }
-    
+
     // 方程相关
-    if (lowerDesc.includes('equation') || lowerDesc.includes('方程') || lowerProb.includes('=') || lowerProb.includes('方程')) {
+    if (
+      lowerDesc.includes('equation') ||
+      lowerDesc.includes('方程') ||
+      lowerProb.includes('=') ||
+      lowerProb.includes('方程')
+    ) {
       return this.generateEquationContent(problem);
     }
-    
+
     // 通用步骤
     return {
       formula: '',
@@ -541,23 +647,27 @@ export class SolverAgent extends BaseAgent {
 
   // 生成导数步骤内容
   private generateDerivativeContent(problem: string): any {
-    const match = problem.match(/(?:求|计算|d\/dx|y'?\s*=\s*)(.+?)(?:的|在|当|$)/);
+    const match = problem.match(
+      /(?:求|计算|d\/dx|y'?\s*=\s*)(.+?)(?:的|在|当|$)/,
+    );
     const func = match ? match[1].trim() : problem;
-    
+
     if (func.includes('x^')) {
       const powerMatch = func.match(/x\^(\d+)/);
       if (powerMatch) {
         const n = parseInt(powerMatch[1]);
         return {
-          formula: `\\frac{d}{dx}(x^{${n}}) = ${n}x^{${n-1}}`,
+          formula: `\\frac{d}{dx}(x^{${n}}) = ${n}x^{${n - 1}}`,
           process: `应用幂法则：\\frac{d}{dx}(x^n) = nx^{n-1}，其中n=${n}`,
-          result: `${n}x^{${n-1}}`,
+          result: `${n}x^{${n - 1}}`,
           highlight: '幂法则是求导的基本方法',
         };
       }
     }
     if (func.includes('sin')) {
-      const inner = func.includes('(') ? func.match(/sin\(([^)]+)\)/)?.[1] || 'x' : 'x';
+      const inner = func.includes('(')
+        ? func.match(/sin\(([^)]+)\)/)?.[1] || 'x'
+        : 'x';
       if (inner === 'x') {
         return {
           formula: '\\frac{d}{dx}(\\sin x) = \\cos x',
@@ -588,7 +698,7 @@ export class SolverAgent extends BaseAgent {
           formula: '\\frac{d}{dx}(e^x) = e^x',
           process: '指数函数e^x的导数等于自身',
           result: 'e^x',
-          highlight: "e^x是唯一求导后不变的函数",
+          highlight: 'e^x是唯一求导后不变的函数',
         };
       }
       return {
@@ -616,14 +726,14 @@ export class SolverAgent extends BaseAgent {
     }
     if (func.includes('*') || func.includes('·')) {
       return {
-        formula: '(uv)\' = u\'v + uv\'',
+        formula: "(uv)' = u'v + uv'",
         process: '乘积函数需使用乘积法则分别求导',
         result: `(${func})' 需逐项应用乘积法则后展开，本地规则未能给出确定结果`,
         highlight: '乘积法则：前导后+前导后导',
       };
     }
     return {
-      formula: 'f\'(x) = ...',
+      formula: "f'(x) = ...",
       process: `对"${func}"应用求导法则（幂法则、链式法则、乘积法则等）`,
       result: `（需对"${func}"逐项求导）`,
       highlight: `核心：识别"${func}"的复合结构，选择合适的求导法则`,
@@ -640,9 +750,9 @@ export class SolverAgent extends BaseAgent {
       if (powerMatch) {
         const n = parseInt(powerMatch[1]);
         return {
-          formula: `\\int x^{${n}} \\,dx = \\frac{x^{${n+1}}}{${n+1}} + C`,
+          formula: `\\int x^{${n}} \\,dx = \\frac{x^{${n + 1}}}{${n + 1}} + C`,
           process: `幂函数积分法则：\\int x^n dx = \\frac{x^{n+1}}{n+1} + C，其中n=${n}`,
-          result: `\\frac{x^{${n+1}}}{${n+1}} + C`,
+          result: `\\frac{x^{${n + 1}}}{${n + 1}} + C`,
           highlight: '积分号内x^n直接累加指数',
         };
       }
@@ -732,12 +842,14 @@ export class SolverAgent extends BaseAgent {
     }
 
     return {
-      formula: problem.includes('sin') && problem.includes('/')
-        ? '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1'
-        : `lim ${problem.replace(/→/g, '→').replace(/->/g, '→')}`,
+      formula:
+        problem.includes('sin') && problem.includes('/')
+          ? '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1'
+          : `lim ${problem.replace(/→/g, '→').replace(/->/g, '→')}`,
       process: method || '应用极限运算法则',
       result,
-      highlight: '关键：先检查是否可直接代入，若为0/0型则用重要极限或洛必达法则',
+      highlight:
+        '关键：先检查是否可直接代入，若为0/0型则用重要极限或洛必达法则',
     };
   }
 
@@ -745,17 +857,17 @@ export class SolverAgent extends BaseAgent {
   private generateEquationContent(problem: string): any {
     if (problem.includes('x^2') && problem.includes('=0')) {
       return {
-        formula: "x^2 = 0 \implies x = 0",
-        process: "解方程：x^2 = 0",
-        result: "x = 0",
-        highlight: "注意方程的解的个数",
+        formula: 'x^2 = 0 \implies x = 0',
+        process: '解方程：x^2 = 0',
+        result: 'x = 0',
+        highlight: '注意方程的解的个数',
       };
     }
     return {
       formula: '',
-      process: "应用解方程的方法（移项、因式分解等）",
-      result: "本地规则未能给出该方程的确定解，需符号计算或 AI 求解",
-      highlight: "注意检验解的正确性",
+      process: '应用解方程的方法（移项、因式分解等）',
+      result: '本地规则未能给出该方程的确定解，需符号计算或 AI 求解',
+      highlight: '注意检验解的正确性',
     };
   }
 
@@ -791,7 +903,8 @@ export class SolverAgent extends BaseAgent {
     const patterns = [
       /(?:求|计算|y\s*=\s*)(.+?)(?:的|在|当|,|，|$)/,
       /f\(x\)\s*=\s*(.+)/,
-      /lim\s*(.+)/i, /lim\s*\[(.+)\]/i,
+      /lim\s*(.+)/i,
+      /lim\s*\[(.+)\]/i,
       /∫\s*(.+?)\s*d[x-z]/i,
       /d\/dx\s*\((.+)\)/,
     ];
@@ -826,9 +939,13 @@ export class SolverAgent extends BaseAgent {
     return '0';
   }
 
-  private async executeSymPy(description: string, problem: string): Promise<string> {
+  private async executeSymPy(
+    description: string,
+    problem: string,
+  ): Promise<string> {
     try {
-      const sympyServiceUrl = this.configService.get<string>('SYMPY_SERVICE_URL');
+      const sympyServiceUrl =
+        this.configService.get<string>('SYMPY_SERVICE_URL');
       if (!sympyServiceUrl) {
         throw new Error('SymPy服务未配置');
       }
@@ -842,25 +959,49 @@ export class SolverAgent extends BaseAgent {
       let payload: any;
       let operationLabel: string;
 
-      if (lowerDesc.includes('导数') || lowerDesc.includes('derivative') || lowerProb.includes('求导') || lowerProb.includes('d/dx')) {
+      if (
+        lowerDesc.includes('导数') ||
+        lowerDesc.includes('derivative') ||
+        lowerProb.includes('求导') ||
+        lowerProb.includes('d/dx')
+      ) {
         endpoint = '/derivative';
         payload = { expr, variable, order: 1 };
         operationLabel = '求导';
-      } else if (lowerDesc.includes('二阶导') || lowerDesc.includes('2阶导') || lowerDesc.includes('second derivative')) {
+      } else if (
+        lowerDesc.includes('二阶导') ||
+        lowerDesc.includes('2阶导') ||
+        lowerDesc.includes('second derivative')
+      ) {
         endpoint = '/derivative';
         payload = { expr, variable, order: 2 };
         operationLabel = '二阶求导';
-      } else if (lowerDesc.includes('积分') || lowerDesc.includes('integral') || lowerProb.includes('∫')) {
+      } else if (
+        lowerDesc.includes('积分') ||
+        lowerDesc.includes('integral') ||
+        lowerProb.includes('∫')
+      ) {
         endpoint = '/integral';
         payload = { expr, variable };
         operationLabel = '积分';
-      } else if (lowerDesc.includes('极限') || lowerDesc.includes('limit') || lowerProb.includes('lim')) {
+      } else if (
+        lowerDesc.includes('极限') ||
+        lowerDesc.includes('limit') ||
+        lowerProb.includes('lim')
+      ) {
         const approach = this.extractApproach(problem);
         endpoint = '/limit';
         payload = { expr, variable, approach };
         operationLabel = '求极限';
-      } else if (lowerDesc.includes('方程') || lowerDesc.includes('equation') || lowerProb.includes('=')) {
-        const cleanedExpr = expr.replace(/^(?:解方程|求解方程|解|求|方程式?)\s*/i, '');
+      } else if (
+        lowerDesc.includes('方程') ||
+        lowerDesc.includes('equation') ||
+        lowerProb.includes('=')
+      ) {
+        const cleanedExpr = expr.replace(
+          /^(?:解方程|求解方程|解|求|方程式?)\s*/i,
+          '',
+        );
         endpoint = '/solve';
         payload = { equation: cleanedExpr, variable };
         operationLabel = '解方程';
@@ -874,7 +1015,9 @@ export class SolverAgent extends BaseAgent {
         operationLabel = '计算';
       }
 
-      this.logger.log(`SymPy路由: ${endpoint} ← expr="${expr.substring(0, 50)}", var=${variable}`);
+      this.logger.log(
+        `SymPy路由: ${endpoint} ← expr="${expr.substring(0, 50)}", var=${variable}`,
+      );
 
       let data: any;
       try {
@@ -898,9 +1041,10 @@ export class SolverAgent extends BaseAgent {
         const resultStr = data.result;
         const latex = data.latex || '';
 
-        const processText = sympySteps.length > 0
-          ? sympySteps.join('\n')
-          : `对 "${expr}" 执行${operationLabel}运算 → ${resultStr}`;
+        const processText =
+          sympySteps.length > 0
+            ? sympySteps.join('\n')
+            : `对 "${expr}" 执行${operationLabel}运算 → ${resultStr}`;
 
         return JSON.stringify({
           stepTitle: description.substring(0, 15),
@@ -920,7 +1064,11 @@ export class SolverAgent extends BaseAgent {
   }
 
   // 执行LLM推理（CoT + Self-Consistency增强版）
-  private async executeLLM(description: string, problem: string, context: AgentContext): Promise<string> {
+  private async executeLLM(
+    description: string,
+    problem: string,
+    context: AgentContext,
+  ): Promise<string> {
     try {
       if (!this.aiModelsService.isModelAvailable(AIModelProvider.QWEN)) {
         throw new Error('Qwen模型未配置');
@@ -999,7 +1147,8 @@ export class SolverAgent extends BaseAgent {
           stepTitle: parsed.stepTitle || description.substring(0, 15),
           keyPoint: parsed.keyPoint || this.inferKeyPoint(description),
           formula: parsed.formula || '',
-          process: parsed.cot_reasoning || parsed.process || content.substring(0, 500),
+          process:
+            parsed.cot_reasoning || parsed.process || content.substring(0, 500),
           result: parsed.result || '',
           highlight: parsed.highlight || this.generateHighlight(description),
           confidence: parsed.confidence || 0.5,
@@ -1007,7 +1156,9 @@ export class SolverAgent extends BaseAgent {
         });
       }
 
-      this.logger.warn(`步骤 JSON 解析失败，返回原始内容（前 120 字符: ${content.slice(0, 120).replace(/\s+/g, ' ')}）`);
+      this.logger.warn(
+        `步骤 JSON 解析失败，返回原始内容（前 120 字符: ${content.slice(0, 120).replace(/\s+/g, ' ')}）`,
+      );
       return content || '解题过程不可用';
     } catch (error) {
       this.logger.warn('Qwen LLM执行失败', error.message);
@@ -1016,7 +1167,11 @@ export class SolverAgent extends BaseAgent {
   }
 
   // 生成最终答案（CoT + Self-Consistency增强版）
-  private async generateFinalAnswer(problem: string, solutionSteps: string[], context: AgentContext): Promise<string> {
+  private async generateFinalAnswer(
+    problem: string,
+    solutionSteps: string[],
+    context: AgentContext,
+  ): Promise<string> {
     try {
       if (!this.aiModelsService.isModelAvailable(AIModelProvider.QWEN)) {
         throw new Error('Qwen模型未配置');
@@ -1060,7 +1215,10 @@ ${solutionSteps.join('\n---\n')}
       const response = await this.aiModelsService.chat(AIModelProvider.QWEN, {
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `请审核以上解题过程，提取并验证最终答案：\n${problem}` },
+          {
+            role: 'user',
+            content: `请审核以上解题过程，提取并验证最终答案：\n${problem}`,
+          },
         ],
         temperature: 0.05,
         maxTokens: 1024,
@@ -1072,8 +1230,13 @@ ${solutionSteps.join('\n---\n')}
         return parsedAnswer.final_answer_latex;
       }
 
-      answer = answer.replace(/^[`\s]*|[`\s]*$/g, '').replace(/\n/g, ' ').trim();
-      return answer.length > 500 ? answer.substring(0, 500) : (answer || '无法生成最终答案');
+      answer = answer
+        .replace(/^[`\s]*|[`\s]*$/g, '')
+        .replace(/\n/g, ' ')
+        .trim();
+      return answer.length > 500
+        ? answer.substring(0, 500)
+        : answer || '无法生成最终答案';
     } catch (error) {
       this.logger.warn('Qwen AI生成最终答案失败', error.message);
       throw error;

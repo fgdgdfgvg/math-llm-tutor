@@ -1,6 +1,19 @@
-import { IsOptional, IsString, IsIn, IsNumber, Min, Max, IsEnum, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsIn,
+  IsNumber,
+  Min,
+  Max,
+  IsEnum,
+  IsObject,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { KnowledgeAreaEnum, DifficultyEnum } from '../types/interactive-learning.schemas';
+import {
+  KnowledgeAreaEnum,
+  DifficultyEnum,
+} from '../types/interactive-learning.schemas';
 
 export class DynamicGraphQueryDto {
   @IsOptional()
@@ -100,8 +113,8 @@ export class CognitiveStateResponseDto {
       metrics: state.metrics,
       predictions: {
         ...state.predictions,
-        recommendedIntervention: state.predictions.recommendedIntervention.map((i: any) =>
-          typeof i === 'string' ? i : String(i),
+        recommendedIntervention: state.predictions.recommendedIntervention.map(
+          (i: any) => (typeof i === 'string' ? i : String(i)),
         ),
       },
       confidence: state.confidence ?? 0.7,
@@ -166,7 +179,10 @@ export class ScenarioSummaryDto {
 
   static fromConfig(config: any): ScenarioSummaryDto {
     const phases = config.learningPath ?? config.learning_path ?? [];
-    const taskCount = phases.reduce((sum: number, phase: any) => sum + (phase.tasks?.length ?? 0), 0);
+    const taskCount = phases.reduce(
+      (sum: number, phase: any) => sum + (phase.tasks?.length ?? 0),
+      0,
+    );
 
     return {
       id: config.id ?? config.scenario?.id,
@@ -174,7 +190,8 @@ export class ScenarioSummaryDto {
       description: config.description ?? config.scenario?.description ?? '',
       knowledgeArea: config.knowledgeArea ?? config.scenario?.knowledge_area,
       difficulty: config.difficulty ?? config.scenario?.difficulty,
-      estimatedDuration: config.estimatedDuration ?? config.scenario?.estimated_duration,
+      estimatedDuration:
+        config.estimatedDuration ?? config.scenario?.estimated_duration,
       version: config.version ?? config.scenario?.version,
       phaseCount: phases.length,
       taskCount,
@@ -197,7 +214,13 @@ export class ApiErrorResponse {
 
   details?: any;
 
-  constructor(statusCode: number, error: string, message: string, path: string, details?: any) {
+  constructor(
+    statusCode: number,
+    error: string,
+    message: string,
+    path: string,
+    details?: any,
+  ) {
     this.statusCode = statusCode;
     this.error = error;
     this.message = message;

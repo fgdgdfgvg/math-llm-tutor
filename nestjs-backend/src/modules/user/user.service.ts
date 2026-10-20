@@ -21,7 +21,10 @@ export class UserService {
    * 配合公开注册接口，意味着任何人注册用户名 `admin` 即可拿到管理员权限，
    * 进而调用用户列表/创建/删除接口（P0 越权）。现在只有管理员接口可显式传角色。
    */
-  async create(createUserDto: CreateUserDto, roles: string[] = UserService.DEFAULT_ROLES): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+    roles: string[] = UserService.DEFAULT_ROLES,
+  ): Promise<User> {
     this.logger.log(`Creating user: ${createUserDto.username}`);
     const createdUser = new this.userModel({
       username: createUserDto.username,
@@ -45,7 +48,9 @@ export class UserService {
   private static normalizeRoles(roles: string[] | undefined | null): string[] {
     const allowed = ['student', 'teacher', 'admin'];
     const cleaned = (roles ?? []).filter((role) => allowed.includes(role));
-    return cleaned.length ? Array.from(new Set(cleaned)) : [...UserService.DEFAULT_ROLES];
+    return cleaned.length
+      ? Array.from(new Set(cleaned))
+      : [...UserService.DEFAULT_ROLES];
   }
 
   async findOne(username: string): Promise<User | null> {
@@ -56,7 +61,10 @@ export class UserService {
     return this.userModel.findOne({ username }).lean().exec();
   }
 
-  async findAll(page = 1, limit = 20): Promise<{ users: User[]; total: number; page: number; limit: number }> {
+  async findAll(
+    page = 1,
+    limit = 20,
+  ): Promise<{ users: User[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
     const [users, total] = await Promise.all([
       this.userModel.find().skip(skip).limit(limit).lean().exec(),

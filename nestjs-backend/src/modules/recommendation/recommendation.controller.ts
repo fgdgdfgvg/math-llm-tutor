@@ -1,6 +1,20 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
-import { RecommendationService, RecommendationItem, ProblemRecommendation, LearningPath } from './recommendation.service';
+import {
+  RecommendationService,
+  RecommendationItem,
+  ProblemRecommendation,
+  LearningPath,
+} from './recommendation.service';
 
 @Controller('recommendation')
 export class RecommendationController {
@@ -11,7 +25,9 @@ export class RecommendationController {
   async getPersonalizedRecommendations(
     @Request() req: Request & { user: { userId: string } },
   ): Promise<RecommendationItem[]> {
-    return this.recommendationService.getPersonalizedRecommendations(req.user.userId);
+    return this.recommendationService.getPersonalizedRecommendations(
+      req.user.userId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -22,11 +38,14 @@ export class RecommendationController {
     @Query('conceptId') conceptId?: string,
     @Query('limit') limit?: number,
   ): Promise<ProblemRecommendation[]> {
-    return this.recommendationService.getProblemRecommendations(req.user.userId, {
-      difficulty,
-      conceptId,
-      limit: limit ? parseInt(limit.toString()) : undefined,
-    });
+    return this.recommendationService.getProblemRecommendations(
+      req.user.userId,
+      {
+        difficulty,
+        conceptId,
+        limit: limit ? parseInt(limit.toString()) : undefined,
+      },
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -45,7 +64,8 @@ export class RecommendationController {
   @Post('adjust-difficulty')
   async adjustDifficulty(
     @Request() req: Request & { user: { userId: string } },
-    @Body() body: {
+    @Body()
+    body: {
       problemId: string;
       isCorrect: boolean;
     },

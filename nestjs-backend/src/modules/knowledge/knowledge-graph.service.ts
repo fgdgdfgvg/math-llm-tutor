@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { KnowledgeService } from './knowledge.service';
 import { LearningService } from '../learning/learning.service';
-import { KnowledgeNode, KnowledgeRelationType } from './interfaces/knowledge.interfaces';
+import {
+  KnowledgeNode,
+  KnowledgeRelationType,
+} from './interfaces/knowledge.interfaces';
 
 // 诊断结果类型定义
 export interface DiagnosisResult {
@@ -85,7 +88,10 @@ export class KnowledgeGraphService {
     }
 
     // 基于相关概念映射
-    if (diagnosisResult.relatedConcepts && diagnosisResult.relatedConcepts.length > 0) {
+    if (
+      diagnosisResult.relatedConcepts &&
+      diagnosisResult.relatedConcepts.length > 0
+    ) {
       for (const concept of diagnosisResult.relatedConcepts) {
         const conceptMappings = await this.searchConceptsByKeyword(concept);
         mappings.push(...conceptMappings);
@@ -93,7 +99,8 @@ export class KnowledgeGraphService {
     }
 
     // 基于问题类型映射
-    const problemTypeMappings = await this.mapProblemTypeToKnowledge(problemType);
+    const problemTypeMappings =
+      await this.mapProblemTypeToKnowledge(problemType);
     mappings.push(...problemTypeMappings);
 
     // 去重和排序
@@ -109,27 +116,92 @@ export class KnowledgeGraphService {
 
     const errorToKnowledgeMap: Record<string, KnowledgeMapping[]> = {
       CONCEPTUAL: [
-        { conceptId: 'limit-definition', conceptName: '极限的定义', relevance: 0.9, difficulty: 'medium' },
-        { conceptId: 'derivative-definition', conceptName: '导数的定义', relevance: 0.8, difficulty: 'medium' },
-        { conceptId: 'integral-definition', conceptName: '积分的定义', relevance: 0.8, difficulty: 'medium' },
+        {
+          conceptId: 'limit-definition',
+          conceptName: '极限的定义',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-definition',
+          conceptName: '导数的定义',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'integral-definition',
+          conceptName: '积分的定义',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
       ],
       CALCULATION: [
-        { conceptId: 'limit-computation', conceptName: '极限的计算方法', relevance: 0.9, difficulty: 'medium' },
-        { conceptId: 'derivative-rules', conceptName: '基本求导公式', relevance: 0.8, difficulty: 'easy' },
-        { conceptId: 'substitution-method', conceptName: '换元积分法', relevance: 0.7, difficulty: 'medium' },
+        {
+          conceptId: 'limit-computation',
+          conceptName: '极限的计算方法',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-rules',
+          conceptName: '基本求导公式',
+          relevance: 0.8,
+          difficulty: 'easy',
+        },
+        {
+          conceptId: 'substitution-method',
+          conceptName: '换元积分法',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
       ],
       PROCEDURAL: [
-        { conceptId: 'chain-rule', conceptName: '链式法则', relevance: 0.8, difficulty: 'medium' },
-        { conceptId: 'product-rule', conceptName: '乘积法则', relevance: 0.7, difficulty: 'easy' },
-        { conceptId: 'integration-by-parts', conceptName: '分部积分法', relevance: 0.7, difficulty: 'medium' },
+        {
+          conceptId: 'chain-rule',
+          conceptName: '链式法则',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'product-rule',
+          conceptName: '乘积法则',
+          relevance: 0.7,
+          difficulty: 'easy',
+        },
+        {
+          conceptId: 'integration-by-parts',
+          conceptName: '分部积分法',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
       ],
       NOTATION: [
-        { conceptId: 'limit-definition', conceptName: '极限的定义', relevance: 0.7, difficulty: 'medium' },
-        { conceptId: 'derivative-definition', conceptName: '导数的定义', relevance: 0.7, difficulty: 'medium' },
+        {
+          conceptId: 'limit-definition',
+          conceptName: '极限的定义',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-definition',
+          conceptName: '导数的定义',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
       ],
       LOGICAL: [
-        { conceptId: 'mean-value-theorem', conceptName: '中值定理', relevance: 0.8, difficulty: 'hard' },
-        { conceptId: 'fundamental-theorem', conceptName: '微积分基本定理', relevance: 0.8, difficulty: 'hard' },
+        {
+          conceptId: 'mean-value-theorem',
+          conceptName: '中值定理',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
+        {
+          conceptId: 'fundamental-theorem',
+          conceptName: '微积分基本定理',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
       ],
     };
 
@@ -140,7 +212,9 @@ export class KnowledgeGraphService {
     return mappings;
   }
 
-  private async searchConceptsByKeyword(keyword: string): Promise<KnowledgeMapping[]> {
+  private async searchConceptsByKeyword(
+    keyword: string,
+  ): Promise<KnowledgeMapping[]> {
     const searchResults = await this.knowledgeService.searchConcepts(keyword);
     return searchResults.map((result) => ({
       conceptId: result.name.toLowerCase().replace(/\s+/g, '-'),
@@ -150,41 +224,133 @@ export class KnowledgeGraphService {
     }));
   }
 
-  private async mapProblemTypeToKnowledge(problemType: string): Promise<KnowledgeMapping[]> {
+  private async mapProblemTypeToKnowledge(
+    problemType: string,
+  ): Promise<KnowledgeMapping[]> {
     const mappings: KnowledgeMapping[] = [];
 
     const problemTypeMap: Record<string, KnowledgeMapping[]> = {
       LIMIT: [
-        { conceptId: 'limit-definition', conceptName: '极限的定义', relevance: 0.9, difficulty: 'medium' },
-        { conceptId: 'limit-properties', conceptName: '极限的性质', relevance: 0.8, difficulty: 'easy' },
-        { conceptId: 'limit-computation', conceptName: '极限的计算方法', relevance: 0.9, difficulty: 'medium' },
+        {
+          conceptId: 'limit-definition',
+          conceptName: '极限的定义',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'limit-properties',
+          conceptName: '极限的性质',
+          relevance: 0.8,
+          difficulty: 'easy',
+        },
+        {
+          conceptId: 'limit-computation',
+          conceptName: '极限的计算方法',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
       ],
       DERIVATIVE: [
-        { conceptId: 'derivative-definition', conceptName: '导数的定义', relevance: 0.9, difficulty: 'medium' },
-        { conceptId: 'derivative-rules', conceptName: '基本求导公式', relevance: 0.9, difficulty: 'easy' },
-        { conceptId: 'chain-rule', conceptName: '链式法则', relevance: 0.8, difficulty: 'medium' },
+        {
+          conceptId: 'derivative-definition',
+          conceptName: '导数的定义',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-rules',
+          conceptName: '基本求导公式',
+          relevance: 0.9,
+          difficulty: 'easy',
+        },
+        {
+          conceptId: 'chain-rule',
+          conceptName: '链式法则',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
       ],
       INTEGRAL: [
-        { conceptId: 'integral-definition', conceptName: '积分的定义', relevance: 0.9, difficulty: 'medium' },
-        { conceptId: 'substitution-method', conceptName: '换元积分法', relevance: 0.8, difficulty: 'medium' },
-        { conceptId: 'integration-by-parts', conceptName: '分部积分法', relevance: 0.8, difficulty: 'medium' },
+        {
+          conceptId: 'integral-definition',
+          conceptName: '积分的定义',
+          relevance: 0.9,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'substitution-method',
+          conceptName: '换元积分法',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'integration-by-parts',
+          conceptName: '分部积分法',
+          relevance: 0.8,
+          difficulty: 'medium',
+        },
       ],
       SERIES: [
-        { conceptId: 'taylor-series', conceptName: '泰勒级数', relevance: 0.9, difficulty: 'hard' },
-        { conceptId: 'power-series', conceptName: '幂级数', relevance: 0.8, difficulty: 'hard' },
-        { conceptId: 'convergence-tests', conceptName: '级数审敛法', relevance: 0.8, difficulty: 'hard' },
+        {
+          conceptId: 'taylor-series',
+          conceptName: '泰勒级数',
+          relevance: 0.9,
+          difficulty: 'hard',
+        },
+        {
+          conceptId: 'power-series',
+          conceptName: '幂级数',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
+        {
+          conceptId: 'convergence-tests',
+          conceptName: '级数审敛法',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
       ],
       EQUATION: [
-        { conceptId: 'limit-computation', conceptName: '极限的计算方法', relevance: 0.7, difficulty: 'medium' },
-        { conceptId: 'derivative-rules', conceptName: '基本求导公式', relevance: 0.7, difficulty: 'easy' },
+        {
+          conceptId: 'limit-computation',
+          conceptName: '极限的计算方法',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-rules',
+          conceptName: '基本求导公式',
+          relevance: 0.7,
+          difficulty: 'easy',
+        },
       ],
       SIMPLIFICATION: [
-        { conceptId: 'limit-computation', conceptName: '极限的计算方法', relevance: 0.7, difficulty: 'medium' },
-        { conceptId: 'derivative-rules', conceptName: '基本求导公式', relevance: 0.7, difficulty: 'easy' },
+        {
+          conceptId: 'limit-computation',
+          conceptName: '极限的计算方法',
+          relevance: 0.7,
+          difficulty: 'medium',
+        },
+        {
+          conceptId: 'derivative-rules',
+          conceptName: '基本求导公式',
+          relevance: 0.7,
+          difficulty: 'easy',
+        },
       ],
       PROOF: [
-        { conceptId: 'mean-value-theorem', conceptName: '中值定理', relevance: 0.8, difficulty: 'hard' },
-        { conceptId: 'fundamental-theorem', conceptName: '微积分基本定理', relevance: 0.8, difficulty: 'hard' },
+        {
+          conceptId: 'mean-value-theorem',
+          conceptName: '中值定理',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
+        {
+          conceptId: 'fundamental-theorem',
+          conceptName: '微积分基本定理',
+          relevance: 0.8,
+          difficulty: 'hard',
+        },
       ],
     };
 
@@ -195,7 +361,9 @@ export class KnowledgeGraphService {
     return mappings;
   }
 
-  private deduplicateMappings(mappings: KnowledgeMapping[]): KnowledgeMapping[] {
+  private deduplicateMappings(
+    mappings: KnowledgeMapping[],
+  ): KnowledgeMapping[] {
     const uniqueMap = new Map<string, KnowledgeMapping>();
     mappings.forEach((mapping) => {
       const existing = uniqueMap.get(mapping.conceptId);
@@ -211,7 +379,10 @@ export class KnowledgeGraphService {
     diagnosisResult: DiagnosisResult,
     problemType: string,
   ): Promise<MasteryUpdate[]> {
-    const knowledgeMappings = await this.mapDiagnosisToKnowledge(diagnosisResult, problemType);
+    const knowledgeMappings = await this.mapDiagnosisToKnowledge(
+      diagnosisResult,
+      problemType,
+    );
     const updates: MasteryUpdate[] = [];
 
     for (const mapping of knowledgeMappings) {
@@ -231,8 +402,11 @@ export class KnowledgeGraphService {
       }
 
       // 记录学习行为
-      const existingRecord = await this.learningService.getConceptProgress(userId);
-      const existingConcept = existingRecord.find(r => r.conceptId === mapping.conceptId);
+      const existingRecord =
+        await this.learningService.getConceptProgress(userId);
+      const existingConcept = existingRecord.find(
+        (r) => r.conceptId === mapping.conceptId,
+      );
       const oldMastery = existingConcept?.masteryLevel || 0;
       const newMastery = Math.max(0, Math.min(1, oldMastery + masteryChange));
 
@@ -258,28 +432,39 @@ export class KnowledgeGraphService {
   }
 
   private calculateErrorSeverity(diagnosisResult: DiagnosisResult): number {
-    if (!diagnosisResult.errorDetails || diagnosisResult.errorDetails.length === 0) {
+    if (
+      !diagnosisResult.errorDetails ||
+      diagnosisResult.errorDetails.length === 0
+    ) {
       return 0.5;
     }
 
-    const severityScores = diagnosisResult.errorDetails.map(error => {
+    const severityScores = diagnosisResult.errorDetails.map((error) => {
       switch (error.severity) {
-        case 'major': return 1.0;
-        case 'moderate': return 0.7;
-        case 'minor': return 0.3;
-        default: return 0.5;
+        case 'major':
+          return 1.0;
+        case 'moderate':
+          return 0.7;
+        case 'minor':
+          return 0.3;
+        default:
+          return 0.5;
       }
     });
 
-    return severityScores.reduce((sum, score) => sum + score, 0) / severityScores.length;
+    return (
+      severityScores.reduce((sum, score) => sum + score, 0) /
+      severityScores.length
+    );
   }
 
   async generatePersonalizedLearningPath(
     userId: string,
     targetConceptId?: string,
   ): Promise<LearningPathNode[]> {
-    const conceptProgress = await this.learningService.getConceptProgress(userId);
-    const progressMap = new Map(conceptProgress.map(p => [p.conceptId, p]));
+    const conceptProgress =
+      await this.learningService.getConceptProgress(userId);
+    const progressMap = new Map(conceptProgress.map((p) => [p.conceptId, p]));
 
     let startConcepts: string[] = [];
     if (targetConceptId) {
@@ -288,11 +473,12 @@ export class KnowledgeGraphService {
     } else {
       // 找出掌握度最低的概念作为起点
       const weakConcepts = conceptProgress
-        .filter(p => p.masteryLevel < 0.6)
+        .filter((p) => p.masteryLevel < 0.6)
         .sort((a, b) => a.masteryLevel - b.masteryLevel)
         .slice(0, 3)
-        .map(p => p.conceptId);
-      startConcepts = weakConcepts.length > 0 ? weakConcepts : ['limit-definition'];
+        .map((p) => p.conceptId);
+      startConcepts =
+        weakConcepts.length > 0 ? weakConcepts : ['limit-definition'];
     }
 
     const path: LearningPathNode[] = [];
@@ -332,7 +518,8 @@ export class KnowledgeGraphService {
     }
 
     // 获取前置概念
-    const prerequisites = await this.knowledgeService.getPrerequisites(conceptId);
+    const prerequisites =
+      await this.knowledgeService.getPrerequisites(conceptId);
     for (const prereq of prerequisites) {
       if (prereq.id && !visited.has(prereq.id)) {
         await this.buildLearningPathNode(prereq.id, path, visited, progressMap);
@@ -340,7 +527,8 @@ export class KnowledgeGraphService {
     }
 
     // 获取依赖概念
-    const dependents = await this.knowledgeService.getDependentConcepts(conceptId);
+    const dependents =
+      await this.knowledgeService.getDependentConcepts(conceptId);
 
     // 获取掌握度
     const progress = progressMap.get(conceptId);
@@ -351,21 +539,19 @@ export class KnowledgeGraphService {
       conceptName: concept.name,
       mastery,
       difficulty: concept.difficulty as 'easy' | 'medium' | 'hard',
-      prerequisites: prerequisites.map(p => p.id),
-      dependents: dependents.map(d => d.id),
+      prerequisites: prerequisites.map((p) => p.id),
+      dependents: dependents.map((d) => d.id),
       estimatedTime: this.calculateEstimatedTime(concept.difficulty, mastery),
     });
   }
 
-  private calculateEstimatedTime(
-    difficulty: string,
-    mastery: number,
-  ): number {
-    const baseTime = {
-      easy: 15,
-      medium: 30,
-      hard: 45,
-    }[difficulty] || 30;
+  private calculateEstimatedTime(difficulty: string, mastery: number): number {
+    const baseTime =
+      {
+        easy: 15,
+        medium: 30,
+        hard: 45,
+      }[difficulty] || 30;
 
     // 掌握度越高，所需时间越少
     return Math.round(baseTime * (1 - mastery * 0.5));
@@ -375,8 +561,9 @@ export class KnowledgeGraphService {
     nodes: LearningPathNode[];
     edges: { source: string; target: string; type: string }[];
   }> {
-    const conceptProgress = await this.learningService.getConceptProgress(userId);
-    const progressMap = new Map(conceptProgress.map(p => [p.conceptId, p]));
+    const conceptProgress =
+      await this.learningService.getConceptProgress(userId);
+    const progressMap = new Map(conceptProgress.map((p) => [p.conceptId, p]));
 
     // 获取所有概念
     const allConcepts = await this.knowledgeService.getAllConcepts();
@@ -400,7 +587,9 @@ export class KnowledgeGraphService {
       });
 
       // 获取前置关系
-      const prerequisites = await this.knowledgeService.getPrerequisites(concept.id);
+      const prerequisites = await this.knowledgeService.getPrerequisites(
+        concept.id,
+      );
       for (const prereq of prerequisites) {
         if (prereq.id) {
           edges.push({
@@ -418,14 +607,17 @@ export class KnowledgeGraphService {
   async getRecommendedConcepts(
     userId: string,
     limit: number = 5,
-  ): Promise<{
-    conceptId: string;
-    conceptName: string;
-    mastery: number;
-    priority: number;
-    reason: string;
-  }[]> {
-    const conceptProgress = await this.learningService.getConceptProgress(userId);
+  ): Promise<
+    {
+      conceptId: string;
+      conceptName: string;
+      mastery: number;
+      priority: number;
+      reason: string;
+    }[]
+  > {
+    const conceptProgress =
+      await this.learningService.getConceptProgress(userId);
     const recommendations: {
       conceptId: string;
       conceptName: string;
@@ -436,7 +628,7 @@ export class KnowledgeGraphService {
 
     // 推荐掌握度低的概念
     const weakConcepts = conceptProgress
-      .filter(p => p.masteryLevel < 0.6)
+      .filter((p) => p.masteryLevel < 0.6)
       .sort((a, b) => a.masteryLevel - b.masteryLevel)
       .slice(0, limit / 2);
 
@@ -452,22 +644,26 @@ export class KnowledgeGraphService {
 
     // 推荐新的相关概念
     const masteredConcepts = conceptProgress
-      .filter(p => p.masteryLevel >= 0.8)
+      .filter((p) => p.masteryLevel >= 0.8)
       .sort((a, b) => b.masteryLevel - a.masteryLevel)
       .slice(0, 3);
 
     for (const concept of masteredConcepts) {
-      const dependentConcepts = await this.knowledgeService.getDependentConcepts(concept.conceptId);
+      const dependentConcepts =
+        await this.knowledgeService.getDependentConcepts(concept.conceptId);
       for (const dependent of dependentConcepts) {
         if (!dependent.id) continue;
-        
-        const existingProgress = conceptProgress.find(p => p.conceptId === dependent.id);
+
+        const existingProgress = conceptProgress.find(
+          (p) => p.conceptId === dependent.id,
+        );
         if (!existingProgress || existingProgress.masteryLevel < 0.5) {
           recommendations.push({
             conceptId: dependent.id,
             conceptName: dependent.name,
             mastery: existingProgress?.masteryLevel || 0,
-            priority: 80 - Math.round((existingProgress?.masteryLevel || 0) * 50),
+            priority:
+              80 - Math.round((existingProgress?.masteryLevel || 0) * 50),
             reason: `基于已掌握的${concept.conceptName}，推荐学习进阶内容`,
           });
         }

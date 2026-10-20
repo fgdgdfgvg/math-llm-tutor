@@ -14,7 +14,7 @@ export class ScenarioService {
       objectives: [
         '理解位移、速度、加速度之间的关系',
         '应用导数和积分解决运动问题',
-        '建立和求解运动微分方程'
+        '建立和求解运动微分方程',
       ],
       tasks: [
         {
@@ -27,8 +27,8 @@ export class ScenarioService {
           hints: [
             '使用加速度公式：a = g',
             '速度是加速度的积分',
-            '位移是速度的积分'
-          ]
+            '位移是速度的积分',
+          ],
         },
         {
           id: 'task2',
@@ -40,11 +40,11 @@ export class ScenarioService {
           hints: [
             '分解速度为水平和垂直分量',
             '水平方向匀速运动',
-            '垂直方向匀加速运动'
-          ]
-        }
+            '垂直方向匀加速运动',
+          ],
+        },
       ],
-      duration: 30
+      duration: 30,
     },
     {
       id: 'economic_model',
@@ -53,11 +53,7 @@ export class ScenarioService {
       type: 'virtual_lab',
       difficulty: 'hard',
       subject: '微积分',
-      objectives: [
-        '建立成本和收益函数',
-        '应用导数求极值',
-        '分析市场均衡状态'
-      ],
+      objectives: ['建立成本和收益函数', '应用导数求极值', '分析市场均衡状态'],
       tasks: [
         {
           id: 'task1',
@@ -69,8 +65,8 @@ export class ScenarioService {
           hints: [
             '利润 = 收益 - 成本',
             '边际收益 = 边际成本时利润最大',
-            '对利润函数求导并令其为零'
-          ]
+            '对利润函数求导并令其为零',
+          ],
         },
         {
           id: 'task2',
@@ -82,11 +78,11 @@ export class ScenarioService {
           hints: [
             '消费者剩余是需求曲线以下的面积',
             '生产者剩余是供给曲线以上的面积',
-            '使用积分计算面积'
-          ]
-        }
+            '使用积分计算面积',
+          ],
+        },
       ],
-      duration: 45
+      duration: 45,
     },
     {
       id: 'integral_challenge',
@@ -98,7 +94,7 @@ export class ScenarioService {
       objectives: [
         '掌握各种积分方法',
         '提高解题速度和准确性',
-        '培养数学思维能力'
+        '培养数学思维能力',
       ],
       tasks: [
         {
@@ -108,10 +104,7 @@ export class ScenarioService {
           type: 'calculation',
           points: 5,
           timeLimit: 2,
-          hints: [
-            '回忆基本积分公式',
-            '注意常数项'
-          ]
+          hints: ['回忆基本积分公式', '注意常数项'],
         },
         {
           id: 'task2',
@@ -120,10 +113,7 @@ export class ScenarioService {
           type: 'calculation',
           points: 10,
           timeLimit: 4,
-          hints: [
-            '选择合适的换元变量',
-            '注意微分的转换'
-          ]
+          hints: ['选择合适的换元变量', '注意微分的转换'],
         },
         {
           id: 'task3',
@@ -132,13 +122,10 @@ export class ScenarioService {
           type: 'calculation',
           points: 15,
           timeLimit: 6,
-          hints: [
-            '正确选择u和dv',
-            '应用分部积分公式'
-          ]
-        }
+          hints: ['正确选择u和dv', '应用分部积分公式'],
+        },
       ],
-      duration: 20
+      duration: 20,
     },
     {
       id: 'matrix_maze',
@@ -147,11 +134,7 @@ export class ScenarioService {
       type: 'game_level',
       difficulty: 'hard',
       subject: '线性代数',
-      objectives: [
-        '掌握矩阵运算',
-        '理解线性变换',
-        '培养空间思维能力'
-      ],
+      objectives: ['掌握矩阵运算', '理解线性变换', '培养空间思维能力'],
       tasks: [
         {
           id: 'task1',
@@ -160,10 +143,7 @@ export class ScenarioService {
           type: 'calculation',
           points: 10,
           timeLimit: 5,
-          hints: [
-            '每个矩阵代表一个方向变换',
-            '按照顺序相乘矩阵'
-          ]
+          hints: ['每个矩阵代表一个方向变换', '按照顺序相乘矩阵'],
         },
         {
           id: 'task2',
@@ -172,14 +152,11 @@ export class ScenarioService {
           type: 'calculation',
           points: 15,
           timeLimit: 8,
-          hints: [
-            '逆矩阵可以撤销变换',
-            '注意矩阵乘法的顺序'
-          ]
-        }
+          hints: ['逆矩阵可以撤销变换', '注意矩阵乘法的顺序'],
+        },
       ],
-      duration: 25
-    }
+      duration: 25,
+    },
   ];
 
   private gameLevels: GameLevel[] = [
@@ -192,7 +169,7 @@ export class ScenarioService {
       completed: false,
       score: 0,
       maxScore: 100,
-      nextLevel: 'level2'
+      nextLevel: 'level2',
     },
     {
       id: 'level2',
@@ -203,7 +180,7 @@ export class ScenarioService {
       completed: false,
       score: 0,
       maxScore: 150,
-      nextLevel: 'level3'
+      nextLevel: 'level3',
     },
     {
       id: 'level3',
@@ -214,7 +191,7 @@ export class ScenarioService {
       completed: false,
       score: 0,
       maxScore: 200,
-      nextLevel: 'level4'
+      nextLevel: 'level4',
     },
     {
       id: 'level4',
@@ -224,8 +201,8 @@ export class ScenarioService {
       unlocked: false,
       completed: false,
       score: 0,
-      maxScore: 300
-    }
+      maxScore: 300,
+    },
   ];
 
   async getScenarios(): Promise<Scenario[]> {
@@ -233,15 +210,17 @@ export class ScenarioService {
   }
 
   async getScenarioById(id: string): Promise<Scenario | null> {
-    return this.scenarios.find(scenario => scenario.id === id) || null;
+    return this.scenarios.find((scenario) => scenario.id === id) || null;
   }
 
   async getScenariosByType(type: string): Promise<Scenario[]> {
-    return this.scenarios.filter(scenario => scenario.type === type);
+    return this.scenarios.filter((scenario) => scenario.type === type);
   }
 
   async getScenariosByDifficulty(difficulty: string): Promise<Scenario[]> {
-    return this.scenarios.filter(scenario => scenario.difficulty === difficulty);
+    return this.scenarios.filter(
+      (scenario) => scenario.difficulty === difficulty,
+    );
   }
 
   async getGameLevels(): Promise<GameLevel[]> {
@@ -249,11 +228,15 @@ export class ScenarioService {
   }
 
   async getGameLevelById(id: string): Promise<GameLevel | null> {
-    return this.gameLevels.find(level => level.id === id) || null;
+    return this.gameLevels.find((level) => level.id === id) || null;
   }
 
-  async completeGameLevel(userId: string, levelId: string, score: number): Promise<GameLevel> {
-    const level = this.gameLevels.find(l => l.id === levelId);
+  async completeGameLevel(
+    userId: string,
+    levelId: string,
+    score: number,
+  ): Promise<GameLevel> {
+    const level = this.gameLevels.find((l) => l.id === levelId);
     if (!level) {
       throw new Error('Level not found');
     }
@@ -263,7 +246,7 @@ export class ScenarioService {
 
     // 解锁下一关
     if (level.nextLevel) {
-      const nextLevel = this.gameLevels.find(l => l.id === level.nextLevel);
+      const nextLevel = this.gameLevels.find((l) => l.id === level.nextLevel);
       if (nextLevel) {
         nextLevel.unlocked = true;
       }
@@ -272,7 +255,10 @@ export class ScenarioService {
     return level;
   }
 
-  async createCollaborativeSession(userId: string, scenarioId: string): Promise<any> {
+  async createCollaborativeSession(
+    userId: string,
+    scenarioId: string,
+  ): Promise<any> {
     // 创建协作会话
     const sessionId = `session_${Date.now()}`;
     return {
@@ -282,21 +268,29 @@ export class ScenarioService {
       participants: [userId],
       status: 'active',
       createdAt: new Date().toISOString(),
-      tasks: []
+      tasks: [],
     };
   }
 
-  async joinCollaborativeSession(sessionId: string, userId: string): Promise<any> {
+  async joinCollaborativeSession(
+    sessionId: string,
+    userId: string,
+  ): Promise<any> {
     // 加入协作会话
     return {
       sessionId,
       userId,
       status: 'joined',
-      joinedAt: new Date().toISOString()
+      joinedAt: new Date().toISOString(),
     };
   }
 
-  async submitTask(userId: string, scenarioId: string, taskId: string, answer: unknown): Promise<{
+  async submitTask(
+    userId: string,
+    scenarioId: string,
+    taskId: string,
+    answer: unknown,
+  ): Promise<{
     userId: string;
     scenarioId: string;
     taskId: string;
@@ -305,8 +299,8 @@ export class ScenarioService {
     submittedAt: string;
   }> {
     // 提交任务答案
-    const scenario = this.scenarios.find(s => s.id === scenarioId);
-    const task = scenario?.tasks.find(t => t.id === taskId);
+    const scenario = this.scenarios.find((s) => s.id === scenarioId);
+    const task = scenario?.tasks.find((t) => t.id === taskId);
 
     if (!scenario || !task) {
       throw new Error('Scenario or task not found');
@@ -321,7 +315,7 @@ export class ScenarioService {
       taskId,
       isCorrect,
       score: isCorrect ? task.points : 0,
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
     };
   }
 

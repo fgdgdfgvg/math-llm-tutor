@@ -1,5 +1,17 @@
-import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto, LogoutDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -18,9 +30,15 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(200)
-  @ApiOperation({ summary: '刷新访问令牌', description: '用 refresh token 换取新的 access/refresh 令牌对' })
+  @ApiOperation({
+    summary: '刷新访问令牌',
+    description: '用 refresh token 换取新的 access/refresh 令牌对',
+  })
   @ApiResponse({ status: 200, description: '刷新成功，返回新的令牌对' })
-  @ApiResponse({ status: 401, description: 'refresh token 无效或已被吊销，需重新登录' })
+  @ApiResponse({
+    status: 401,
+    description: 'refresh token 无效或已被吊销，需重新登录',
+  })
   async refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refresh(dto.refreshToken);
   }
@@ -32,7 +50,10 @@ export class AuthController {
   @Public()
   @Post('logout')
   @HttpCode(200)
-  @ApiOperation({ summary: '登出', description: '吊销当前 refresh token，服务端会话立即失效' })
+  @ApiOperation({
+    summary: '登出',
+    description: '吊销当前 refresh token，服务端会话立即失效',
+  })
   @ApiResponse({ status: 200, description: '已登出' })
   async logout(@Body() dto: LogoutDto) {
     const revoked = await this.authService.logout(dto?.refreshToken);
@@ -44,7 +65,10 @@ export class AuthController {
   @Post('logout-all')
   @HttpCode(200)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: '登出所有设备', description: '吊销该用户全部 refresh token' })
+  @ApiOperation({
+    summary: '登出所有设备',
+    description: '吊销该用户全部 refresh token',
+  })
   @ApiResponse({ status: 200, description: '已吊销全部会话' })
   @ApiResponse({ status: 401, description: '未授权' })
   async logoutAll(@Request() req: any) {

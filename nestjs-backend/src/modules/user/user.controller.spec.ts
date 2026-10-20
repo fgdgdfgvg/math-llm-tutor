@@ -54,11 +54,16 @@ describe('UserController', () => {
   describe('注册（P0：越权提升）', () => {
     it('公开注册不允许分配 admin 角色', async () => {
       userService.findOne.mockResolvedValue(null);
-      userService.create.mockImplementation(async (dto: any, roles?: string[]) => ({
-        toObject: () => ({ _id: '1', username: dto.username, roles }),
-      }));
+      userService.create.mockImplementation(
+        async (dto: any, roles?: string[]) => ({
+          toObject: () => ({ _id: '1', username: dto.username, roles }),
+        }),
+      );
 
-      await controller.register({ username: 'alice', password: 'secret123' } as CreateUserDto);
+      await controller.register({
+        username: 'alice',
+        password: 'secret123',
+      } as CreateUserDto);
 
       // 第二个参数（角色）必须缺省，由服务层固定为 student
       const [, roles] = userService.create.mock.calls[0];
@@ -68,7 +73,10 @@ describe('UserController', () => {
 
     it('拒绝系统保留用户名 admin', async () => {
       await expect(
-        controller.register({ username: 'admin', password: 'secret123' } as CreateUserDto),
+        controller.register({
+          username: 'admin',
+          password: 'secret123',
+        } as CreateUserDto),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(userService.create).not.toHaveBeenCalled();
     });
@@ -76,7 +84,10 @@ describe('UserController', () => {
     it('用户名已存在返回 409', async () => {
       userService.findOne.mockResolvedValue({ username: 'alice' });
       await expect(
-        controller.register({ username: 'alice', password: 'secret123' } as CreateUserDto),
+        controller.register({
+          username: 'alice',
+          password: 'secret123',
+        } as CreateUserDto),
       ).rejects.toBeInstanceOf(ConflictException);
     });
   });
@@ -88,16 +99,25 @@ describe('UserController', () => {
         password: 'secret123',
         roles: ['admin'],
       } as any);
-      const errors = await validate(instance, { whitelist: true, forbidNonWhitelisted: true });
+      const errors = await validate(instance, {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
       expect(errors.some((e) => e.property === 'roles')).toBe(true);
     });
 
     it('LoginDto 拒绝空密码/空用户名（旧的内联类型会被 ValidationPipe 跳过）', async () => {
       const empty = plainToInstance(LoginDto, {});
       const errors = await validate(empty);
-      expect(errors.map((e) => e.property).sort()).toEqual(['password', 'username']);
+      expect(errors.map((e) => e.property).sort()).toEqual([
+        'password',
+        'username',
+      ]);
 
-      const short = plainToInstance(LoginDto, { username: 'bob', password: '123' });
+      const short = plainToInstance(LoginDto, {
+        username: 'bob',
+        password: '123',
+      });
       const shortErrors = await validate(short);
       expect(shortErrors.some((e) => e.property === 'password')).toBe(true);
     });
@@ -106,14 +126,23 @@ describe('UserController', () => {
   describe('登录', () => {
     it('凭据错误返回 401 且不签发令牌', async () => {
       userService.validateUser.mockResolvedValue(null);
-      await expect(controller.login({ username: 'bob', password: 'secret123' })).rejects.toThrow();
+      await expect(
+        controller.login({ username: 'bob', password: 'secret123' }),
+      ).rejects.toThrow();
       expect(authService.login).not.toHaveBeenCalled();
     });
 
     it('凭据正确时签发令牌', async () => {
-      userService.validateUser.mockResolvedValue({ _id: '1', username: 'bob', roles: ['student'] });
+      userService.validateUser.mockResolvedValue({
+        _id: '1',
+        username: 'bob',
+        roles: ['student'],
+      });
       authService.login.mockResolvedValue({ access_token: 'token' });
-      const result = await controller.login({ username: 'bob', password: 'secret123' });
+      const result = await controller.login({
+        username: 'bob',
+        password: 'secret123',
+      });
       expect(result).toEqual({ access_token: 'token' });
     });
   });

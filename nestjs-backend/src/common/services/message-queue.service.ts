@@ -42,7 +42,10 @@ export interface QueueStats {
   throughput: number;
   avgLatency: number;
   queueSize: number;
-  byType: Record<string, { queued: number; processing: number; failed: number }>;
+  byType: Record<
+    string,
+    { queued: number; processing: number; failed: number }
+  >;
 }
 
 const QUEUE_PREFIX = 'mq:';
@@ -53,7 +56,10 @@ export class MessageQueueService implements OnModuleDestroy {
   private readonly queues = new Map<string, QueueTask[]>();
   private readonly processing = new Map<string, QueueTask>();
   private readonly taskSubjects = new Map<string, Subject<QueueTask>>();
-  private readonly handlers = new Map<string, (task: QueueTask) => Promise<any>>();
+  private readonly handlers = new Map<
+    string,
+    (task: QueueTask) => Promise<any>
+  >();
   private processingInterval: NodeJS.Timeout | null = null;
   private completedCount = 0;
   private failedCount = 0;
@@ -71,7 +77,10 @@ export class MessageQueueService implements OnModuleDestroy {
     }, 100);
   }
 
-  registerHandler(taskType: string, handler: (task: QueueTask) => Promise<any>): void {
+  registerHandler(
+    taskType: string,
+    handler: (task: QueueTask) => Promise<any>,
+  ): void {
     this.handlers.set(taskType, handler);
     this.logger.log(`注册消息处理器: ${taskType}`);
   }
@@ -161,7 +170,9 @@ export class MessageQueueService implements OnModuleDestroy {
           const queue = this.queues.get(type) || [];
           queue.unshift(task);
           this.queues.set(type, queue);
-          this.logger.warn(`任务重试: ${task.id} (${task.attempts}/${task.maxAttempts})`);
+          this.logger.warn(
+            `任务重试: ${task.id} (${task.attempts}/${task.maxAttempts})`,
+          );
         } else {
           task.status = TaskStatus.FAILED;
           task.error = errorMsg;
@@ -227,7 +238,8 @@ export class MessageQueueService implements OnModuleDestroy {
 
     const avgLatency =
       this.latencySamples.length > 0
-        ? this.latencySamples.reduce((a, b) => a + b, 0) / this.latencySamples.length
+        ? this.latencySamples.reduce((a, b) => a + b, 0) /
+          this.latencySamples.length
         : 0;
 
     const throughput =

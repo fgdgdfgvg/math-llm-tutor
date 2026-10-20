@@ -1,5 +1,9 @@
 import { Logger } from '@nestjs/common';
-import { StateManager, SystemState, SolutionStep } from './state-manager.service';
+import {
+  StateManager,
+  SystemState,
+  SolutionStep,
+} from './state-manager.service';
 import { VerificationResult } from './agent.types';
 import { extractAiJson } from './ai-json.utils';
 
@@ -53,7 +57,10 @@ export class StepExecutionEngine {
     problem: string,
     plan: any,
     executeStepFn: (step: any, context: any) => Promise<any>,
-    validateStepFn?: (step: SolutionStep, previousSteps: SolutionStep[]) => Promise<VerificationResult>
+    validateStepFn?: (
+      step: SolutionStep,
+      previousSteps: SolutionStep[],
+    ) => Promise<VerificationResult>,
   ): Promise<ExecutionResult> {
     const startTime = Date.now();
     this.logger.log('开始分步执行（带实时验证）');
@@ -62,7 +69,11 @@ export class StepExecutionEngine {
     const steps = plan.steps || [];
     const totalSteps = steps.length;
     let completedSteps = 0;
-    const failedSteps: Array<{ stepId: string; error: string; recovered: boolean }> = [];
+    const failedSteps: Array<{
+      stepId: string;
+      error: string;
+      recovered: boolean;
+    }> = [];
     const recoveryActions: string[] = [];
 
     for (let i = 0; i < steps.length; i++) {
@@ -86,28 +97,36 @@ export class StepExecutionEngine {
         stepExecution.output = result;
         stepExecution.status = 'completed';
         stepExecution.endTime = Date.now();
-        stepExecution.duration = stepExecution.endTime - stepExecution.startTime;
+        stepExecution.duration =
+          stepExecution.endTime - stepExecution.startTime;
 
         const solutionStep = this.convertToSolutionStep(step, result);
         this.stateManager.addSolutionStep(solutionStep);
 
         if (validateStepFn) {
           this.logger.log(`验证步骤 ${i + 1}...`);
-          const previousSteps = this.stateManager.getCurrentState().solutionSteps.slice(0, -1);
-          const verification = await validateStepFn(solutionStep, previousSteps);
-          
+          const previousSteps = this.stateManager
+            .getCurrentState()
+            .solutionSteps.slice(0, -1);
+          const verification = await validateStepFn(
+            solutionStep,
+            previousSteps,
+          );
+
           stepExecution.verification = verification;
 
           if (!verification.isValid) {
-            this.logger.warn(`步骤 ${i + 1} 验证失败: ${verification.errorMessage}`);
-            
+            this.logger.warn(
+              `步骤 ${i + 1} 验证失败: ${verification.errorMessage}`,
+            );
+
             const recovered = await this.handleValidationFailure(
               step,
               i,
               result,
               verification,
               executeStepFn,
-              validateStepFn
+              validateStepFn,
             );
 
             if (recovered) {
@@ -119,7 +138,7 @@ export class StepExecutionEngine {
                 error: verification.errorMessage || '验证未通过',
                 recovered: false,
               });
-              
+
               if (!this.shouldContinueAfterFailure(i, steps.length)) {
                 this.logger.error(`步骤 ${i + 1} 失败且无法恢复，终止执行`);
                 break;
@@ -130,21 +149,21 @@ export class StepExecutionEngine {
 
         completedSteps++;
         this.executionHistory.push(stepExecution);
-
       } catch (error) {
         this.logger.error(`步骤 ${i + 1} 执行出错: ${error.message}`);
-        
+
         stepExecution.status = 'failed';
         stepExecution.error = error.message;
         stepExecution.endTime = Date.now();
-        stepExecution.duration = stepExecution.endTime - stepExecution.startTime;
+        stepExecution.duration =
+          stepExecution.endTime - stepExecution.startTime;
 
         const recovered = await this.handleExecutionError(
           step,
           i,
           error,
           executeStepFn,
-          validateStepFn
+          validateStepFn,
         );
 
         if (recovered) {
@@ -173,7 +192,7 @@ export class StepExecutionEngine {
     const success = failedSteps.length === 0 && completedSteps === totalSteps;
 
     this.logger.log(
-      `分步执行完成: ${completedSteps}/${totalSteps} 成功, ${failedSteps.length} 失败 (${totalTime}ms)`
+      `分步执行完成: ${completedSteps}/${totalSteps} 成功, ${failedSteps.length} 失败 (${totalTime}ms)`,
     );
 
     return {
@@ -194,12 +213,15 @@ export class StepExecutionEngine {
     originalResult: any,
     verification: VerificationResult,
     executeStepFn: (step: any, context: any) => Promise<any>,
-    validateStepFn: (step: SolutionStep, previousSteps: SolutionStep[]) => Promise<VerificationResult>
+    validateStepFn: (
+      step: SolutionStep,
+      previousSteps: SolutionStep[],
+    ) => Promise<VerificationResult>,
   ): Promise<boolean> {
     this.logger.log(`尝试修复步骤 ${stepIndex + 1}...`);
 
     const maxRetries = 2;
-    
+
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         const modifiedStep = {
@@ -212,9 +234,17 @@ export class StepExecutionEngine {
         const context = this.stateManager.toAgentContext();
         const newResult = await executeStepFn(modifiedStep, context);
 
-        const newSolutionStep = this.convertToSolutionStep(modifiedStep, newResult);
-        const previousSteps = this.stateManager.getCurrentState().solutionSteps.slice(0, -1);
-        const newVerification = await validateStepFn(newSolutionStep, previousSteps);
+        const newSolutionStep = this.convertToSolutionStep(
+          modifiedStep,
+          newResult,
+        );
+        const previousSteps = this.stateManager
+          .getCurrentState()
+          .solutionSteps.slice(0, -1);
+        const newVerification = await validateStepFn(
+          newSolutionStep,
+          previousSteps,
+        );
 
         if (newVerification.isValid) {
           this.stateManager.addSolutionStep(newSolutionStep, stepIndex);
@@ -233,7 +263,10 @@ export class StepExecutionEngine {
     stepIndex: number,
     error: Error,
     executeStepFn: (step: any, context: any) => Promise<any>,
-    validateStepFn?: (step: SolutionStep, previousSteps: SolutionStep[]) => Promise<VerificationResult>
+    validateStepFn?: (
+      step: SolutionStep,
+      previousSteps: SolutionStep[],
+    ) => Promise<VerificationResult>,
   ): Promise<boolean> {
     this.logger.log(`尝试从错误中恢复（步骤 ${stepIndex + 1}）...`);
 
@@ -249,25 +282,35 @@ export class StepExecutionEngine {
       const context = this.stateManager.toAgentContext();
       const fallbackResult = await executeStepFn(fallbackStep, context);
 
-      const solutionStep = this.convertToSolutionStep(fallbackStep, fallbackResult);
+      const solutionStep = this.convertToSolutionStep(
+        fallbackStep,
+        fallbackResult,
+      );
       this.stateManager.addSolutionStep(solutionStep, stepIndex);
 
       return true;
     } catch (fallbackError) {
       this.logger.warn(`降级模式也失败了: ${fallbackError.message}`);
-      
+
       const minimalStep = this.generateMinimalStep(step, error);
       this.stateManager.addSolutionStep(minimalStep, stepIndex);
-      
+
       return false;
     }
   }
 
-  private shouldContinueAfterFailure(currentStep: number, totalSteps: number): boolean {
-    const failureRate = this.executionHistory.filter(e => e.status === 'failed').length / Math.max(currentStep, 1);
-    
+  private shouldContinueAfterFailure(
+    currentStep: number,
+    totalSteps: number,
+  ): boolean {
+    const failureRate =
+      this.executionHistory.filter((e) => e.status === 'failed').length /
+      Math.max(currentStep, 1);
+
     if (failureRate > 0.6) {
-      this.logger.warn(`失败率过高(${Math.round(failureRate * 100)}%)，建议停止执行`);
+      this.logger.warn(
+        `失败率过高(${Math.round(failureRate * 100)}%)，建议停止执行`,
+      );
       return false;
     }
 
@@ -314,7 +357,8 @@ export class StepExecutionEngine {
 
     return {
       stepId: step.id,
-      stepTitle: result.stepTitle || step.description?.substring(0, 20) || '解题步骤',
+      stepTitle:
+        result.stepTitle || step.description?.substring(0, 20) || '解题步骤',
       keyPoint: result.keyPoint || '',
       formula: result.formula || '',
       process: result.process || JSON.stringify(result).substring(0, 300),
@@ -343,32 +387,41 @@ export class StepExecutionEngine {
 
   generateExecutionReport(): string {
     const lines: string[] = ['=== 执行报告 ===', ''];
-    
+
     lines.push(`总步骤数: ${this.executionHistory.length}`);
-    lines.push(`成功: ${this.executionHistory.filter(e => e.status === 'completed').length}`);
-    lines.push(`失败: ${this.executionHistory.filter(e => e.status === 'failed').length}`);
+    lines.push(
+      `成功: ${this.executionHistory.filter((e) => e.status === 'completed').length}`,
+    );
+    lines.push(
+      `失败: ${this.executionHistory.filter((e) => e.status === 'failed').length}`,
+    );
     lines.push('');
 
     for (const exec of this.executionHistory) {
-      const statusIcon = exec.status === 'completed' ? '✅' : exec.status === 'failed' ? '❌' : '⏳';
+      const statusIcon =
+        exec.status === 'completed'
+          ? '✅'
+          : exec.status === 'failed'
+            ? '❌'
+            : '⏳';
       lines.push(`${statusIcon} 步骤 ${exec.stepIndex + 1}: ${exec.stepId}`);
       lines.push(`   状态: ${exec.status}`);
       lines.push(`   耗时: ${exec.duration || 0}ms`);
-      
+
       if (exec.error) {
         lines.push(`   错误: ${exec.error}`);
       }
-      
+
       if (exec.verification && !exec.verification.isValid) {
         lines.push(`   验证: ❌ ${exec.verification.errorMessage}`);
       } else if (exec.verification) {
         lines.push(`   验证: ✅ 通过`);
       }
-      
+
       if (exec.alternativeUsed) {
         lines.push(`   ⚠️  使用了替代方案`);
       }
-      
+
       lines.push('');
     }
 
@@ -376,20 +429,33 @@ export class StepExecutionEngine {
   }
 
   getExecutionMetrics(): any {
-    const completed = this.executionHistory.filter(e => e.status === 'completed');
-    const failed = this.executionHistory.filter(e => e.status === 'failed');
+    const completed = this.executionHistory.filter(
+      (e) => e.status === 'completed',
+    );
+    const failed = this.executionHistory.filter((e) => e.status === 'failed');
 
     return {
       totalSteps: this.executionHistory.length,
       completedSteps: completed.length,
       failedSteps: failed.length,
-      successRate: this.executionHistory.length > 0 ? completed.length / this.executionHistory.length : 0,
-      averageDuration: completed.length > 0 
-        ? completed.reduce((sum, e) => sum + (e.duration || 0), 0) / completed.length 
-        : 0,
-      totalDuration: this.executionHistory.reduce((sum, e) => sum + (e.duration || 0), 0),
-      alternativesUsed: this.executionHistory.filter(e => e.alternativeUsed).length,
-      verificationsPassed: this.executionHistory.filter(e => e.verification?.isValid).length,
+      successRate:
+        this.executionHistory.length > 0
+          ? completed.length / this.executionHistory.length
+          : 0,
+      averageDuration:
+        completed.length > 0
+          ? completed.reduce((sum, e) => sum + (e.duration || 0), 0) /
+            completed.length
+          : 0,
+      totalDuration: this.executionHistory.reduce(
+        (sum, e) => sum + (e.duration || 0),
+        0,
+      ),
+      alternativesUsed: this.executionHistory.filter((e) => e.alternativeUsed)
+        .length,
+      verificationsPassed: this.executionHistory.filter(
+        (e) => e.verification?.isValid,
+      ).length,
     };
   }
 

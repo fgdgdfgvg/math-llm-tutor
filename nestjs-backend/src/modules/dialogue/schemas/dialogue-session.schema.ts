@@ -17,7 +17,7 @@ export interface DialogueContext {
 
 @Schema({
   timestamps: true,
-  expires: '24h' // 24小时过期
+  expires: '24h', // 24小时过期
 })
 export class DialogueSession {
   @Prop({ required: true })
@@ -40,4 +40,5 @@ export class DialogueSession {
 }
 
 export type DialogueSessionDocument = DialogueSession & Document;
-export const DialogueSessionSchema = SchemaFactory.createForClass(DialogueSession);
+export const DialogueSessionSchema =
+  SchemaFactory.createForClass(DialogueSession);

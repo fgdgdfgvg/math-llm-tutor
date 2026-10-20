@@ -2,7 +2,10 @@ import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LearningController } from './learning.controller';
 import { LearningService } from './learning.service';
-import { LearningRecord, LearningRecordSchema } from './schemas/learning-record.schema';
+import {
+  LearningRecord,
+  LearningRecordSchema,
+} from './schemas/learning-record.schema';
 import { StudentModule } from '../student/student.module';
 import { KnowledgePointMappingService } from '../knowledge/knowledge-point-mapping.service';
 

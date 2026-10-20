@@ -13,7 +13,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, Document } from 'mongoose';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
-import { LearningRecord, LearningRecordDocument } from '../learning/schemas/learning-record.schema';
+import {
+  LearningRecord,
+  LearningRecordDocument,
+} from '../learning/schemas/learning-record.schema';
 
 interface UserStats {
   userId: string;
@@ -34,7 +37,8 @@ interface AdminStats {
   averageMastery: number;
 }
 
-type UserDocumentWithTimestamps = UserDocument & Document & { createdAt: Date; updatedAt: Date };
+type UserDocumentWithTimestamps = UserDocument &
+  Document & { createdAt: Date; updatedAt: Date };
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
@@ -43,7 +47,8 @@ export class AdminController {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(LearningRecord.name) private readonly learningRecordModel: Model<LearningRecordDocument>,
+    @InjectModel(LearningRecord.name)
+    private readonly learningRecordModel: Model<LearningRecordDocument>,
   ) {}
 
   private async checkAdmin(userId: string): Promise<UserDocument> {
@@ -51,7 +56,11 @@ export class AdminController {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('admin')) {
+    if (
+      !user.roles ||
+      !Array.isArray(user.roles) ||
+      !user.roles.includes('admin')
+    ) {
       throw new ForbiddenException('Admin access required');
     }
     return user;
@@ -68,9 +77,10 @@ export class AdminController {
     ]);
 
     const activeUserIds = new Set(records.map((r) => r.userId.toString()));
-    const averageMastery = records.length > 0
-      ? records.reduce((sum, r) => sum + r.masteryLevel, 0) / records.length
-      : 0;
+    const averageMastery =
+      records.length > 0
+        ? records.reduce((sum, r) => sum + r.masteryLevel, 0) / records.length
+        : 0;
 
     return {
       totalUsers,
@@ -109,11 +119,17 @@ export class AdminController {
           roles: user.roles || [],
           createdAt: typedUser.createdAt,
           totalConcepts: concepts.length,
-          masteredConcepts: concepts.filter((c) => c.masteryLevel >= 0.8).length,
-          totalPracticeTime: records.reduce((sum, r) => sum + (r.timeSpent || 0), 0),
-          averageMastery: concepts.length > 0
-            ? concepts.reduce((sum, c) => sum + c.masteryLevel, 0) / concepts.length
-            : 0,
+          masteredConcepts: concepts.filter((c) => c.masteryLevel >= 0.8)
+            .length,
+          totalPracticeTime: records.reduce(
+            (sum, r) => sum + (r.timeSpent || 0),
+            0,
+          ),
+          averageMastery:
+            concepts.length > 0
+              ? concepts.reduce((sum, c) => sum + c.masteryLevel, 0) /
+                concepts.length
+              : 0,
         };
       }),
     );
@@ -168,7 +184,9 @@ export class AdminController {
       throw new NotFoundException('User not found');
     }
 
-    await this.learningRecordModel.deleteMany({ userId: new Types.ObjectId(userId) });
+    await this.learningRecordModel.deleteMany({
+      userId: new Types.ObjectId(userId),
+    });
     await this.userModel.deleteOne({ _id: new Types.ObjectId(userId) });
 
     this.logger.log(`Admin ${req.user.userId} deleted user ${userId}`);

@@ -26,12 +26,16 @@ export class LearningController {
   }
 
   @Get('stats')
-  async getLearningStats(@Request() req: Request & { user: { userId: string } }) {
+  async getLearningStats(
+    @Request() req: Request & { user: { userId: string } },
+  ) {
     return this.learningService.getLearningStats(req.user.userId);
   }
 
   @Get('progress')
-  async getConceptProgress(@Request() req: Request & { user: { userId: string } }) {
+  async getConceptProgress(
+    @Request() req: Request & { user: { userId: string } },
+  ) {
     return this.learningService.getConceptProgress(req.user.userId);
   }
 

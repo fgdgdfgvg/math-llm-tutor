@@ -66,7 +66,9 @@ export class DataSourceService {
   validateDataSource(): boolean {
     if (this.isProduction()) {
       if (this.useMockData) {
-        this.logger.warn('USE_MOCK_DATA is true in production environment - overriding to false');
+        this.logger.warn(
+          'USE_MOCK_DATA is true in production environment - overriding to false',
+        );
         return false;
       }
       return true;
@@ -79,24 +81,30 @@ export class DataSourceService {
    */
   getDatabaseConfig(): any {
     const env = this.getDataSourceType();
-    
+
     return {
       production: {
-        uri: this.configService.get('MONGODB_URI') || 'mongodb://localhost:27017/math-tutor-prod',
+        uri:
+          this.configService.get('MONGODB_URI') ||
+          'mongodb://localhost:27017/math-tutor-prod',
         options: {
           useNewUrlParser: true,
           useUnifiedTopology: true,
         },
       },
       development: {
-        uri: this.configService.get('MONGODB_URI_DEV') || 'mongodb://localhost:27017/math-tutor-dev',
+        uri:
+          this.configService.get('MONGODB_URI_DEV') ||
+          'mongodb://localhost:27017/math-tutor-dev',
         options: {
           useNewUrlParser: true,
           useUnifiedTopology: true,
         },
       },
       test: {
-        uri: this.configService.get('MONGODB_URI_TEST') || 'mongodb://localhost:27017/math-tutor-test',
+        uri:
+          this.configService.get('MONGODB_URI_TEST') ||
+          'mongodb://localhost:27017/math-tutor-test',
         options: {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -110,7 +118,7 @@ export class DataSourceService {
    */
   getNeo4jConfig(): any {
     const env = this.getDataSourceType();
-    
+
     return {
       production: {
         scheme: 'neo4j',

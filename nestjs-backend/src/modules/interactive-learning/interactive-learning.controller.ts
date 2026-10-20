@@ -17,7 +17,10 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
 import { DynamicKnowledgeGraphService } from './services/dynamic-knowledge-graph.service';
-import { ScenarioConfigService, BrokenConfigInfo } from './services/scenario-config.service';
+import {
+  ScenarioConfigService,
+  BrokenConfigInfo,
+} from './services/scenario-config.service';
 import {
   DynamicGraphQueryDto,
   InteractionRecordDto,
@@ -88,7 +91,10 @@ export class InteractiveLearningController {
   async getCognitiveState(
     @Request() req: Request & { user: { userId: string } },
   ): Promise<CognitiveStateResponseDto> {
-    const cognitiveState = await this.dynamicGraphService.getCognitiveStateWithCircuitBreaker(req.user.userId);
+    const cognitiveState =
+      await this.dynamicGraphService.getCognitiveStateWithCircuitBreaker(
+        req.user.userId,
+      );
 
     return CognitiveStateResponseDto.fromDomain({
       userId: cognitiveState.userId,
@@ -125,8 +131,11 @@ export class InteractiveLearningController {
   }
 
   @Get('scenarios/by-area/:area')
-  async getScenariosByArea(@Param('area') area: string): Promise<ScenarioSummaryDto[]> {
-    const scenarios = await this.scenarioConfigService.getScenariosByKnowledgeArea(area);
+  async getScenariosByArea(
+    @Param('area') area: string,
+  ): Promise<ScenarioSummaryDto[]> {
+    const scenarios =
+      await this.scenarioConfigService.getScenariosByKnowledgeArea(area);
     return scenarios.map(ScenarioSummaryDto.fromConfig);
   }
 
@@ -142,7 +151,9 @@ export class InteractiveLearningController {
   }
 
   @Post('scenarios/validate')
-  async validateScenario(@Body() validationDto: ScenarioValidationDto): Promise<{
+  async validateScenario(
+    @Body() validationDto: ScenarioValidationDto,
+  ): Promise<{
     isValid: boolean;
     errors: string[];
     warnings: string[];
@@ -175,7 +186,9 @@ export class InteractiveLearningController {
     message: string;
   }> {
     try {
-      const scenario = await this.scenarioConfigService.createScenarioFromYaml(body.yamlContent);
+      const scenario = await this.scenarioConfigService.createScenarioFromYaml(
+        body.yamlContent,
+      );
 
       return {
         success: true,
@@ -183,7 +196,9 @@ export class InteractiveLearningController {
         message: 'Scenario created successfully',
       };
     } catch (error: any) {
-      throw new BadRequestException(`Failed to create scenario: ${error.message}`);
+      throw new BadRequestException(
+        `Failed to create scenario: ${error.message}`,
+      );
     }
   }
 
@@ -217,7 +232,9 @@ export class InteractiveLearningController {
   }
 
   @Get('broken-configs/:id')
-  getBrokenConfig(@Param('id') id: string): BrokenConfigInfo | { message: string } {
+  getBrokenConfig(
+    @Param('id') id: string,
+  ): BrokenConfigInfo | { message: string } {
     const brokenConfig = this.scenarioConfigService.getBrokenConfig(id);
 
     if (!brokenConfig) {

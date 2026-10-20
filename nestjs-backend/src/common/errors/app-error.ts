@@ -1,5 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
-import { ERROR_DEFAULT_MESSAGE, ERROR_HTTP_STATUS, ErrorCode } from './error-codes';
+import {
+  ERROR_DEFAULT_MESSAGE,
+  ERROR_HTTP_STATUS,
+  ErrorCode,
+} from './error-codes';
 
 /**
  * 类型化错误体系。
@@ -20,7 +24,12 @@ export class AppError extends Error {
   constructor(
     code: ErrorCode,
     message?: string,
-    options: { httpStatus?: number; expose?: boolean; details?: unknown; cause?: unknown } = {},
+    options: {
+      httpStatus?: number;
+      expose?: boolean;
+      details?: unknown;
+      cause?: unknown;
+    } = {},
   ) {
     super(message || ERROR_DEFAULT_MESSAGE[code]);
     this.name = new.target.name;
@@ -124,7 +133,10 @@ export function isAppError(error: unknown): error is AppError {
 /** 从未知异常恢复成 AppError，供全局过滤器兜底 */
 export function toAppError(error: unknown): AppError {
   if (isAppError(error)) return error;
-  return new InternalError(error instanceof Error ? error.message : String(error), error);
+  return new InternalError(
+    error instanceof Error ? error.message : String(error),
+    error,
+  );
 }
 
 export { ErrorCode, HttpStatus };

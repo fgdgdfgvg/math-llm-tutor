@@ -64,7 +64,9 @@ export function loadEnvFileFallback(keys: string[], cwd = process.cwd()): void {
         filled++;
       }
       if (filled > 0) {
-        logger.log(`已从 ${file} 补充 ${filled} 个环境变量（ConfigModule 加载前的兜底）`);
+        logger.log(
+          `已从 ${file} 补充 ${filled} 个环境变量（ConfigModule 加载前的兜底）`,
+        );
       }
       return;
     } catch (error: any) {
@@ -97,7 +99,9 @@ function parseDurationToSeconds(raw: string | undefined): number | null {
   if (!match) return null;
   const n = Number(match[1]);
   const unit = (match[2] || 's').toLowerCase();
-  return n * (unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400);
+  return (
+    n * (unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400)
+  );
 }
 
 /** access token 最长允许 1 小时；再长就失去了"短时效 + refresh 续期"的安全意义 */
@@ -114,17 +118,25 @@ const MAX_ACCESS_TOKEN_SECONDS = 3600;
 export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
   const isProduction = process.env.NODE_ENV === 'production';
 
-  const required = ['JWT_SECRET', 'MONGODB_URI', ...(options.productionRequired ?? [])];
+  const required = [
+    'JWT_SECRET',
+    'MONGODB_URI',
+    ...(options.productionRequired ?? []),
+  ];
   if (isProduction) {
     required.push('CORS_ORIGIN');
   }
 
-  const missing = required.filter((key) => !process.env[key] || !String(process.env[key]).trim());
+  const missing = required.filter(
+    (key) => !process.env[key] || !String(process.env[key]).trim(),
+  );
   if (missing.length > 0) {
     const message = `缺少必需的环境变量: ${missing.join(', ')}`;
     logger.error(message);
     if (isProduction) {
-      logger.error('生产环境必须显式配置以上变量（尤其 CORS_ORIGIN，否则跨域策略无法安全生效）');
+      logger.error(
+        '生产环境必须显式配置以上变量（尤其 CORS_ORIGIN，否则跨域策略无法安全生效）',
+      );
     }
     throw new Error(message);
   }
@@ -152,7 +164,9 @@ export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
       ['MONGO_ROOT_PASSWORD', process.env.MONGO_ROOT_PASSWORD],
       ['NEO4J_PASSWORD', process.env.NEO4J_PASSWORD],
       ['REDIS_PASSWORD', process.env.REDIS_PASSWORD],
-    ].filter(([, value]) => value && WEAK_SECRETS.includes(String(value).trim()));
+    ].filter(
+      ([, value]) => value && WEAK_SECRETS.includes(String(value).trim()),
+    );
     if (weak.length > 0) {
       logger.error(
         `检测到默认口令/弱密钥: ${weak.map(([key]) => key).join(', ')} —— 仅限本地演示使用，正式部署前必须在 .env 中更换`,

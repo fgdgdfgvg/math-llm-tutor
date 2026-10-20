@@ -28,12 +28,19 @@ export class KnowledgePointMappingService {
     const mapping = this.readMappingFile();
     if (!mapping) return;
 
-    const knowledgeMapping: Record<string, string[]> = mapping['知识点映射'] || {};
-    const subConceptMapping: Record<string, string> = mapping['子概念映射'] || {};
-    const aliasMapping: Record<string, string> = mapping['知识点别名映射'] || {};
+    const knowledgeMapping: Record<string, string[]> =
+      mapping['知识点映射'] || {};
+    const subConceptMapping: Record<string, string> =
+      mapping['子概念映射'] || {};
+    const aliasMapping: Record<string, string> =
+      mapping['知识点别名映射'] || {};
 
-    for (const [knowledgePoint, conceptIds] of Object.entries(knowledgeMapping)) {
-      const ids = (Array.isArray(conceptIds) ? conceptIds : []).map((id) => String(id).trim());
+    for (const [knowledgePoint, conceptIds] of Object.entries(
+      knowledgeMapping,
+    )) {
+      const ids = (Array.isArray(conceptIds) ? conceptIds : []).map((id) =>
+        String(id).trim(),
+      );
       this.knowledgePointToConcepts.set(knowledgePoint.trim(), ids);
       for (const id of ids) {
         if (!this.conceptToKnowledgePoint.has(id)) {
@@ -43,14 +50,19 @@ export class KnowledgePointMappingService {
     }
 
     for (const [subConcept, conceptId] of Object.entries(subConceptMapping)) {
-      const knowledgePoint = this.conceptToKnowledgePoint.get(String(conceptId).trim());
+      const knowledgePoint = this.conceptToKnowledgePoint.get(
+        String(conceptId).trim(),
+      );
       if (knowledgePoint) {
         this.aliasToKnowledgePoint.set(subConcept.trim(), knowledgePoint);
       }
     }
 
     for (const [alias, knowledgePoint] of Object.entries(aliasMapping)) {
-      this.aliasToKnowledgePoint.set(alias.trim(), String(knowledgePoint).trim());
+      this.aliasToKnowledgePoint.set(
+        alias.trim(),
+        String(knowledgePoint).trim(),
+      );
     }
 
     this.logger.log(
@@ -62,7 +74,11 @@ export class KnowledgePointMappingService {
     // 与 QuestionsService 相同的向上查找策略，兼容 dist/ 与 src/ 运行位置
     let currentDir = __dirname;
     for (let i = 0; i < 6; i++) {
-      const candidate = path.join(currentDir, 'datasets', 'knowledge-point-mapping.json');
+      const candidate = path.join(
+        currentDir,
+        'datasets',
+        'knowledge-point-mapping.json',
+      );
       try {
         const content = fs.readFileSync(candidate, 'utf8');
         return JSON.parse(content);
@@ -70,7 +86,9 @@ export class KnowledgePointMappingService {
         currentDir = path.dirname(currentDir);
       }
     }
-    this.logger.warn('未找到 datasets/knowledge-point-mapping.json，知识点映射为空');
+    this.logger.warn(
+      '未找到 datasets/knowledge-point-mapping.json，知识点映射为空',
+    );
     return null;
   }
 
@@ -114,7 +132,11 @@ export class KnowledgePointMappingService {
   getKnowledgePoint(conceptId: string): string | null {
     if (!conceptId) return null;
     const key = conceptId.trim();
-    return this.conceptToKnowledgePoint.get(key) || this.aliasToKnowledgePoint.get(key) || null;
+    return (
+      this.conceptToKnowledgePoint.get(key) ||
+      this.aliasToKnowledgePoint.get(key) ||
+      null
+    );
   }
 
   /** 某个学习记录（中文知识点）是否与图谱节点相关 */

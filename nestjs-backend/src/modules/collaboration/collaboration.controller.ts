@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import {
   CollaborationSessionService,
   CollaborationRole,
@@ -8,7 +17,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 @ApiTags('collaboration')
 @Controller('api/collaboration')
 export class CollaborationController {
-  constructor(private readonly collaborationService: CollaborationSessionService) {}
+  constructor(
+    private readonly collaborationService: CollaborationSessionService,
+  ) {}
 
   @Post('sessions')
   @ApiOperation({ summary: '创建协作会话' })
@@ -74,7 +85,10 @@ export class CollaborationController {
     @Param('sessionId') sessionId: string,
     @Body() body: { userId: string },
   ) {
-    const success = this.collaborationService.leaveSession(sessionId, body.userId);
+    const success = this.collaborationService.leaveSession(
+      sessionId,
+      body.userId,
+    );
     return { success, message: success ? '已离开' : '操作失败' };
   }
 
@@ -119,7 +133,11 @@ export class CollaborationController {
     @Param('stepId') stepId: string,
     @Body() body: { userId: string },
   ) {
-    return this.collaborationService.confirmStep(sessionId, stepId, body.userId);
+    return this.collaborationService.confirmStep(
+      sessionId,
+      stepId,
+      body.userId,
+    );
   }
 
   @Post('sessions/:sessionId/steps/:stepId/react')

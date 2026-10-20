@@ -36,9 +36,15 @@ export class LoginThrottleService {
     private readonly configService: ConfigService,
     private readonly cache: RedisCacheService,
   ) {
-    this.maxFailures = Number(this.configService.get('LOGIN_MAX_FAILURES') || 5);
-    this.lockSeconds = Number(this.configService.get('LOGIN_LOCK_SECONDS') || 900);
-    this.windowSeconds = Number(this.configService.get('LOGIN_WINDOW_SECONDS') || 900);
+    this.maxFailures = Number(
+      this.configService.get('LOGIN_MAX_FAILURES') || 5,
+    );
+    this.lockSeconds = Number(
+      this.configService.get('LOGIN_LOCK_SECONDS') || 900,
+    );
+    this.windowSeconds = Number(
+      this.configService.get('LOGIN_WINDOW_SECONDS') || 900,
+    );
   }
 
   /** 登录前调用：不允许时直接抛 429 */
@@ -85,8 +91,14 @@ export class LoginThrottleService {
 
     if (failures >= this.maxFailures) {
       const until = Date.now() + this.lockSeconds * 1000;
-      await this.cache.set(this.lockKey(username), String(until), this.lockSeconds);
-      this.logger.warn(`账号 ${username} 登录失败 ${failures} 次，已锁定 ${this.lockSeconds}s`);
+      await this.cache.set(
+        this.lockKey(username),
+        String(until),
+        this.lockSeconds,
+      );
+      this.logger.warn(
+        `账号 ${username} 登录失败 ${failures} 次，已锁定 ${this.lockSeconds}s`,
+      );
     }
   }
 

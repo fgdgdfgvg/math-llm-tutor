@@ -52,7 +52,8 @@ export class StudentProfile {
   lastPracticeDate: Date;
 }
 
-export const StudentProfileSchema = SchemaFactory.createForClass(StudentProfile);
+export const StudentProfileSchema =
+  SchemaFactory.createForClass(StudentProfile);
 
 StudentProfileSchema.index({ userId: 1 });
 StudentProfileSchema.index({ lastActiveAt: -1 });

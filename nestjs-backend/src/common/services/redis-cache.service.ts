@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
 import { createHash } from 'crypto';
@@ -18,10 +23,16 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
   private hits = 0;
   private misses = 0;
   private readonly defaultTTL: number;
-  private readonly fallbackCache: Map<string, { value: string; expiresAt: number }>;
+  private readonly fallbackCache: Map<
+    string,
+    { value: string; expiresAt: number }
+  >;
 
   constructor(private readonly configService: ConfigService) {
-    this.defaultTTL = parseInt(this.configService.get('REDIS_TTL') || '3600', 10);
+    this.defaultTTL = parseInt(
+      this.configService.get('REDIS_TTL') || '3600',
+      10,
+    );
     this.fallbackCache = new Map();
   }
 
@@ -30,7 +41,9 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
     const redisPassword = this.configService.get('REDIS_PASSWORD') || undefined;
 
     if (!redisUrl) {
-      this.logger.log('Redis 未配置，使用内存缓存降级模式。如需启用，请在 .env 中设置 REDIS_URL。');
+      this.logger.log(
+        'Redis 未配置，使用内存缓存降级模式。如需启用，请在 .env 中设置 REDIS_URL。',
+      );
       this.isConnected = false;
       this.startFallbackCleanup();
       return;
@@ -148,7 +161,11 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
    * 用途：分布式锁与幂等标记——refresh token 轮换的并发单飞依赖它。
    * 返回 true 表示写入成功（此前不存在），false 表示已存在。
    */
-  async setIfAbsent(key: string, value: string, ttlSeconds?: number): Promise<boolean> {
+  async setIfAbsent(
+    key: string,
+    value: string,
+    ttlSeconds?: number,
+  ): Promise<boolean> {
     const ttl = ttlSeconds ?? this.defaultTTL;
 
     if (this.isConnected) {
@@ -219,7 +236,8 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
 
   getStats(): CacheStats {
     const total = this.hits + this.misses;
-    const hitRate = total > 0 ? ((this.hits / total) * 100).toFixed(1) + '%' : '0.0%';
+    const hitRate =
+      total > 0 ? ((this.hits / total) * 100).toFixed(1) + '%' : '0.0%';
     return {
       hits: this.hits,
       misses: this.misses,

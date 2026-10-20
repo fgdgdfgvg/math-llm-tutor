@@ -86,13 +86,19 @@ export class ContentAuditService {
     const findings: AuditFinding[] = [];
     const moduleScores: ModuleScore[] = [];
     let totalKp = 0;
-    const difficultyDist: Record<string, number> = { easy: 0, medium: 0, hard: 0 };
+    const difficultyDist: Record<string, number> = {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    };
 
     let allModules: any[] = [];
     try {
       const jsonFiles = fs
         .readdirSync(this.datasetsDir)
-        .filter((f) => f.endsWith('-module.json') || f.endsWith('-module.full.json'));
+        .filter(
+          (f) => f.endsWith('-module.json') || f.endsWith('-module.full.json'),
+        );
 
       for (const file of jsonFiles) {
         try {
@@ -103,7 +109,9 @@ export class ContentAuditService {
           allModules.push(module);
           const moduleFindings = this.auditModule(module, file);
 
-          moduleFindings.forEach((f) => (f.module = module.module_name || file));
+          moduleFindings.forEach(
+            (f) => (f.module = module.module_name || file),
+          );
           findings.push(...moduleFindings);
 
           const kpCount = (module.knowledge_points || []).length;
@@ -116,8 +124,12 @@ export class ContentAuditService {
             }
           }
 
-          const errors = moduleFindings.filter((f) => f.severity === 'error').length;
-          const warnings = moduleFindings.filter((f) => f.severity === 'warning').length;
+          const errors = moduleFindings.filter(
+            (f) => f.severity === 'error',
+          ).length;
+          const warnings = moduleFindings.filter(
+            (f) => f.severity === 'warning',
+          ).length;
           const totalIssues = errors + warnings;
           const score = Math.max(0, 100 - errors * 15 - warnings * 5);
 
@@ -250,7 +262,11 @@ export class ContentAuditService {
             message: `知识点 "${kp.name || kp.id}" 缺少 "${field}" 字段`,
             suggestion: `为知识点添加 "${field}" 内容`,
           });
-        } else if (field === 'formulas' && Array.isArray(val) && val.length === 0) {
+        } else if (
+          field === 'formulas' &&
+          Array.isArray(val) &&
+          val.length === 0
+        ) {
           findings.push({
             severity: 'warning',
             module: module.module_name || fileName,
@@ -262,7 +278,10 @@ export class ContentAuditService {
         }
       }
 
-      if (kp.difficulty && !['easy', 'medium', 'hard'].includes(kp.difficulty)) {
+      if (
+        kp.difficulty &&
+        !['easy', 'medium', 'hard'].includes(kp.difficulty)
+      ) {
         findings.push({
           severity: 'warning',
           module: module.module_name || fileName,
@@ -378,7 +397,10 @@ export class ContentAuditService {
     difficultyDist: Record<string, number>,
   ): AuditFinding[] {
     const findings: AuditFinding[] = [];
-    const total = (difficultyDist.easy || 0) + (difficultyDist.medium || 0) + (difficultyDist.hard || 0);
+    const total =
+      (difficultyDist.easy || 0) +
+      (difficultyDist.medium || 0) +
+      (difficultyDist.hard || 0);
 
     if (total === 0) return findings;
 
@@ -392,9 +414,7 @@ export class ContentAuditService {
       field: 'difficulty',
       message: `难度分布: 简单${easyPct.toFixed(1)}% (${difficultyDist.easy || 0}个), 中等${mediumPct.toFixed(1)}% (${difficultyDist.medium || 0}个), 困难${hardPct.toFixed(1)}% (${difficultyDist.hard || 0}个)`,
       suggestion:
-        easyPct > 50
-          ? '建议提高中等/困难知识点的比例'
-          : '难度分布较为合理',
+        easyPct > 50 ? '建议提高中等/困难知识点的比例' : '难度分布较为合理',
     });
 
     const expectedCount = this.expectedCoverageAreas.length;
@@ -457,9 +477,12 @@ export class ContentAuditService {
       return false;
     }).length;
 
-    const pct = this.expectedCoverageAreas.length > 0
-      ? ((coveredCount / this.expectedCoverageAreas.length) * 100).toFixed(1) + '%'
-      : 'N/A';
+    const pct =
+      this.expectedCoverageAreas.length > 0
+        ? ((coveredCount / this.expectedCoverageAreas.length) * 100).toFixed(
+            1,
+          ) + '%'
+        : 'N/A';
     return pct;
   }
 

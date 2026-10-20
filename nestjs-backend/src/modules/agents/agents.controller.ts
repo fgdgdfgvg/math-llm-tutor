@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, Res, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Res,
+  Logger,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { IsString, IsNotEmpty, IsOptional, IsObject } from 'class-validator';
 import type { Response } from 'express';
 import { Public } from '../../core/auth/guards/global-auth.guard';
@@ -41,7 +50,9 @@ export class AgentsController {
 
   @Public()
   @Post('solve')
-  async solve(@Body() solveProblemDto: SolveProblemDto): Promise<MultiAgentResult> {
+  async solve(
+    @Body() solveProblemDto: SolveProblemDto,
+  ): Promise<MultiAgentResult> {
     try {
       return await this.agentsService.solveProblem(solveProblemDto.problem);
     } catch (error) {
@@ -65,9 +76,7 @@ export class AgentsController {
 
   @Public()
   @Get('solve/stream')
-  async solveStream(
-    @Res() response: Response,
-  ): Promise<void> {
+  async solveStream(@Res() response: Response): Promise<void> {
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
@@ -78,27 +87,25 @@ export class AgentsController {
       response.write(`data: ${JSON.stringify(event)}\n\n`);
     };
 
-    const progressSub = this.agentsService
-      .getProgressEvents()
-      .subscribe({
-        next: (event) => {
-          sendEvent(event);
-          if (event.type === 'complete') {
-            response.write('event: done\ndata: {}\n\n');
-            response.end();
-          }
-        },
-        error: (err) => {
-          const friendly = toUserFriendlyError(err);
-          sendEvent({
-            type: 'agent_error',
-            message: friendly.message,
-            timestamp: Date.now(),
-          });
-          response.write(`event: error\ndata: ${JSON.stringify(friendly)}\n\n`);
+    const progressSub = this.agentsService.getProgressEvents().subscribe({
+      next: (event) => {
+        sendEvent(event);
+        if (event.type === 'complete') {
+          response.write('event: done\ndata: {}\n\n');
           response.end();
-        },
-      });
+        }
+      },
+      error: (err) => {
+        const friendly = toUserFriendlyError(err);
+        sendEvent({
+          type: 'agent_error',
+          message: friendly.message,
+          timestamp: Date.now(),
+        });
+        response.write(`event: error\ndata: ${JSON.stringify(friendly)}\n\n`);
+        response.end();
+      },
+    });
 
     response.on('close', () => {
       progressSub.unsubscribe();

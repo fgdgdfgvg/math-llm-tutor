@@ -21,10 +21,27 @@ function scoreCandidate(text: string): number {
   let score = 0;
   // 常见智能体输出字段
   const knownKeys = [
-    'accuracy', 'completeness', 'clarity', 'suggestions', 'improvements', 'rating',
-    'isValid', 'errorMessage', 'confidence', 'stepTitle', 'keyPoint', 'formula',
-    'result', 'process', 'highlight', 'final_answer', 'problemType', 'keyConditions',
-    'macroStrategy', 'steps', 'estimatedDifficulty',
+    'accuracy',
+    'completeness',
+    'clarity',
+    'suggestions',
+    'improvements',
+    'rating',
+    'isValid',
+    'errorMessage',
+    'confidence',
+    'stepTitle',
+    'keyPoint',
+    'formula',
+    'result',
+    'process',
+    'highlight',
+    'final_answer',
+    'problemType',
+    'keyConditions',
+    'macroStrategy',
+    'steps',
+    'estimatedDifficulty',
   ];
   for (const key of knownKeys) {
     if (text.includes(`"${key}"`)) score += 2;
@@ -99,11 +116,13 @@ function repairCommonIssues(text: string): string[] {
   //    形如 "key": A-B（A、B 是数字）→ 取中点；"0-1" 这种字符串同理
   let fixed = text.replace(
     /(:\s*)"(-?\d+(?:\.\d+)?)\s*-\s*(-?\d+(?:\.\d+)?)"(\s*[,}\]])/g,
-    (_m, colon, lo, hi, tail) => `${colon}${(Number(lo) + Number(hi)) / 2}${tail}`,
+    (_m, colon, lo, hi, tail) =>
+      `${colon}${(Number(lo) + Number(hi)) / 2}${tail}`,
   );
   fixed = fixed.replace(
     /(:\s*)(-?\d+(?:\.\d+)?)\s*-\s*(-?\d+(?:\.\d+)?)(\s*[,}\]])/g,
-    (_m, colon, lo, hi, tail) => `${colon}${(Number(lo) + Number(hi)) / 2}${tail}`,
+    (_m, colon, lo, hi, tail) =>
+      `${colon}${(Number(lo) + Number(hi)) / 2}${tail}`,
   );
   if (fixed !== text) variants.push(fixed);
 
@@ -130,9 +149,18 @@ function repairCommonIssues(text: string): string[] {
     let inString = false;
     let escaped = false;
     for (const ch of repaired) {
-      if (escaped) { escaped = false; continue; }
-      if (ch === '\\' && inString) { escaped = true; continue; }
-      if (ch === '"') { inString = !inString; continue; }
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (ch === '\\' && inString) {
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        continue;
+      }
       if (!inString) {
         if (ch === '{' || ch === '[') stack.push(ch);
         else if (ch === '}' || ch === ']') stack.pop();
@@ -153,7 +181,9 @@ function repairCommonIssues(text: string): string[] {
  * 从 AI 返回的任意文本中提取第一个可解析的 JSON 对象。
  * 成功返回解析后的对象，失败返回 null（不抛异常）。
  */
-export function extractAiJson<T = Record<string, any>>(content: string): T | null {
+export function extractAiJson<T = Record<string, any>>(
+  content: string,
+): T | null {
   if (!content || typeof content !== 'string') return null;
 
   const cleaned = stripCodeFence(content);
@@ -194,5 +224,5 @@ export function extractAiJson<T = Record<string, any>>(content: string): T | nul
     }
   }
 
-  return best ? (best as { parsed: any; score: number }).parsed as T : null;
+  return best ? ((best as { parsed: any; score: number }).parsed as T) : null;
 }

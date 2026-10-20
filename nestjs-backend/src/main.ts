@@ -3,7 +3,10 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { json, urlencoded } from 'express';
-import { loadEnvFileFallback, validateServerEnv } from './common/utils/env.validation';
+import {
+  loadEnvFileFallback,
+  validateServerEnv,
+} from './common/utils/env.validation';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { securityHeaders } from './common/middleware/security-headers.middleware';
 import { gzipCompression } from './common/middleware/compression.middleware';
@@ -16,7 +19,12 @@ async function bootstrap() {
 
   // 兜底加载 .env：启动期校验早于 ConfigModule 完成加载，只填充缺失的键，
   // 不覆盖容器/CI 注入的真实环境变量。
-  loadEnvFileFallback(['JWT_SECRET', 'MONGODB_URI', 'CORS_ORIGIN', 'REDIS_PASSWORD']);
+  loadEnvFileFallback([
+    'JWT_SECRET',
+    'MONGODB_URI',
+    'CORS_ORIGIN',
+    'REDIS_PASSWORD',
+  ]);
   validateServerEnv();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -37,16 +45,26 @@ async function bootstrap() {
    */
   const trustProxy = process.env.TRUST_PROXY?.trim();
   if (trustProxy) {
-    const value: string | number = /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy;
+    const value: string | number = /^\d+$/.test(trustProxy)
+      ? Number(trustProxy)
+      : trustProxy;
     app.set('trust proxy', value);
-    logger.log(`已启用反向代理信任（trust proxy = ${value}），req.ip 将按该策略解析 X-Forwarded-For`);
+    logger.log(
+      `已启用反向代理信任（trust proxy = ${value}），req.ip 将按该策略解析 X-Forwarded-For`,
+    );
   }
 
   const corsOrigin = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()).filter(Boolean)
+    ? process.env.CORS_ORIGIN.split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
     : isProduction
       ? []
-      : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4200'];
+      : [
+          'http://localhost:3000',
+          'http://localhost:5173',
+          'http://localhost:4200',
+        ];
 
   // 生产环境未配置 CORS_ORIGIN 时，旧代码会走 `corsOrigin.length === 0 → 放行任意来源`
   // 分支，配合 credentials: true 等于任何站点都能带用户凭证调 API。
@@ -96,7 +114,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     maxAge: 86400,
   });
-  
+
   // 安全响应头（零依赖最小集）：nosniff / 防嵌入 / Referrer-Policy，生产另加 HSTS。
   // 放在最前面，保证错误响应（含 CORS 拒绝、校验失败）也带上这些头。
   app.use(securityHeaders(isProduction));
@@ -121,7 +139,7 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
-  
+
   app.useGlobalInterceptors(new TransformInterceptor());
 
   // 优雅停机：收到 SIGTERM/SIGINT 时触发 onModuleDestroy，
@@ -130,7 +148,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Math AI Tutor API')
-    .setDescription(`
+    .setDescription(
+      `
 ## 数学AI导师后端API文档
 
 ### 功能模块
@@ -154,7 +173,8 @@ Authorization: Bearer <your_token>
 | 403 | 禁止访问，权限不足 |
 | 404 | 资源不存在 |
 | 500 | 服务器内部错误 |
-    `)
+    `,
+    )
     .setVersion('1.0.0')
     .addBearerAuth(
       {
@@ -217,14 +237,18 @@ Authorization: Bearer <your_token>
    * headersTimeout 再留出余量，即可消除这个竞态。
    */
   const httpServer = app.getHttpServer();
-  httpServer.keepAliveTimeout = Number(process.env.KEEP_ALIVE_TIMEOUT_MS || 65_000);
+  httpServer.keepAliveTimeout = Number(
+    process.env.KEEP_ALIVE_TIMEOUT_MS || 65_000,
+  );
   httpServer.headersTimeout = httpServer.keepAliveTimeout + 5_000;
 
   logger.log(`Application is running on: http://localhost:${port}`);
   if (enableSwagger) {
     logger.log(`Swagger documentation: http://localhost:${port}/api/docs`);
   } else {
-    logger.log('Swagger 文档未注册（生产环境默认关闭，可用 ENABLE_SWAGGER=true 打开）');
+    logger.log(
+      'Swagger 文档未注册（生产环境默认关闭，可用 ENABLE_SWAGGER=true 打开）',
+    );
   }
 }
 bootstrap();

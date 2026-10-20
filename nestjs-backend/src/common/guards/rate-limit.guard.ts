@@ -27,10 +27,22 @@ export class RateLimitGuard implements CanActivate, OnModuleDestroy {
   private readonly llmMaxRequests: number;
 
   constructor() {
-    this.defaultWindowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10);
-    this.defaultMaxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10);
-    this.llmWindowMs = parseInt(process.env.RATE_LIMIT_LLM_WINDOW_MS || '300000', 10);
-    this.llmMaxRequests = parseInt(process.env.RATE_LIMIT_LLM_MAX_REQUESTS || '20', 10);
+    this.defaultWindowMs = parseInt(
+      process.env.RATE_LIMIT_WINDOW_MS || '60000',
+      10,
+    );
+    this.defaultMaxRequests = parseInt(
+      process.env.RATE_LIMIT_MAX_REQUESTS || '100',
+      10,
+    );
+    this.llmWindowMs = parseInt(
+      process.env.RATE_LIMIT_LLM_WINDOW_MS || '300000',
+      10,
+    );
+    this.llmMaxRequests = parseInt(
+      process.env.RATE_LIMIT_LLM_MAX_REQUESTS || '20',
+      10,
+    );
 
     this.cleanupTimer = setInterval(() => this.cleanup(), 60000);
     // 定时器不应阻止进程退出
@@ -45,9 +57,14 @@ export class RateLimitGuard implements CanActivate, OnModuleDestroy {
     const request = context.switchToHttp().getRequest<Request>();
     const path = request.path || '';
 
-    const isLlmEndpoint = path.includes('/agents/') || path.includes('/solve') || path.includes('/ai-');
+    const isLlmEndpoint =
+      path.includes('/agents/') ||
+      path.includes('/solve') ||
+      path.includes('/ai-');
     const windowMs = isLlmEndpoint ? this.llmWindowMs : this.defaultWindowMs;
-    const maxRequests = isLlmEndpoint ? this.llmMaxRequests : this.defaultMaxRequests;
+    const maxRequests = isLlmEndpoint
+      ? this.llmMaxRequests
+      : this.defaultMaxRequests;
 
     const clientIp = this.getClientIp(request);
     const key = `${clientIp}:${isLlmEndpoint ? 'llm' : 'default'}`;
@@ -64,7 +81,9 @@ export class RateLimitGuard implements CanActivate, OnModuleDestroy {
 
     if (entry.count > maxRequests) {
       const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
-      this.logger.warn(`Rate limit exceeded for ${clientIp} on ${isLlmEndpoint ? 'LLM' : 'default'} endpoints`);
+      this.logger.warn(
+        `Rate limit exceeded for ${clientIp} on ${isLlmEndpoint ? 'LLM' : 'default'} endpoints`,
+      );
       throw new HttpException(
         {
           statusCode: HttpStatus.TOO_MANY_REQUESTS,

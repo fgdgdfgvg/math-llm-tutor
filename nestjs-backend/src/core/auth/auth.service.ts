@@ -22,7 +22,10 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<UserPayload | null> {
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<UserPayload | null> {
     return this.userService.validateUser(username, pass);
   }
 

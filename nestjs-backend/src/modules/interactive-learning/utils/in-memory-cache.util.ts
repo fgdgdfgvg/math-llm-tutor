@@ -73,9 +73,7 @@ export class InMemoryCacheManager implements ICacheManager, OnModuleDestroy {
 
     if (!pattern) return allKeys;
 
-    const regex = new RegExp(
-      pattern.replace(/\*/g, '.*').replace(/\?/g, '.'),
-    );
+    const regex = new RegExp(pattern.replace(/\*/g, '.*').replace(/\?/g, '.'));
 
     return allKeys.filter((key) => regex.test(key));
   }
@@ -157,4 +155,5 @@ export class InMemoryCacheManager implements ICacheManager, OnModuleDestroy {
 export const sharedCacheManager = new InMemoryCacheManager();
 
 /** 认知状态的缓存键（务必与读写双方一致） */
-export const cognitiveStateCacheKey = (userId: string): string => `cognitive:${userId}`;
+export const cognitiveStateCacheKey = (userId: string): string =>
+  `cognitive:${userId}`;

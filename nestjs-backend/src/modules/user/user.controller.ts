@@ -24,7 +24,14 @@ import { LoginDto } from './dto/login.dto';
 import { AdminCreateUserDto } from './dto/admin-create-user.dto';
 
 /** 保留用户名：避免仿冒与钓鱼（admin 已不再自动获得管理员角色，但仍会误导用户） */
-const RESERVED_USERNAMES = ['admin', 'administrator', 'root', 'system', 'superuser', 'support'];
+const RESERVED_USERNAMES = [
+  'admin',
+  'administrator',
+  'root',
+  'system',
+  'superuser',
+  'support',
+];
 import { AuthService } from '../../core/auth/auth.service';
 import { LoginThrottleService } from '../../core/auth/login-throttle.service';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
@@ -33,7 +40,8 @@ import { Public } from '../../core/auth/guards/global-auth.guard';
 
 /** 把 mongoose 文档转换成对外安全的纯对象（去掉密码与内部字段） */
 function toSafeUser(user: any) {
-  const plain = typeof user?.toObject === 'function' ? user.toObject() : { ...user };
+  const plain =
+    typeof user?.toObject === 'function' ? user.toObject() : { ...user };
   const { password, __v, _id, ...rest } = plain;
   return { id: String(_id ?? user?._id ?? ''), ...rest };
 }
@@ -49,7 +57,10 @@ export class UserController {
 
   @Public()
   @Post('register')
-  @ApiOperation({ summary: '用户注册', description: '创建新用户账号（角色固定为 student）' })
+  @ApiOperation({
+    summary: '用户注册',
+    description: '创建新用户账号（角色固定为 student）',
+  })
   @ApiResponse({ status: 201, description: '注册成功' })
   @ApiResponse({ status: 409, description: '用户名已存在' })
   async register(@Body() createUserDto: CreateUserDto) {
@@ -70,7 +81,10 @@ export class UserController {
 
   @Public()
   @Post('login')
-  @ApiOperation({ summary: '用户登录', description: '使用用户名密码登录，返回JWT令牌' })
+  @ApiOperation({
+    summary: '用户登录',
+    description: '使用用户名密码登录，返回JWT令牌',
+  })
   @ApiResponse({ status: 200, description: '登录成功，返回JWT令牌' })
   @ApiResponse({ status: 401, description: '用户名或密码错误' })
   async login(@Body() loginDto: LoginDto, @Request() req: any) {
@@ -82,7 +96,10 @@ export class UserController {
     // 登录前先查锁定状态：被锁定时直接 429，连密码校验都不做
     await this.loginThrottle.assertAllowed(username, ip);
 
-    const user = await this.userService.validateUser(username, loginDto.password);
+    const user = await this.userService.validateUser(
+      username,
+      loginDto.password,
+    );
     if (!user) {
       await this.loginThrottle.recordFailure(username, ip);
       // 统一文案：不区分“用户不存在”与“密码错误”，避免账号枚举
@@ -96,7 +113,10 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: '获取用户信息', description: '获取当前登录用户的个人信息' })
+  @ApiOperation({
+    summary: '获取用户信息',
+    description: '获取当前登录用户的个人信息',
+  })
   @ApiResponse({ status: 200, description: '返回用户信息' })
   @ApiResponse({ status: 401, description: '未授权' })
   getProfile(@Request() req) {
@@ -107,7 +127,10 @@ export class UserController {
   @Roles('admin')
   @Get('list')
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: '获取用户列表（分页）', description: '管理员获取用户列表，支持分页' })
+  @ApiOperation({
+    summary: '获取用户列表（分页）',
+    description: '管理员获取用户列表，支持分页',
+  })
   @ApiResponse({ status: 200, description: '返回分页用户列表' })
   @ApiResponse({ status: 401, description: '未授权' })
   @ApiResponse({ status: 403, description: '权限不足' })

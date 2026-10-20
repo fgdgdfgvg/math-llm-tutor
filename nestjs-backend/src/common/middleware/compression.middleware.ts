@@ -16,8 +16,11 @@ import { gzip } from 'zlib';
  * 3. **不能对小响应压**：JSON 信封普遍几百字节，压缩收益为负（还多了 CPU 与
  *    ~20 字节 gzip 头），因此设阈值（默认 1KB，可用 GZIP_MIN_SIZE 调整，0 = 全压）。
  */
-export function gzipCompression(minSize = Number(process.env.GZIP_MIN_SIZE || 1024)) {
-  const SKIP_CONTENT_TYPE = /^(text\/event-stream|application\/octet-stream|video\/|audio\/)/i;
+export function gzipCompression(
+  minSize = Number(process.env.GZIP_MIN_SIZE || 1024),
+) {
+  const SKIP_CONTENT_TYPE =
+    /^(text\/event-stream|application\/octet-stream|video\/|audio\/)/i;
 
   return (req: Request, res: Response, next: NextFunction): void => {
     // 客户端不支持 gzip 就完全不管
@@ -54,7 +57,11 @@ export function gzipCompression(minSize = Number(process.env.GZIP_MIN_SIZE || 10
       const contentType = String(res.getHeader('content-type') || '');
       const alreadyEncoded = Boolean(res.getHeader('content-encoding'));
       const shouldCompress =
-        !res.headersSent && !alreadyEncoded && !SKIP_CONTENT_TYPE.test(contentType) && size >= minSize && size > 0;
+        !res.headersSent &&
+        !alreadyEncoded &&
+        !SKIP_CONTENT_TYPE.test(contentType) &&
+        size >= minSize &&
+        size > 0;
 
       if (!shouldCompress) {
         // 不压缩：把缓冲的内容原样吐回去（分片写回，保持与原行为一致）

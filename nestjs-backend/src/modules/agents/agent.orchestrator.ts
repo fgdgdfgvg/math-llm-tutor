@@ -1,7 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
 import { describeErrorForLog } from '../../common/utils/redact';
-import { AgentInput, AgentOutput, AgentOrchestratorConfig, MultiAgentResult, AgentExecution, AgentDetailResults, AgentContext } from './agent.types';
+import {
+  AgentInput,
+  AgentOutput,
+  AgentOrchestratorConfig,
+  MultiAgentResult,
+  AgentExecution,
+  AgentDetailResults,
+  AgentContext,
+} from './agent.types';
 import { BaseAgent } from './agent.base';
 import { StateManager } from './state-manager.service';
 import { InputPreprocessor } from './input-preprocessor.service';
@@ -19,7 +27,12 @@ interface AgentStats {
 
 // 智能体编排器
 export interface AgentProgressEvent {
-  type: 'agent_start' | 'agent_complete' | 'agent_error' | 'step_update' | 'complete';
+  type:
+    | 'agent_start'
+    | 'agent_complete'
+    | 'agent_error'
+    | 'step_update'
+    | 'complete';
   agentName?: string;
   message: string;
   timestamp: number;
@@ -73,7 +86,7 @@ export class AgentOrchestrator {
 
     // 初始化状态管理器
     this.stateManager.initialize(input.problem);
-    
+
     const executionHistory: AgentExecution[] = [];
     let status: 'success' | 'partial' | 'failure' = 'success';
 
@@ -83,15 +96,26 @@ export class AgentOrchestrator {
       const validation = this.inputPreprocessor.validateInput(input.problem);
       if (!validation.isValid) {
         this.logger.warn(`输入验证失败: ${validation.errors.join(', ')}`);
-        return this.generateErrorResult('输入验证失败', startTime, validation.errors);
+        return this.generateErrorResult(
+          '输入验证失败',
+          startTime,
+          validation.errors,
+        );
       }
 
-      const { normalized, transformations } = this.inputPreprocessor.normalizeInput(input.problem);
+      const { normalized, transformations } =
+        this.inputPreprocessor.normalizeInput(input.problem);
       this.logger.log(`输入标准化: ${transformations.join(', ')}`);
 
-      const classification = await this.inputPreprocessor.classifyProblem(normalized);
-      this.logger.log(`问题分类: ${classification.primaryType} (置信度: ${classification.confidence})`);
-      this.stateManager.updateProblemType(classification.primaryType, classification.confidence);
+      const classification =
+        await this.inputPreprocessor.classifyProblem(normalized);
+      this.logger.log(
+        `问题分类: ${classification.primaryType} (置信度: ${classification.confidence})`,
+      );
+      this.stateManager.updateProblemType(
+        classification.primaryType,
+        classification.confidence,
+      );
 
       // 2. 智能体执行流程
       await this.executeAgentFlow(input, executionHistory, classification);
@@ -115,23 +139,30 @@ export class AgentOrchestrator {
       this.logger.log('生成标准化输出...');
       const standardOutput = this.outputStandardizer.generateStandardOutput(
         this.stateManager.getCurrentState(),
-        classification
+        classification,
       );
 
       // 5. 构建最终结果
       const totalExecutionTime = Date.now() - startTime;
-      const sanitizedExecutionHistory = this.sanitizeExecutionHistory(executionHistory);
-      const agentDetails = this.buildAgentDetails(executionHistory, this.stateManager.toAgentContext());
+      const sanitizedExecutionHistory =
+        this.sanitizeExecutionHistory(executionHistory);
+      const agentDetails = this.buildAgentDetails(
+        executionHistory,
+        this.stateManager.toAgentContext(),
+      );
 
       const result: MultiAgentResult = {
         finalAnswer: standardOutput.finalAnswer,
-        solutionSteps: standardOutput.solutionSteps.map(s => JSON.stringify(s)),
+        solutionSteps: standardOutput.solutionSteps.map((s) =>
+          JSON.stringify(s),
+        ),
         knowledgePoints: standardOutput.knowledgePoints.map((kp, index) => ({
           ...kp,
           id: `kp_${index + 1}`,
           tags: [standardOutput.problemType],
         })),
-        verificationResults: this.stateManager.getCurrentState().verificationResults || [],
+        verificationResults:
+          this.stateManager.getCurrentState().verificationResults || [],
         feedback: {
           accuracy: 0.8,
           completeness: 0.9,
@@ -153,11 +184,15 @@ export class AgentOrchestrator {
       this.logger.error('多智能体协作流程执行失败', describeErrorForLog(error));
 
       // 生成降级输出
-      const fallbackOutput = this.outputStandardizer.generateFallbackOutput(input.problem);
-      
+      const fallbackOutput = this.outputStandardizer.generateFallbackOutput(
+        input.problem,
+      );
+
       const result: MultiAgentResult = {
         finalAnswer: fallbackOutput.finalAnswer,
-        solutionSteps: fallbackOutput.solutionSteps.map(s => JSON.stringify(s)),
+        solutionSteps: fallbackOutput.solutionSteps.map((s) =>
+          JSON.stringify(s),
+        ),
         knowledgePoints: fallbackOutput.knowledgePoints.map((kp, index) => ({
           ...kp,
           id: `kp_${index + 1}`,
@@ -174,10 +209,24 @@ export class AgentOrchestrator {
         },
         executionHistory: [],
         agentDetails: {
-          planner: { summary: '规划阶段未执行', problemType: 'unknown', keyConditions: [], planOverview: '' },
+          planner: {
+            summary: '规划阶段未执行',
+            problemType: 'unknown',
+            keyConditions: [],
+            planOverview: '',
+          },
           solver: { summary: '求解阶段未执行', stepCount: 0, approach: '' },
-          diagnostic: { summary: '诊断阶段未执行', passedSteps: 0, totalSteps: 0, confidence: 0 },
-          feedback: { summary: '反馈阶段未执行', rating: 'poor', keySuggestions: [] },
+          diagnostic: {
+            summary: '诊断阶段未执行',
+            passedSteps: 0,
+            totalSteps: 0,
+            confidence: 0,
+          },
+          feedback: {
+            summary: '反馈阶段未执行',
+            rating: 'poor',
+            keySuggestions: [],
+          },
         },
         totalExecutionTime,
         status: 'failure',
@@ -190,20 +239,20 @@ export class AgentOrchestrator {
   private async executeAgentFlow(
     input: AgentInput,
     executionHistory: AgentExecution[],
-    classification: any
+    classification: any,
   ): Promise<void> {
     const agents = ['planner', 'solver', 'diagnostic', 'feedback'];
-    
+
     for (const agentName of agents) {
       this.logger.log(`执行智能体: ${agentName}`);
-      
+
       this.progressEvents.next({
         type: 'agent_start',
         agentName,
         message: `正在调用${agentName}智能体...`,
         timestamp: Date.now(),
       });
-      
+
       const agent = this.agents.get(agentName);
       if (!agent) {
         this.logger.warn(`智能体不存在: ${agentName}`);
@@ -241,7 +290,10 @@ export class AgentOrchestrator {
         });
 
         if (executionHistory.length > MAX_EXECUTION_HISTORY) {
-          executionHistory.splice(0, executionHistory.length - MAX_EXECUTION_HISTORY);
+          executionHistory.splice(
+            0,
+            executionHistory.length - MAX_EXECUTION_HISTORY,
+          );
         }
 
         if (agentOutput.status === 'success') {
@@ -262,11 +314,10 @@ export class AgentOrchestrator {
             severity: 'warning',
           });
         }
-
       } catch (error) {
         this.logger.warn(`智能体执行出错: ${agentName}`, error.message);
         this.updateAgentStats(agentName, false, 0);
-        
+
         this.stateManager.addError({
           step: agentName,
           agent: agentName,
@@ -282,14 +333,17 @@ export class AgentOrchestrator {
         });
 
         // 应用降级策略 - 直接调用 stateManager 的方法更新内部状态
-        const fallbackData = this.stateManager.generateFallbackForAgent(agentName);
+        const fallbackData =
+          this.stateManager.generateFallbackForAgent(agentName);
         this.applyFallbackToStateManager(fallbackData, agentName);
       }
 
       // 状态验证
       const validation = this.stateManager.validateState();
       if (!validation.isValid) {
-        this.logger.warn(`智能体 ${agentName} 执行后状态验证失败: ${validation.errors.join(', ')}`);
+        this.logger.warn(
+          `智能体 ${agentName} 执行后状态验证失败: ${validation.errors.join(', ')}`,
+        );
       }
 
       // 检查是否可以继续
@@ -300,7 +354,9 @@ export class AgentOrchestrator {
     }
   }
 
-  private sanitizeExecutionHistory(executionHistory: AgentExecution[]): AgentExecution[] {
+  private sanitizeExecutionHistory(
+    executionHistory: AgentExecution[],
+  ): AgentExecution[] {
     return executionHistory.map((exec) => {
       let safeOutput: any;
       if (typeof exec.output === 'object' && exec.output !== null) {
@@ -317,7 +373,10 @@ export class AgentOrchestrator {
       return {
         agentName: exec.agentName,
         timestamp: exec.timestamp || Date.now(),
-        input: typeof exec.input === 'object' ? { problem: exec.input.problem || '' } : exec.input,
+        input:
+          typeof exec.input === 'object'
+            ? { problem: exec.input.problem || '' }
+            : exec.input,
         output: safeOutput,
         duration: exec.duration,
         status: exec.status,
@@ -328,10 +387,10 @@ export class AgentOrchestrator {
   private generateErrorResult(
     errorMessage: string,
     startTime: number,
-    errors: string[]
+    errors: string[],
   ): MultiAgentResult {
     const totalExecutionTime = Date.now() - startTime;
-    
+
     return {
       finalAnswer: '无法生成最终答案',
       solutionSteps: [],
@@ -347,10 +406,24 @@ export class AgentOrchestrator {
       },
       executionHistory: [],
       agentDetails: {
-        planner: { summary: '规划阶段未执行', problemType: '', keyConditions: [], planOverview: '' },
+        planner: {
+          summary: '规划阶段未执行',
+          problemType: '',
+          keyConditions: [],
+          planOverview: '',
+        },
         solver: { summary: '求解阶段未执行', stepCount: 0, approach: '' },
-        diagnostic: { summary: '诊断阶段未执行', passedSteps: 0, totalSteps: 0, confidence: 0 },
-        feedback: { summary: '反馈阶段未执行', rating: 'poor', keySuggestions: [] },
+        diagnostic: {
+          summary: '诊断阶段未执行',
+          passedSteps: 0,
+          totalSteps: 0,
+          confidence: 0,
+        },
+        feedback: {
+          summary: '反馈阶段未执行',
+          rating: 'poor',
+          keySuggestions: [],
+        },
       },
       totalExecutionTime,
       status: 'failure',
@@ -358,7 +431,10 @@ export class AgentOrchestrator {
   }
 
   // 应用降级数据到状态管理器（修复Object.assign副本问题）
-  private applyFallbackToStateManager(fallbackData: any, agentName: string): void {
+  private applyFallbackToStateManager(
+    fallbackData: any,
+    agentName: string,
+  ): void {
     if (fallbackData.plan) {
       this.stateManager.updatePlan(fallbackData.plan);
     }
@@ -374,7 +450,9 @@ export class AgentOrchestrator {
       this.stateManager.updateFinalAnswer(fallbackData.finalAnswer);
     }
     if (fallbackData.verificationResults) {
-      this.stateManager.updateVerificationResults(fallbackData.verificationResults);
+      this.stateManager.updateVerificationResults(
+        fallbackData.verificationResults,
+      );
     }
     if (fallbackData.feedback) {
       this.stateManager.updateFeedback(fallbackData.feedback);
@@ -387,8 +465,12 @@ export class AgentOrchestrator {
     agentName: string,
     input: AgentInput,
     context: AgentContext,
-    executionHistory: AgentExecution[]
-  ): Promise<{ agentName: string; context: AgentContext; status: 'success' | 'failure' | 'partial' }> {
+    executionHistory: AgentExecution[],
+  ): Promise<{
+    agentName: string;
+    context: AgentContext;
+    status: 'success' | 'failure' | 'partial';
+  }> {
     const agent = this.agents.get(agentName);
     if (!agent) {
       this.logger.error(`智能体不存在: ${agentName}`);
@@ -408,30 +490,40 @@ export class AgentOrchestrator {
     let agentOutput;
     try {
       // 设置智能体执行超时
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error(`智能体执行超时: ${agentName}`)), this.getAgentTimeout(agentName))
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`智能体执行超时: ${agentName}`)),
+          this.getAgentTimeout(agentName),
+        ),
       );
-      
+
       agentOutput = await Promise.race([
         agent.execute(agentInput),
-        timeoutPromise
+        timeoutPromise,
       ]);
     } catch (error) {
       this.logger.warn(`智能体执行出错: ${agentName}`, error.message);
-      return { 
-        agentName, 
-        context: this.injectFallbackContext(agentName, context), 
-        status: 'failure' 
+      return {
+        agentName,
+        context: this.injectFallbackContext(agentName, context),
+        status: 'failure',
       };
     }
-    
+
     const agentExecutionTime = Date.now() - agentStartTime;
 
     // 更新智能体统计信息
-    this.updateAgentStats(agentName, agentOutput.status === 'success', agentExecutionTime);
+    this.updateAgentStats(
+      agentName,
+      agentOutput.status === 'success',
+      agentExecutionTime,
+    );
 
     // 更新上下文（确保context始终包含必要字段）
-    const updatedContext = this.ensureContextIntegrity(agentOutput.context, context);
+    const updatedContext = this.ensureContextIntegrity(
+      agentOutput.context,
+      context,
+    );
 
     // 记录执行历史（始终记录，不依赖agentHistory）
     const historyEntry = updatedContext.agentHistory?.slice(-1)?.[0];
@@ -450,22 +542,31 @@ export class AgentOrchestrator {
           stepCount: agentOutput.context?.solutionSteps?.length || 0,
         },
         duration: agentExecutionTime,
-        status: (agentOutput.status || 'success') as 'success' | 'failure' | 'partial',
+        status: (agentOutput.status || 'success') as
+          | 'success'
+          | 'failure'
+          | 'partial',
       });
     }
 
     // 处理智能体执行失败的情况
     if (agentOutput.status === 'failure') {
       this.logger.warn(`智能体执行失败: ${agentName}，使用fallback数据继续`);
-      const fallbackContext = this.injectFallbackContext(agentName, updatedContext);
-      
+      const fallbackContext = this.injectFallbackContext(
+        agentName,
+        updatedContext,
+      );
+
       // 根据回退策略处理
       if (this.config.fallbackStrategy === 'retry') {
         this.logger.log(`重试智能体: ${agentName}`);
         try {
           const retryOutput = await agent.execute(agentInput);
           if (retryOutput.status === 'success') {
-            const retryContext = this.ensureContextIntegrity(retryOutput.context, fallbackContext);
+            const retryContext = this.ensureContextIntegrity(
+              retryOutput.context,
+              fallbackContext,
+            );
             executionHistory.push(...retryContext.agentHistory.slice(-1));
             return { agentName, context: retryContext, status: 'success' };
           }
@@ -473,7 +574,7 @@ export class AgentOrchestrator {
           this.logger.warn(`智能体重试失败: ${agentName}`, retryError.message);
         }
       }
-      
+
       return { agentName, context: fallbackContext, status: 'failure' };
     }
 
@@ -483,33 +584,45 @@ export class AgentOrchestrator {
   // 获取智能体超时时间
   private getAgentTimeout(agentName: string): number {
     const timeoutMap: Record<string, number> = {
-      planner: 60000,    // 规划智能体最多60秒
-      solver: 45000,      // 求解智能体最多45秒
-      diagnostic: 15000,  // 诊断智能体最多15秒
-      feedback: 10000,    // 反馈智能体最多10秒
+      planner: 60000, // 规划智能体最多60秒
+      solver: 45000, // 求解智能体最多45秒
+      diagnostic: 15000, // 诊断智能体最多15秒
+      feedback: 10000, // 反馈智能体最多10秒
     };
     return timeoutMap[agentName] || 30000;
   }
 
   // 确保context完整性（合并新旧context，防止字段丢失）
-  private ensureContextIntegrity(newContext: any, oldContext: AgentContext): AgentContext {
+  private ensureContextIntegrity(
+    newContext: any,
+    oldContext: AgentContext,
+  ): AgentContext {
     if (!newContext) return oldContext;
     return {
       problem: newContext.problem || oldContext.problem,
       plan: newContext.plan || oldContext.plan,
       solutionSteps: newContext.solutionSteps || oldContext.solutionSteps || [],
       finalAnswer: newContext.finalAnswer || oldContext.finalAnswer || '',
-      knowledgePoints: newContext.knowledgePoints || oldContext.knowledgePoints || [],
-      verificationResults: newContext.verificationResults || oldContext.verificationResults || [],
+      knowledgePoints:
+        newContext.knowledgePoints || oldContext.knowledgePoints || [],
+      verificationResults:
+        newContext.verificationResults || oldContext.verificationResults || [],
       feedback: newContext.feedback || oldContext.feedback || null,
       agentHistory: newContext.agentHistory || oldContext.agentHistory || [],
-      intermediateResults: newContext.intermediateResults || oldContext.intermediateResults || [],
-      metadata: { ...(oldContext.metadata || {}), ...(newContext.metadata || {}) },
+      intermediateResults:
+        newContext.intermediateResults || oldContext.intermediateResults || [],
+      metadata: {
+        ...(oldContext.metadata || {}),
+        ...(newContext.metadata || {}),
+      },
     };
   }
 
   // 为失败的智能体注入fallback数据
-  private injectFallbackContext(agentName: string, context: AgentContext): AgentContext {
+  private injectFallbackContext(
+    agentName: string,
+    context: AgentContext,
+  ): AgentContext {
     switch (agentName) {
       case 'planner':
         if (!context.plan) {
@@ -526,15 +639,31 @@ export class AgentOrchestrator {
           };
         }
         if (!context.knowledgePoints || context.knowledgePoints.length === 0) {
-          context.knowledgePoints = [{ name: '数学分析基础', description: '相关数学概念' } as any];
+          context.knowledgePoints = [
+            { name: '数学分析基础', description: '相关数学概念' } as any,
+          ];
         }
         break;
 
       case 'solver':
         if (!context.solutionSteps || context.solutionSteps.length === 0) {
           context.solutionSteps = [
-            JSON.stringify({ stepTitle: '分析问题', keyPoint: '问题理解', formula: '', process: `分析"${context.problem}"的解题思路`, result: '', highlight: '' }),
-            JSON.stringify({ stepTitle: '执行求解', keyPoint: '数学推理', formula: '', process: `应用适当的数学方法进行求解`, result: '', highlight: '配置AI模型可获得详细步骤' }),
+            JSON.stringify({
+              stepTitle: '分析问题',
+              keyPoint: '问题理解',
+              formula: '',
+              process: `分析"${context.problem}"的解题思路`,
+              result: '',
+              highlight: '',
+            }),
+            JSON.stringify({
+              stepTitle: '执行求解',
+              keyPoint: '数学推理',
+              formula: '',
+              process: `应用适当的数学方法进行求解`,
+              result: '',
+              highlight: '配置AI模型可获得详细步骤',
+            }),
           ];
         }
         if (!context.finalAnswer) {
@@ -543,14 +672,20 @@ export class AgentOrchestrator {
         break;
 
       case 'diagnostic':
-        if (!context.verificationResults || context.verificationResults.length === 0) {
+        if (
+          !context.verificationResults ||
+          context.verificationResults.length === 0
+        ) {
           const stepCount = context.solutionSteps?.length || 0;
-          context.verificationResults = Array.from({ length: Math.max(stepCount, 1) }, (_, i) => ({
-            stepId: `step${i + 1}`,
-            isValid: true,
-            errorMessage: '',
-            confidence: 0.6,
-          }));
+          context.verificationResults = Array.from(
+            { length: Math.max(stepCount, 1) },
+            (_, i) => ({
+              stepId: `step${i + 1}`,
+              isValid: true,
+              errorMessage: '',
+              confidence: 0.6,
+            }),
+          );
         }
         break;
 
@@ -572,12 +707,20 @@ export class AgentOrchestrator {
   }
 
   // 提取各智能体的核心结果（用于executionHistory）
-  private extractAgentResult(agentName: string, context: AgentContext | undefined): any {
+  private extractAgentResult(
+    agentName: string,
+    context: AgentContext | undefined,
+  ): any {
     if (!context) return null;
 
     switch (agentName) {
       case 'planner':
-        return context.plan ? { problemType: context.plan.problemType, stepCount: context.plan.steps?.length || 0 } : null;
+        return context.plan
+          ? {
+              problemType: context.plan.problemType,
+              stepCount: context.plan.steps?.length || 0,
+            }
+          : null;
       case 'solver':
         const steps = context.solutionSteps || [];
         return steps.length > 0
@@ -586,10 +729,18 @@ export class AgentOrchestrator {
       case 'diagnostic':
         const verifications = context.verificationResults || [];
         return verifications.length > 0
-          ? { verifiedCount: verifications.length, passedCount: verifications.filter(v => v.isValid).length }
+          ? {
+              verifiedCount: verifications.length,
+              passedCount: verifications.filter((v) => v.isValid).length,
+            }
           : null;
       case 'feedback':
-        return context.feedback ? { rating: context.feedback.rating, accuracy: context.feedback.accuracy } : null;
+        return context.feedback
+          ? {
+              rating: context.feedback.rating,
+              accuracy: context.feedback.accuracy,
+            }
+          : null;
       default:
         return null;
     }
@@ -606,12 +757,32 @@ export class AgentOrchestrator {
   }
 
   // 构建各智能体的详细输出摘要
-  private buildAgentDetails(executionHistory: AgentExecution[], currentContext: any): AgentDetailResults {
+  private buildAgentDetails(
+    executionHistory: AgentExecution[],
+    currentContext: any,
+  ): AgentDetailResults {
     const details: AgentDetailResults = {
-      planner: { summary: '', problemType: '', keyConditions: [], planOverview: '', rawOutput: null },
+      planner: {
+        summary: '',
+        problemType: '',
+        keyConditions: [],
+        planOverview: '',
+        rawOutput: null,
+      },
       solver: { summary: '', stepCount: 0, approach: '', rawOutput: null },
-      diagnostic: { summary: '', passedSteps: 0, totalSteps: 0, confidence: 0, rawOutput: null },
-      feedback: { summary: '', rating: '', keySuggestions: [], rawOutput: null },
+      diagnostic: {
+        summary: '',
+        passedSteps: 0,
+        totalSteps: 0,
+        confidence: 0,
+        rawOutput: null,
+      },
+      feedback: {
+        summary: '',
+        rating: '',
+        keySuggestions: [],
+        rawOutput: null,
+      },
     };
 
     for (const exec of executionHistory) {
@@ -619,12 +790,18 @@ export class AgentOrchestrator {
         case 'planner':
           const plan = currentContext.plan;
           details.planner = {
-            summary: plan ? `已制定${plan.steps?.length || 0}步解题计划` : '规划完成',
+            summary: plan
+              ? `已制定${plan.steps?.length || 0}步解题计划`
+              : '规划完成',
             problemType: plan?.problemType || '未知类型',
             keyConditions: plan?.keyConditions || [],
-            planOverview: plan?.steps
-              ?.map((s: any, i: number) => `${i + 1}. ${s.description} (${s.tool || 'llm'})`)
-              .join(' → ') || '使用默认计划',
+            planOverview:
+              plan?.steps
+                ?.map(
+                  (s: any, i: number) =>
+                    `${i + 1}. ${s.description} (${s.tool || 'llm'})`,
+                )
+                .join(' → ') || '使用默认计划',
             rawOutput: this.safeExtractResult(exec.output),
           };
           break;
@@ -632,9 +809,8 @@ export class AgentOrchestrator {
         case 'solver':
           const steps = currentContext.solutionSteps || [];
           details.solver = {
-            summary: steps.length > 0
-              ? `已完成${steps.length}个解题步骤`
-              : '求解完成',
+            summary:
+              steps.length > 0 ? `已完成${steps.length}个解题步骤` : '求解完成',
             stepCount: steps.length,
             approach: currentContext.finalAnswer
               ? `通过分步推理得出答案`
@@ -645,14 +821,21 @@ export class AgentOrchestrator {
 
         case 'diagnostic':
           const verifications = currentContext.verificationResults || [];
-          const passedCount = verifications.filter((v: any) => v.isValid).length;
-          const avgConfidence = verifications.length > 0
-            ? verifications.reduce((sum: number, v: any) => sum + (v.confidence || 0), 0) / verifications.length
-            : 0;
+          const passedCount = verifications.filter(
+            (v: any) => v.isValid,
+          ).length;
+          const avgConfidence =
+            verifications.length > 0
+              ? verifications.reduce(
+                  (sum: number, v: any) => sum + (v.confidence || 0),
+                  0,
+                ) / verifications.length
+              : 0;
           details.diagnostic = {
-            summary: verifications.length > 0
-              ? `验证${verifications.length}项，${passedCount}项通过`
-              : '诊断完成',
+            summary:
+              verifications.length > 0
+                ? `验证${verifications.length}项，${passedCount}项通过`
+                : '诊断完成',
             passedSteps: passedCount,
             totalSteps: verifications.length,
             confidence: Math.round(avgConfidence * 100) / 100,
@@ -688,20 +871,48 @@ export class AgentOrchestrator {
   private async determineProblemType(problem: string): Promise<string> {
     // 简单的问题类型识别逻辑
     const problemLower = problem.toLowerCase();
-    
-    if (problemLower.includes('极限') || problemLower.includes('limit') || problemLower.includes('lim')) {
+
+    if (
+      problemLower.includes('极限') ||
+      problemLower.includes('limit') ||
+      problemLower.includes('lim')
+    ) {
       return 'limit';
-    } else if (problemLower.includes('导数') || problemLower.includes('derivative') || problemLower.includes('求导')) {
+    } else if (
+      problemLower.includes('导数') ||
+      problemLower.includes('derivative') ||
+      problemLower.includes('求导')
+    ) {
       return 'derivative';
-    } else if (problemLower.includes('积分') || problemLower.includes('integral') || problemLower.includes('∫')) {
+    } else if (
+      problemLower.includes('积分') ||
+      problemLower.includes('integral') ||
+      problemLower.includes('∫')
+    ) {
       return 'integral';
-    } else if (problemLower.includes('级数') || problemLower.includes('series') || problemLower.includes('sum')) {
+    } else if (
+      problemLower.includes('级数') ||
+      problemLower.includes('series') ||
+      problemLower.includes('sum')
+    ) {
       return 'series';
-    } else if (problemLower.includes('方程') || problemLower.includes('equation') || problemLower.includes('solve')) {
+    } else if (
+      problemLower.includes('方程') ||
+      problemLower.includes('equation') ||
+      problemLower.includes('solve')
+    ) {
       return 'equation';
-    } else if (problemLower.includes('证明') || problemLower.includes('proof') || problemLower.includes('prove')) {
+    } else if (
+      problemLower.includes('证明') ||
+      problemLower.includes('proof') ||
+      problemLower.includes('prove')
+    ) {
       return 'proof';
-    } else if (problemLower.includes('几何') || problemLower.includes('geometry') || problemLower.includes('shape')) {
+    } else if (
+      problemLower.includes('几何') ||
+      problemLower.includes('geometry') ||
+      problemLower.includes('shape')
+    ) {
       return 'geometry';
     } else {
       return 'unknown';
@@ -717,7 +928,7 @@ export class AgentOrchestrator {
 
     // 基于问题类型和智能体统计信息生成执行顺序
     let baseOrder: string[];
-    
+
     // 根据问题类型确定基础执行顺序
     switch (problemType) {
       case 'limit':
@@ -751,7 +962,7 @@ export class AgentOrchestrator {
   // 优化执行顺序
   private optimizeExecutionOrder(baseOrder: string[]): string[] {
     // 基于智能体的成功率和执行时间进行排序
-    const agentsWithStats = baseOrder.map(agentName => {
+    const agentsWithStats = baseOrder.map((agentName) => {
       const stats = this.agentStats.get(agentName);
       return {
         name: agentName,
@@ -768,11 +979,15 @@ export class AgentOrchestrator {
       return scoreB - scoreA;
     });
 
-    return agentsWithStats.map(agent => agent.name);
+    return agentsWithStats.map((agent) => agent.name);
   }
 
   // 更新智能体统计信息
-  private updateAgentStats(agentName: string, success: boolean, executionTime: number): void {
+  private updateAgentStats(
+    agentName: string,
+    success: boolean,
+    executionTime: number,
+  ): void {
     const stats = this.agentStats.get(agentName);
     if (stats) {
       stats.totalCount++;
@@ -780,9 +995,11 @@ export class AgentOrchestrator {
         stats.successCount++;
       }
       // 计算移动平均执行时间
-      stats.averageExecutionTime = (stats.averageExecutionTime * (stats.totalCount - 1) + executionTime) / stats.totalCount;
+      stats.averageExecutionTime =
+        (stats.averageExecutionTime * (stats.totalCount - 1) + executionTime) /
+        stats.totalCount;
       stats.lastExecutionTime = executionTime;
-      stats.errorRate = 1 - (stats.successCount / stats.totalCount);
+      stats.errorRate = 1 - stats.successCount / stats.totalCount;
       this.agentStats.set(agentName, stats);
     }
   }
@@ -844,22 +1061,31 @@ export class AgentOrchestrator {
 
   // 检查是否有错误
   private checkForErrors(context: AgentContext): boolean {
-    if (!context.verificationResults || context.verificationResults.length === 0) {
+    if (
+      !context.verificationResults ||
+      context.verificationResults.length === 0
+    ) {
       return false;
     }
-    return context.verificationResults.some(result => !result.isValid);
+    return context.verificationResults.some((result) => !result.isValid);
   }
 
   // 定位错误步骤
   private findErrorStepIndex(context: AgentContext): number {
-    if (!context.verificationResults || context.verificationResults.length === 0) {
+    if (
+      !context.verificationResults ||
+      context.verificationResults.length === 0
+    ) {
       return -1;
     }
-    return context.verificationResults.findIndex(result => !result.isValid);
+    return context.verificationResults.findIndex((result) => !result.isValid);
   }
 
   // 为错误调整规划
-  private async adjustPlanForErrors(context: AgentContext, errorStepIndex: number): Promise<AgentContext> {
+  private async adjustPlanForErrors(
+    context: AgentContext,
+    errorStepIndex: number,
+  ): Promise<AgentContext> {
     if (errorStepIndex === -1 || !context.plan || !context.plan.steps) {
       return context;
     }
@@ -868,7 +1094,7 @@ export class AgentOrchestrator {
 
     // 生成调整后的步骤
     const adjustedSteps = [...context.plan.steps];
-    
+
     // 在错误步骤前添加修正步骤
     if (errorStepIndex > 0) {
       adjustedSteps.splice(errorStepIndex, 0, {

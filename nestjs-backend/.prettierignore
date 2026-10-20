@@ -1,0 +1,25 @@
+# 依赖与构建产物
+node_modules
+dist
+build
+coverage
+unpackage
+
+# 生成的声明文件
+*.d.ts
+
+# 锁文件（由包管理器生成，不参与格式化）
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# 数据与评测产物
+datasets
+results
+*.json
+
+# 其他服务目录（各自独立，不在本仓库格式门禁范围内）
+sympy-service
+python-sympy-service
+formula-renderer-service
+math-tutor-prototype

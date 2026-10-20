@@ -34,7 +34,9 @@ describe('SolverAgent 规则引擎边界', () => {
       expect(agent.isPlaceholderResult('（方程的解）')).toBe(true);
       expect(agent.isPlaceholderResult('（计算完成）')).toBe(true);
       // 超过 20 字的括号文本不是"泛称占位"，不应误判
-      expect(agent.isPlaceholderResult(`（${'很长的具体结果描述'.repeat(3)}）`)).toBe(false);
+      expect(
+        agent.isPlaceholderResult(`（${'很长的具体结果描述'.repeat(3)}）`),
+      ).toBe(false);
     });
 
     it('执行中/省略号判为占位', () => {
@@ -95,7 +97,9 @@ describe('SolverAgent 规则引擎边界', () => {
 
     it('步骤缺 result 字段时跳过', () => {
       const steps = [JSON.stringify({ stepTitle: '分析' })];
-      expect(agent.extractFinalAnswerFromSteps(steps, '求极限')).toContain('未能');
+      expect(agent.extractFinalAnswerFromSteps(steps, '求极限')).toContain(
+        '未能',
+      );
     });
   });
 
@@ -124,7 +128,9 @@ describe('SolverAgent 规则引擎边界', () => {
     });
 
     it('未知题型给出通用提示', () => {
-      expect(agent.generateHighlight('整理题目条件')).toBe('请仔细检查每一步的计算过程');
+      expect(agent.generateHighlight('整理题目条件')).toBe(
+        '请仔细检查每一步的计算过程',
+      );
     });
   });
 });

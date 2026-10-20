@@ -49,25 +49,64 @@ export interface ClassificationOption {
 export class InputPreprocessor {
   private readonly logger = new Logger(InputPreprocessor.name);
 
-  private readonly level1Keywords: Record<string, { patterns: string[]; weight: number }> = {
+  private readonly level1Keywords: Record<
+    string,
+    { patterns: string[]; weight: number }
+  > = {
     limit: {
       patterns: ['极限', 'lim', 'limit', '趋近', '收敛', '发散', '→'],
       weight: 1.0,
     },
     derivative: {
-      patterns: ['导数', 'derivative', '求导', "d/dx", "f'(x)", '微分', '斜率', '变化率'],
+      patterns: [
+        '导数',
+        'derivative',
+        '求导',
+        'd/dx',
+        "f'(x)",
+        '微分',
+        '斜率',
+        '变化率',
+      ],
       weight: 1.0,
     },
     integral: {
-      patterns: ['积分', 'integral', '∫', '原函数', '面积', '体积', '不定积分', '定积分'],
+      patterns: [
+        '积分',
+        'integral',
+        '∫',
+        '原函数',
+        '面积',
+        '体积',
+        '不定积分',
+        '定积分',
+      ],
       weight: 1.0,
     },
     equation: {
-      patterns: ['方程', 'equation', '解方程', '求根', '求解', '= 0', 'roots', '解'],
+      patterns: [
+        '方程',
+        'equation',
+        '解方程',
+        '求根',
+        '求解',
+        '= 0',
+        'roots',
+        '解',
+      ],
       weight: 0.8,
     },
     series: {
-      patterns: ['级数', 'series', 'sum', '∑', '泰勒', 'taylor', '傅里叶', '收敛和'],
+      patterns: [
+        '级数',
+        'series',
+        'sum',
+        '∑',
+        '泰勒',
+        'taylor',
+        '傅里叶',
+        '收敛和',
+      ],
       weight: 0.9,
     },
     proof: {
@@ -83,7 +122,15 @@ export class InputPreprocessor {
       weight: 0.85,
     },
     probability: {
-      patterns: ['概率', 'probability', '统计', 'statistics', '期望', '方差', '分布'],
+      patterns: [
+        '概率',
+        'probability',
+        '统计',
+        'statistics',
+        '期望',
+        '方差',
+        '分布',
+      ],
       weight: 0.85,
     },
   };
@@ -103,12 +150,20 @@ export class InputPreprocessor {
 
     const level1Result = this.level1KeywordMatching(problem);
     const level2Result = this.level2StructureAnalysis(problem);
-    const level3Result = await this.level3SemanticAnalysis(problem, level1Result, level2Result);
+    const level3Result = await this.level3SemanticAnalysis(
+      problem,
+      level1Result,
+      level2Result,
+    );
 
-    const finalClassification = this.synthesizeResults(level1Result, level2Result, level3Result);
+    const finalClassification = this.synthesizeResults(
+      level1Result,
+      level2Result,
+      level3Result,
+    );
 
     this.logger.log(
-      `分类完成: ${finalClassification.primaryType} (置信度: ${finalClassification.confidence})`
+      `分类完成: ${finalClassification.primaryType} (置信度: ${finalClassification.confidence})`,
     );
 
     return finalClassification;
@@ -116,12 +171,16 @@ export class InputPreprocessor {
 
   private level1KeywordMatching(problem: string): Level1Result {
     const lowerProblem = problem.toLowerCase();
-    const matchedKeywords: Array<{ keyword: string; type: string; weight: number }> = [];
+    const matchedKeywords: Array<{
+      keyword: string;
+      type: string;
+      weight: number;
+    }> = [];
     const typeScores: Record<string, number> = {};
 
     for (const [type, config] of Object.entries(this.level1Keywords)) {
       let typeScore = 0;
-      
+
       for (const pattern of config.patterns) {
         if (lowerProblem.includes(pattern.toLowerCase())) {
           matchedKeywords.push({
@@ -141,7 +200,8 @@ export class InputPreprocessor {
     const sortedTypes = Object.entries(typeScores).sort((a, b) => b[1] - a[1]);
     const topCandidate = sortedTypes[0]?.[0] || 'unknown';
     const totalScore = sortedTypes.reduce((sum, [, score]) => sum + score, 0);
-    const confidence = totalScore > 0 ? Math.min(sortedTypes[0][1] / totalScore, 1) : 0;
+    const confidence =
+      totalScore > 0 ? Math.min(sortedTypes[0][1] / totalScore, 1) : 0;
 
     return {
       matchedKeywords,
@@ -155,14 +215,19 @@ export class InputPreprocessor {
     const expressionPatterns: string[] = [];
     const syntaxErrors: string[] = [];
 
-    for (const [patternName, regex] of Object.entries(this.expressionPatterns)) {
+    for (const [patternName, regex] of Object.entries(
+      this.expressionPatterns,
+    )) {
       const matches = problem.match(regex);
       if (matches && matches.length > 0) {
-        expressionPatterns.push(...matches.map(m => `${patternName}: ${m}`));
+        expressionPatterns.push(...matches.map((m) => `${patternName}: ${m}`));
       }
     }
 
-    if (problem.includes('\\') && !problem.match(/\\(?:frac|lim|int|sum|sqrt)/)) {
+    if (
+      problem.includes('\\') &&
+      !problem.match(/\\(?:frac|lim|int|sum|sqrt)/)
+    ) {
       syntaxErrors.push('检测到未转义的LaTeX命令');
     }
 
@@ -170,12 +235,16 @@ export class InputPreprocessor {
       syntaxErrors.push('存在空的LaTeX分组');
     }
 
-    if (!problem.match(/[=+\-*/]/) && !problem.includes('求') && !problem.includes('计算')) {
+    if (
+      !problem.match(/[=+\-*/]/) &&
+      !problem.includes('求') &&
+      !problem.includes('计算')
+    ) {
       syntaxErrors.push('问题中缺少运算符或明确的计算要求');
     }
 
     let completeness: 'complete' | 'partial' | 'incomplete' = 'complete';
-    
+
     if (syntaxErrors.length > 2) {
       completeness = 'incomplete';
     } else if (syntaxErrors.length > 0 || expressionPatterns.length === 0) {
@@ -194,12 +263,17 @@ export class InputPreprocessor {
   }
 
   private detectProblemStructure(patterns: string[]): string {
-    if (patterns.some(p => p.startsWith('limit:'))) return 'limit-expression';
-    if (patterns.some(p => p.startsWith('derivative:'))) return 'derivative-expression';
-    if (patterns.some(p => p.startsWith('integral:'))) return 'integral-expression';
-    if (patterns.some(p => p.startsWith('equation:'))) return 'equation-expression';
-    if (patterns.some(p => p.startsWith('series:'))) return 'series-expression';
-    if (patterns.some(p => p.startsWith('function:'))) return 'function-evaluation';
+    if (patterns.some((p) => p.startsWith('limit:'))) return 'limit-expression';
+    if (patterns.some((p) => p.startsWith('derivative:')))
+      return 'derivative-expression';
+    if (patterns.some((p) => p.startsWith('integral:')))
+      return 'integral-expression';
+    if (patterns.some((p) => p.startsWith('equation:')))
+      return 'equation-expression';
+    if (patterns.some((p) => p.startsWith('series:')))
+      return 'series-expression';
+    if (patterns.some((p) => p.startsWith('function:')))
+      return 'function-evaluation';
     if (patterns.length === 0) return 'text-description';
     return 'mixed-structure';
   }
@@ -207,12 +281,18 @@ export class InputPreprocessor {
   private async level3SemanticAnalysis(
     problem: string,
     level1: Level1Result,
-    level2: Level2Result
+    level2: Level2Result,
   ): Promise<Level3Result> {
     const contextAnalysis = this.analyzeContext(problem, level1, level2);
     const compositeProblem = this.detectCompositeProblem(problem, level1);
-    const subProblems = compositeProblem ? this.extractSubProblems(problem, level1) : [];
-    const recommendedStrategy = this.recommendStrategy(level1, level2, subProblems);
+    const subProblems = compositeProblem
+      ? this.extractSubProblems(problem, level1)
+      : [];
+    const recommendedStrategy = this.recommendStrategy(
+      level1,
+      level2,
+      subProblems,
+    );
 
     return {
       contextAnalysis,
@@ -222,7 +302,11 @@ export class InputPreprocessor {
     };
   }
 
-  private analyzeContext(problem: string, level1: Level1Result, level2: Level2Result): string {
+  private analyzeContext(
+    problem: string,
+    level1: Level1Result,
+    level2: Level2Result,
+  ): string {
     const contexts: string[] = [];
 
     if (level1.topCandidate !== 'unknown') {
@@ -241,22 +325,33 @@ export class InputPreprocessor {
       contexts.push(`发现${level2.syntaxErrors.length}个语法问题`);
     }
 
-    if (problem.includes('然后') || problem.includes('再') || problem.includes('最后')) {
+    if (
+      problem.includes('然后') ||
+      problem.includes('再') ||
+      problem.includes('最后')
+    ) {
       contexts.push('检测到多步骤问题的连接词');
     }
 
     return contexts.join('; ');
   }
 
-  private detectCompositeProblem(problem: string, level1: Level1Result): boolean {
-    const multipleTypes = new Set(level1.matchedKeywords.map(k => k.type)).size > 1;
+  private detectCompositeProblem(
+    problem: string,
+    level1: Level1Result,
+  ): boolean {
+    const multipleTypes =
+      new Set(level1.matchedKeywords.map((k) => k.type)).size > 1;
     const stepIndicators = /(然后|接着|再|之后|最后|首先|其次)/.test(problem);
     const multiPartQuestions = /(求.*?(?:，|。).*?(?:再|又|还))/i.test(problem);
 
     return multipleTypes && (stepIndicators || multiPartQuestions);
   }
 
-  private extractSubProblems(problem: string, level1: Level1Result): Array<{ type: string; description: string }> {
+  private extractSubProblems(
+    problem: string,
+    level1: Level1Result,
+  ): Array<{ type: string; description: string }> {
     const subProblems: Array<{ type: string; description: string }> = [];
     const parts = problem.split(/(?:，|。|;)\s*(?=求|计算|证明|解)/);
 
@@ -278,7 +373,7 @@ export class InputPreprocessor {
   private recommendStrategy(
     level1: Level1Result,
     level2: Level2Result,
-    subProblems: Array<{ type: string; description: string }>
+    subProblems: Array<{ type: string; description: string }>,
   ): string {
     if (subProblems.length > 1) {
       return `复合问题策略: 先处理${subProblems[0].type}部分，再处理其他部分`;
@@ -305,7 +400,7 @@ export class InputPreprocessor {
   private synthesizeResults(
     level1: Level1Result,
     level2: Level2Result,
-    level3: Level3Result
+    level3: Level3Result,
   ): ProblemClassification {
     let primaryType = level1.topCandidate;
     let confidence = level1.confidence;
@@ -318,9 +413,9 @@ export class InputPreprocessor {
       confidence = Math.min(confidence, 0.75);
     }
 
-    const secondaryTypes = [...new Set(level1.matchedKeywords.map(k => k.type))].filter(
-      t => t !== primaryType
-    );
+    const secondaryTypes = [
+      ...new Set(level1.matchedKeywords.map((k) => k.type)),
+    ].filter((t) => t !== primaryType);
 
     const userConfirmationNeeded =
       confidence < 0.6 ||
@@ -331,7 +426,7 @@ export class InputPreprocessor {
       primaryType,
       secondaryTypes,
       confidence,
-      keywords: level1.matchedKeywords.map(k => k.keyword),
+      keywords: level1.matchedKeywords.map((k) => k.keyword),
       mathematicalExpressions: level2.expressionPatterns,
       isComplex: level3.compositeProblem || secondaryTypes.length > 1,
       suggestedApproach: level3.recommendedStrategy,
@@ -350,10 +445,17 @@ export class InputPreprocessor {
       return primaryType;
     }
 
-    const typePriority = ['limit', 'derivative', 'integral', 'equation', 'series', 'proof'];
-    
+    const typePriority = [
+      'limit',
+      'derivative',
+      'integral',
+      'equation',
+      'series',
+      'proof',
+    ];
+
     for (const type of typePriority) {
-      if (level1.matchedKeywords.some(k => k.type === type)) {
+      if (level1.matchedKeywords.some((k) => k.type === type)) {
         return type;
       }
     }
@@ -361,7 +463,9 @@ export class InputPreprocessor {
     return 'general';
   }
 
-  generateClassificationOptions(classification: ProblemClassification): ClassificationOption[] {
+  generateClassificationOptions(
+    classification: ProblemClassification,
+  ): ClassificationOption[] {
     const options: ClassificationOption[] = [
       {
         type: classification.primaryType,
@@ -407,7 +511,10 @@ export class InputPreprocessor {
     return descriptions[type] || '未知类型的数学问题';
   }
 
-  normalizeInput(problem: string): { normalized: string; transformations: string[] } {
+  normalizeInput(problem: string): {
+    normalized: string;
+    transformations: string[];
+  } {
     const transformations: string[] = [];
     let normalized = problem.trim();
 
@@ -435,7 +542,11 @@ export class InputPreprocessor {
     return { normalized, transformations };
   }
 
-  validateInput(problem: string): { isValid: boolean; errors: string[]; warnings: string[] } {
+  validateInput(problem: string): {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+  } {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -456,7 +567,10 @@ export class InputPreprocessor {
       warnings.push('问题混合了中文和英文，将尝试智能识别数学表达式');
     }
 
-    if (problem.includes('$') && !(problem.match(/^\$.*\$$/) || problem.match(/\$.*\$/g)?.length === 1)) {
+    if (
+      problem.includes('$') &&
+      !(problem.match(/^\$.*\$$/) || problem.match(/\$.*\$/g)?.length === 1)
+    ) {
       warnings.push('检测到多个LaTeX标记，请确保格式正确');
     }
 

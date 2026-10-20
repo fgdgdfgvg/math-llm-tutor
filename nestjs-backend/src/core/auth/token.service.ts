@@ -34,14 +34,18 @@ const KEY_PREFIX = 'auth:rt';
 const MAX_TOKENS_PER_USER = 20;
 
 /** 支持 '900' / '15m' / '2h' / '7d' */
-function parseDurationToSeconds(raw: string | undefined, fallbackSeconds: number): number {
+function parseDurationToSeconds(
+  raw: string | undefined,
+  fallbackSeconds: number,
+): number {
   if (!raw) return fallbackSeconds;
   const value = String(raw).trim();
   const match = /^(\d+)\s*([smhd])?$/i.exec(value);
   if (!match) return fallbackSeconds;
   const n = Number(match[1]);
   const unit = (match[2] || 's').toLowerCase();
-  const factor = unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400;
+  const factor =
+    unit === 's' ? 1 : unit === 'm' ? 60 : unit === 'h' ? 3600 : 86400;
   return n * factor;
 }
 
@@ -98,7 +102,10 @@ export class TokenService {
   }
 
   /** 签发一对令牌；familyId 用于把同一次登录派生出的会话归为一个令牌族 */
-  async issuePair(user: AuthUser, familyId: string = randomBytes(8).toString('hex')): Promise<TokenPair> {
+  async issuePair(
+    user: AuthUser,
+    familyId: string = randomBytes(8).toString('hex'),
+  ): Promise<TokenPair> {
     const refreshToken = randomBytes(32).toString('base64url');
     const hash = this.hash(refreshToken);
     const userId = String(user._id ?? user.id ?? '');
@@ -111,11 +118,19 @@ export class TokenService {
       issuedAt: Date.now(),
     };
 
-    await this.cache.set(`${KEY_PREFIX}:${hash}`, JSON.stringify(record), this.refreshTtlSeconds);
+    await this.cache.set(
+      `${KEY_PREFIX}:${hash}`,
+      JSON.stringify(record),
+      this.refreshTtlSeconds,
+    );
     await this.addToUserIndex(userId, hash);
 
     return {
-      access_token: this.signAccess({ username: user.username, sub: userId, roles: user.roles }),
+      access_token: this.signAccess({
+        username: user.username,
+        sub: userId,
+        roles: user.roles,
+      }),
       refresh_token: refreshToken,
       token_type: 'Bearer',
       expires_in: this.accessTtlSeconds,
@@ -148,7 +163,9 @@ export class TokenService {
     // 2) 重用检测（窗口外）：这个值只在 token 被使用过一次后才存在
     const reusedFamily = await this.cache.get(`${KEY_PREFIX}:used:${hash}`);
     if (reusedFamily) {
-      this.logger.warn(`检测到 refresh token 重用（超出宽容窗口），吊销令牌族 ${reusedFamily}`);
+      this.logger.warn(
+        `检测到 refresh token 重用（超出宽容窗口），吊销令牌族 ${reusedFamily}`,
+      );
       await this.revokeFamily(reusedFamily);
       throw new UnauthorizedAppError('登录已失效，请重新登录');
     }
@@ -190,7 +207,11 @@ export class TokenService {
       }
 
       // 旧值标记为已用（保留到到期为止，用于窗口外的重用检测），再签发新值
-      await this.cache.set(`${KEY_PREFIX}:used:${hash}`, record.familyId, this.refreshTtlSeconds);
+      await this.cache.set(
+        `${KEY_PREFIX}:used:${hash}`,
+        record.familyId,
+        this.refreshTtlSeconds,
+      );
       await this.cache.delete(`${KEY_PREFIX}:${hash}`);
       await this.removeFromUserIndex(record.userId, hash);
 
@@ -201,7 +222,11 @@ export class TokenService {
 
       // 写进宽容窗口：窗口内同一旧值的重复请求返回这一对
       if (this.graceSeconds > 0) {
-        await this.cache.set(`${KEY_PREFIX}:grace:${hash}`, JSON.stringify(pair), this.graceSeconds);
+        await this.cache.set(
+          `${KEY_PREFIX}:grace:${hash}`,
+          JSON.stringify(pair),
+          this.graceSeconds,
+        );
       }
       return pair;
     } finally {
@@ -227,13 +252,21 @@ export class TokenService {
     }
     await this.cache.delete(`${KEY_PREFIX}:${hash}`);
     // used 标记存 familyId（而非字面量），后续若被重放能正确吊销对应的令牌族
-    await this.cache.set(`${KEY_PREFIX}:used:${hash}`, familyId, this.refreshTtlSeconds);
+    await this.cache.set(
+      `${KEY_PREFIX}:used:${hash}`,
+      familyId,
+      this.refreshTtlSeconds,
+    );
   }
 
   /** 吊销某次登录派生出的全部会话（令牌族） */
   async revokeFamily(familyId: string): Promise<void> {
     if (!familyId) return;
-    await this.cache.set(`${KEY_PREFIX}:family:${familyId}`, 'revoked', this.refreshTtlSeconds);
+    await this.cache.set(
+      `${KEY_PREFIX}:family:${familyId}`,
+      'revoked',
+      this.refreshTtlSeconds,
+    );
   }
 
   /** 吊销某用户的全部会话（改密码、管理员踢人等场景） */
@@ -259,7 +292,11 @@ export class TokenService {
         }
       }
       await this.cache.delete(`${KEY_PREFIX}:${hash}`);
-      await this.cache.set(`${KEY_PREFIX}:used:${hash}`, familyId, this.refreshTtlSeconds);
+      await this.cache.set(
+        `${KEY_PREFIX}:used:${hash}`,
+        familyId,
+        this.refreshTtlSeconds,
+      );
     }
     await this.cache.delete(`${KEY_PREFIX}:user:${userId}`);
     return hashes.length;
@@ -295,7 +332,11 @@ export class TokenService {
     return null;
   }
 
-  private signAccess(payload: { username: string; sub: string; roles?: string[] }): string {
+  private signAccess(payload: {
+    username: string;
+    sub: string;
+    roles?: string[];
+  }): string {
     return this.jwtService.sign(payload, { expiresIn: this.accessTtlSeconds });
   }
 
@@ -317,11 +358,15 @@ export class TokenService {
     }
     hashes.push(hash);
     // 只保留最近的若干个，避免长期积累把缓存撑大
-    if (hashes.length > MAX_TOKENS_PER_USER) hashes = hashes.slice(-MAX_TOKENS_PER_USER);
+    if (hashes.length > MAX_TOKENS_PER_USER)
+      hashes = hashes.slice(-MAX_TOKENS_PER_USER);
     await this.cache.set(key, JSON.stringify(hashes), this.refreshTtlSeconds);
   }
 
-  private async removeFromUserIndex(userId: string, hash: string): Promise<void> {
+  private async removeFromUserIndex(
+    userId: string,
+    hash: string,
+  ): Promise<void> {
     if (!userId) return;
     const key = `${KEY_PREFIX}:user:${userId}`;
     const raw = await this.cache.get(key);

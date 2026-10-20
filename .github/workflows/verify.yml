@@ -19,7 +19,7 @@ concurrency:
 jobs:
   # ---------------------------------------------------------------- 静态门禁
   static-gates:
-    name: 静态门禁（类型 / 单测 / 密钥 / 日志卫生）
+    name: 静态门禁（类型 / 单测 / 密钥 / 日志卫生 / 格式）
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -52,7 +52,7 @@ jobs:
             || { echo "::error::未产出 dist/build/h5/index.html，前端镜像会构建失败"; exit 1; }
           du -sh uniapp-frontend/dist/build/h5
 
-      # 一条命令跑完后端 tsc / jest、前端 vue-tsc、密钥扫描、日志卫生扫描。
+      # 一条命令跑完后端 tsc / jest、前端 vue-tsc、密钥扫描、日志卫生扫描、prettier 格式门禁。
       # 与本地完全同一份脚本，避免"本地绿、CI 红"的双份逻辑漂移。
       - name: 运行统一门禁
         run: node scripts/verify-all.cjs

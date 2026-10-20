@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  NotFoundException,
+} from '@nestjs/common';
 import { Neo4jService } from './neo4j/neo4j.service';
 import {
   KnowledgeNodeType,
@@ -754,10 +759,15 @@ export class KnowledgeService implements OnModuleInit {
       const exact = this.fallbackNodes.find((n) => n.id === id);
       if (exact) return exact;
 
-      return this.fallbackNodes.find((n) =>
-        n.id.startsWith(id) || id.startsWith(n.id) ||
-        n.id.replace(/_/g, '').toLowerCase() === id.replace(/-/g, '').toLowerCase()
-      ) || null;
+      return (
+        this.fallbackNodes.find(
+          (n) =>
+            n.id.startsWith(id) ||
+            id.startsWith(n.id) ||
+            n.id.replace(/_/g, '').toLowerCase() ===
+              id.replace(/-/g, '').toLowerCase(),
+        ) || null
+      );
     }
 
     const result = await this.neo4jService.findNodeById('Knowledge', id);

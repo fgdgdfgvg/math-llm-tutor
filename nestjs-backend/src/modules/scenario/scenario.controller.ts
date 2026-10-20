@@ -1,7 +1,12 @@
 import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard';
-import { CompleteGameLevelDto, CreateCollaborativeSessionDto, JoinCollaborativeSessionDto, SubmitTaskDto } from './dto/scenario.dto';
+import {
+  CompleteGameLevelDto,
+  CreateCollaborativeSessionDto,
+  JoinCollaborativeSessionDto,
+  SubmitTaskDto,
+} from './dto/scenario.dto';
 
 @Controller('scenario')
 export class ScenarioController {
@@ -45,33 +50,40 @@ export class ScenarioController {
 
   @UseGuards(JwtAuthGuard)
   @Post('game/complete')
-  async completeGameLevel(
-    @Body() dto: CompleteGameLevelDto
-  ) {
-    return this.scenarioService.completeGameLevel(dto.userId, dto.levelId, dto.score);
+  async completeGameLevel(@Body() dto: CompleteGameLevelDto) {
+    return this.scenarioService.completeGameLevel(
+      dto.userId,
+      dto.levelId,
+      dto.score,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('collaborative/create')
-  async createCollaborativeSession(
-    @Body() dto: CreateCollaborativeSessionDto
-  ) {
-    return this.scenarioService.createCollaborativeSession(dto.userId, dto.scenarioId);
+  async createCollaborativeSession(@Body() dto: CreateCollaborativeSessionDto) {
+    return this.scenarioService.createCollaborativeSession(
+      dto.userId,
+      dto.scenarioId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('collaborative/join')
-  async joinCollaborativeSession(
-    @Body() dto: JoinCollaborativeSessionDto
-  ) {
-    return this.scenarioService.joinCollaborativeSession(dto.sessionId, dto.userId);
+  async joinCollaborativeSession(@Body() dto: JoinCollaborativeSessionDto) {
+    return this.scenarioService.joinCollaborativeSession(
+      dto.sessionId,
+      dto.userId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('task/submit')
-  async submitTask(
-    @Body() dto: SubmitTaskDto
-  ) {
-    return this.scenarioService.submitTask(dto.userId, dto.scenarioId, dto.taskId, dto.answer);
+  async submitTask(@Body() dto: SubmitTaskDto) {
+    return this.scenarioService.submitTask(
+      dto.userId,
+      dto.scenarioId,
+      dto.taskId,
+      dto.answer,
+    );
   }
 }

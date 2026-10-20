@@ -1,7 +1,15 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, Document } from 'mongoose';
-import { LearningRecord, LearningRecordDocument } from './schemas/learning-record.schema';
+import {
+  LearningRecord,
+  LearningRecordDocument,
+} from './schemas/learning-record.schema';
 import { StudentKnowledgeService } from '../student/student-knowledge.service';
 import type { StudentKnowledge } from '../student/schemas/student-knowledge.schema';
 import { KnowledgePointMappingService } from '../knowledge/knowledge-point-mapping.service';
@@ -45,7 +53,8 @@ export interface ReviewItem {
   masteryLevel: number;
 }
 
-type LearningRecordWithTimestamps = LearningRecordDocument & Document & { createdAt: Date; updatedAt: Date };
+type LearningRecordWithTimestamps = LearningRecordDocument &
+  Document & { createdAt: Date; updatedAt: Date };
 
 @Injectable()
 export class LearningService {
@@ -62,8 +71,11 @@ export class LearningService {
    * 统一数据源：练习页写入的 student-knowledge 记录。
    * 这样 /learning/* 与 /student/knowledge/* 返回的学习进度完全一致。
    */
-  private async getKnowledgeRecords(userId: string): Promise<StudentKnowledge[]> {
-    const records = await this.studentKnowledgeService.getAllStudentKnowledge(userId);
+  private async getKnowledgeRecords(
+    userId: string,
+  ): Promise<StudentKnowledge[]> {
+    const records =
+      await this.studentKnowledgeService.getAllStudentKnowledge(userId);
     return records.filter((r) => (r.attemptsCount || 0) > 0);
   }
 
@@ -94,7 +106,9 @@ export class LearningService {
     return progress;
   }
 
-  private getStatusFromMastery(masteryLevel: number): ConceptProgress['status'] {
+  private getStatusFromMastery(
+    masteryLevel: number,
+  ): ConceptProgress['status'] {
     if (masteryLevel >= 0.8) return 'mastered';
     if (masteryLevel > 0) return 'learning';
     return 'not_started';
@@ -115,7 +129,10 @@ export class LearningService {
     },
   ): Promise<LearningRecord> {
     const existingRecord = await this.learningRecordModel
-      .findOne({ userId: new Types.ObjectId(userId), conceptId: data.conceptId })
+      .findOne({
+        userId: new Types.ObjectId(userId),
+        conceptId: data.conceptId,
+      })
       .sort({ createdAt: -1 });
 
     let interval = 1;
@@ -125,7 +142,10 @@ export class LearningService {
     if (existingRecord) {
       reviewCount = existingRecord.reviewCount + 1;
       easeFactor = existingRecord.easeFactor;
-      interval = this.calculateNextInterval(existingRecord, data.isCorrect ?? true);
+      interval = this.calculateNextInterval(
+        existingRecord,
+        data.isCorrect ?? true,
+      );
     }
 
     const nextReviewDate = this.calculateNextReviewDate(interval);
@@ -152,14 +172,19 @@ export class LearningService {
           data.timeSpent || 0,
         );
       } catch (error) {
-        this.logger.warn(`同步练习记录到 student-knowledge 失败: ${(error as Error).message}`);
+        this.logger.warn(
+          `同步练习记录到 student-knowledge 失败: ${(error as Error).message}`,
+        );
       }
     }
 
     return saved;
   }
 
-  private calculateNextInterval(record: LearningRecordDocument, isCorrect: boolean): number {
+  private calculateNextInterval(
+    record: LearningRecordDocument,
+    isCorrect: boolean,
+  ): number {
     let { interval, easeFactor } = record;
 
     if (isCorrect) {
@@ -188,14 +213,26 @@ export class LearningService {
   async getLearningStats(userId: string): Promise<LearningStats> {
     const concepts = await this.getKnowledgeRecords(userId);
 
-    const masteredConcepts = concepts.filter((c) => (c.masteryLevel || 0) >= 0.8).length;
-    const learningConcepts = concepts.filter((c) => (c.masteryLevel || 0) > 0 && (c.masteryLevel || 0) < 0.8).length;
-    const totalPracticeTime = concepts.reduce((sum, c) => sum + (c.totalPracticeTime || 0), 0);
-    const averageMastery = concepts.length > 0
-      ? concepts.reduce((sum, c) => sum + (c.masteryLevel || 0), 0) / concepts.length
-      : 0;
+    const masteredConcepts = concepts.filter(
+      (c) => (c.masteryLevel || 0) >= 0.8,
+    ).length;
+    const learningConcepts = concepts.filter(
+      (c) => (c.masteryLevel || 0) > 0 && (c.masteryLevel || 0) < 0.8,
+    ).length;
+    const totalPracticeTime = concepts.reduce(
+      (sum, c) => sum + (c.totalPracticeTime || 0),
+      0,
+    );
+    const averageMastery =
+      concepts.length > 0
+        ? concepts.reduce((sum, c) => sum + (c.masteryLevel || 0), 0) /
+          concepts.length
+        : 0;
 
-    const streakDays = concepts.reduce((max, c) => Math.max(max, c.streakDays || 0), 0);
+    const streakDays = concepts.reduce(
+      (max, c) => Math.max(max, c.streakDays || 0),
+      0,
+    );
 
     const weeklyProgress = this.buildWeeklyProgress(concepts);
 
@@ -215,34 +252,50 @@ export class LearningService {
 
     return records
       .slice()
-      .sort((a, b) => (b.lastPracticed?.getTime() || 0) - (a.lastPracticed?.getTime() || 0))
+      .sort(
+        (a, b) =>
+          (b.lastPracticed?.getTime() || 0) - (a.lastPracticed?.getTime() || 0),
+      )
       .map((record) => {
         const masteryLevel = record.masteryLevel || 0;
-        const lastPracticeDate = record.lastPracticed || record.firstLearned || new Date();
+        const lastPracticeDate =
+          record.lastPracticed || record.firstLearned || new Date();
         // 掌握度越低越早安排复习
-        const intervalDays = masteryLevel < 0.5 ? 1 : masteryLevel < 0.8 ? 3 : 7;
+        const intervalDays =
+          masteryLevel < 0.5 ? 1 : masteryLevel < 0.8 ? 3 : 7;
         // 练习记录按题库知识点归档（如“极限计算”），知识图谱用的是概念 id
         // （如 limit_definition）。这里把两者一并给出，前端才能把掌握度回填到具体节点上。
-        const mappedIds = this.knowledgePointMapping.getConceptIds(record.conceptId);
-        const conceptIds = Array.from(new Set([record.conceptId, ...mappedIds]));
+        const mappedIds = this.knowledgePointMapping.getConceptIds(
+          record.conceptId,
+        );
+        const conceptIds = Array.from(
+          new Set([record.conceptId, ...mappedIds]),
+        );
 
         const attemptsCount = record.attemptsCount || 0;
         const correctCount = record.correctCount || 0;
-        const { earlyAccuracy, recentAccuracy } = this.buildAccuracyTrend(record.practiceHistory || []);
+        const { earlyAccuracy, recentAccuracy } = this.buildAccuracyTrend(
+          record.practiceHistory || [],
+        );
 
         return {
           conceptId: record.conceptId,
           conceptName: record.conceptId,
           masteryLevel,
           lastPracticeDate,
-          nextReviewDate: new Date(lastPracticeDate.getTime() + intervalDays * 24 * 60 * 60 * 1000),
+          nextReviewDate: new Date(
+            lastPracticeDate.getTime() + intervalDays * 24 * 60 * 60 * 1000,
+          ),
           reviewCount: record.incorrectCount || 0,
           status: this.getStatusFromMastery(masteryLevel),
           conceptIds,
           attemptsCount,
           correctCount,
           incorrectCount: record.incorrectCount || 0,
-          correctRate: attemptsCount > 0 ? Math.round((correctCount / attemptsCount) * 100) : 0,
+          correctRate:
+            attemptsCount > 0
+              ? Math.round((correctCount / attemptsCount) * 100)
+              : 0,
           earlyAccuracy,
           recentAccuracy,
         };
@@ -253,10 +306,13 @@ export class LearningService {
    * 练习历史前半段 / 后半段正确率，用于判断“越练越准”还是“重复犯错”。
    * 练习次数不足 4 次时不足以判断趋势，返回 null。
    */
-  private buildAccuracyTrend(
-    history: Array<{ isCorrect?: boolean }>,
-  ): { earlyAccuracy: number | null; recentAccuracy: number | null } {
-    const attempts = history.filter((entry) => typeof entry?.isCorrect === 'boolean');
+  private buildAccuracyTrend(history: Array<{ isCorrect?: boolean }>): {
+    earlyAccuracy: number | null;
+    recentAccuracy: number | null;
+  } {
+    const attempts = history.filter(
+      (entry) => typeof entry?.isCorrect === 'boolean',
+    );
     if (attempts.length < 4) {
       return { earlyAccuracy: null, recentAccuracy: null };
     }
@@ -345,11 +401,18 @@ export class LearningService {
       stats.push({
         totalConcepts: concepts.length,
         masteredConcepts: concepts.filter((c) => c.masteryLevel >= 0.8).length,
-        learningConcepts: concepts.filter((c) => c.masteryLevel > 0 && c.masteryLevel < 0.8).length,
-        totalPracticeTime: records.reduce((sum, r) => sum + (r.timeSpent || 0), 0),
-        averageMastery: concepts.length > 0
-          ? concepts.reduce((sum, c) => sum + c.masteryLevel, 0) / concepts.length
-          : 0,
+        learningConcepts: concepts.filter(
+          (c) => c.masteryLevel > 0 && c.masteryLevel < 0.8,
+        ).length,
+        totalPracticeTime: records.reduce(
+          (sum, r) => sum + (r.timeSpent || 0),
+          0,
+        ),
+        averageMastery:
+          concepts.length > 0
+            ? concepts.reduce((sum, c) => sum + c.masteryLevel, 0) /
+              concepts.length
+            : 0,
         streakDays: 0,
         weeklyProgress: [],
       });
@@ -358,12 +421,17 @@ export class LearningService {
     return stats;
   }
 
-  async deleteUserData(userId: string, requestingUserId: string): Promise<void> {
+  async deleteUserData(
+    userId: string,
+    requestingUserId: string,
+  ): Promise<void> {
     if (userId !== requestingUserId) {
       throw new ForbiddenException('You can only delete your own data');
     }
 
-    await this.learningRecordModel.deleteMany({ userId: new Types.ObjectId(userId) });
+    await this.learningRecordModel.deleteMany({
+      userId: new Types.ObjectId(userId),
+    });
     this.logger.log(`Deleted all learning data for user ${userId}`);
   }
 }

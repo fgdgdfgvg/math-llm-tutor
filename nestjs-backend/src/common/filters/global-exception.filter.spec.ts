@@ -1,11 +1,22 @@
-import { ArgumentsHost, BadRequestException, HttpStatus, NotFoundException } from '@nestjs/common';
-import { GlobalExceptionFilter, ErrorResponseBody } from './global-exception.filter';
+import {
+  ArgumentsHost,
+  BadRequestException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  GlobalExceptionFilter,
+  ErrorResponseBody,
+} from './global-exception.filter';
 import { AppError, InternalError } from '../errors/app-error';
 import { ErrorCode } from '../errors/error-codes';
 import { getTraceId, runWithRequestContext } from '../utils/request-context';
 
 /** 构造一个最小可用的 HTTP ArgumentsHost */
-function fakeHost(path = '/api/test', traceId?: string): { host: ArgumentsHost; res: any } {
+function fakeHost(
+  path = '/api/test',
+  traceId?: string,
+): { host: ArgumentsHost; res: any } {
   const res: any = {
     statusCode: 200,
     body: undefined,
@@ -37,8 +48,12 @@ describe('GlobalExceptionFilter', () => {
   beforeEach(() => {
     filter = new GlobalExceptionFilter();
     // 过滤器自身不打日志到 stdout，避免污染测试结果；这里只关心响应体
-    jest.spyOn((filter as any).logger, 'error').mockImplementation(() => undefined);
-    jest.spyOn((filter as any).logger, 'warn').mockImplementation(() => undefined);
+    jest
+      .spyOn((filter as any).logger, 'error')
+      .mockImplementation(() => undefined);
+    jest
+      .spyOn((filter as any).logger, 'warn')
+      .mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -50,12 +65,22 @@ describe('GlobalExceptionFilter', () => {
     process.env.NODE_ENV = 'production';
     const { host, res } = fakeHost();
 
-    filter.catch(new AppError(ErrorCode.BUSINESS_ERROR, '这题暂不支持自动求解'), host);
+    filter.catch(
+      new AppError(ErrorCode.BUSINESS_ERROR, '这题暂不支持自动求解'),
+      host,
+    );
     expect(res.statusCode).toBe(422);
-    expect((res.body as ErrorResponseBody).message).toBe('这题暂不支持自动求解');
+    expect((res.body as ErrorResponseBody).message).toBe(
+      '这题暂不支持自动求解',
+    );
 
     const { host: h2, res: r2 } = fakeHost();
-    filter.catch(new InternalError('Mongo connection string mongodb://user:pwd@host leaked'), h2);
+    filter.catch(
+      new InternalError(
+        'Mongo connection string mongodb://user:pwd@host leaked',
+      ),
+      h2,
+    );
     expect(r2.statusCode).toBe(500);
     // 关键：内部细节不能出现在响应里
     expect((r2.body as ErrorResponseBody).message).not.toContain('pwd');
@@ -66,7 +91,10 @@ describe('GlobalExceptionFilter', () => {
     process.env.NODE_ENV = 'production';
     const { host, res } = fakeHost();
     filter.catch(
-      new BadRequestException(['username must be a string', 'password too short']),
+      new BadRequestException([
+        'username must be a string',
+        'password too short',
+      ]),
       host,
     );
     const body = res.body as ErrorResponseBody;
@@ -99,7 +127,9 @@ describe('GlobalExceptionFilter', () => {
     const axiosError: any = new Error('timeout of 20000ms exceeded');
     axiosError.isAxiosError = true;
     axiosError.code = 'ECONNABORTED';
-    axiosError.config = { headers: { Authorization: 'Bearer sk-secretvalue123456' } };
+    axiosError.config = {
+      headers: { Authorization: 'Bearer sk-secretvalue123456' },
+    };
     filter.catch(axiosError, host);
     const body = res.body as ErrorResponseBody;
     expect(res.statusCode).toBe(504);
@@ -133,7 +163,10 @@ describe('GlobalExceptionFilter', () => {
 
     process.env.NODE_ENV = 'development';
     const { host: h2, res: r2 } = fakeHost();
-    filter.catch(new AppError(ErrorCode.BUSINESS_ERROR, 'x', { details: { a: 1 } }), h2);
+    filter.catch(
+      new AppError(ErrorCode.BUSINESS_ERROR, 'x', { details: { a: 1 } }),
+      h2,
+    );
     expect((r2.body as ErrorResponseBody).details).toEqual({ a: 1 });
     expect((r2.body as ErrorResponseBody).stack).toBeDefined();
   });
@@ -141,7 +174,10 @@ describe('GlobalExceptionFilter', () => {
   it('未识别异常不会把原始 message 透给客户端', () => {
     process.env.NODE_ENV = 'production';
     const { host, res } = fakeHost();
-    filter.catch(new Error('Cannot read property x of undefined at /app/src/foo.ts:12'), host);
+    filter.catch(
+      new Error('Cannot read property x of undefined at /app/src/foo.ts:12'),
+      host,
+    );
     const body = res.body as ErrorResponseBody;
     expect(body.code).toBe(ErrorCode.INTERNAL_ERROR);
     expect(body.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -76,7 +76,7 @@ export class VisualizationService {
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
       const validation = validationResults[i];
-      
+
       const node = this.createStepNode(step, validation, i);
       nodes.push(node);
 
@@ -116,9 +116,9 @@ export class VisualizationService {
 
     const metadata = {
       totalSteps: steps.length,
-      correctSteps: validationResults.filter(v => v.status === 'pass').length,
-      errorSteps: validationResults.filter(v => v.status === 'fail').length,
-      keySteps: steps.filter(s => s.keyPoint && s.keyPoint.length > 0).length,
+      correctSteps: validationResults.filter((v) => v.status === 'pass').length,
+      errorSteps: validationResults.filter((v) => v.status === 'fail').length,
+      keySteps: steps.filter((s) => s.keyPoint && s.keyPoint.length > 0).length,
     };
 
     return {
@@ -155,7 +155,9 @@ export class VisualizationService {
     };
   }
 
-  private getNodeColor(validation: ValidationResult): 'green' | 'red' | 'blue' | 'yellow' | 'gray' {
+  private getNodeColor(
+    validation: ValidationResult,
+  ): 'green' | 'red' | 'blue' | 'yellow' | 'gray' {
     switch (validation.status) {
       case 'pass':
         return 'green';
@@ -168,43 +170,50 @@ export class VisualizationService {
     }
   }
 
-  private getNodeShape(step: SolutionStep, validation: ValidationResult): 'rect' | 'rounded' | 'diamond' | 'circle' {
+  private getNodeShape(
+    step: SolutionStep,
+    validation: ValidationResult,
+  ): 'rect' | 'rounded' | 'diamond' | 'circle' {
     if (validation.status === 'fail') {
       return 'diamond';
     }
-    
+
     if (step.keyPoint && step.keyPoint.length > 0) {
       return 'rounded';
     }
-    
+
     return 'rect';
   }
 
   private formatNodeLabel(step: SolutionStep, index: number): string {
-    const title = step.title.length > 20 ? step.title.substring(0, 20) + '...' : step.title;
+    const title =
+      step.title.length > 20 ? step.title.substring(0, 20) + '...' : step.title;
     return `步骤${index + 1}: ${title}`;
   }
 
-  private createTooltip(step: SolutionStep, validation: ValidationResult): string {
+  private createTooltip(
+    step: SolutionStep,
+    validation: ValidationResult,
+  ): string {
     const parts: string[] = [];
-    
+
     parts.push(`标题: ${step.title}`);
     parts.push(`描述: ${step.description}`);
-    
+
     if (step.formula) {
       parts.push(`公式: ${step.formula}`);
     }
-    
+
     if (step.result) {
       parts.push(`结果: ${step.result}`);
     }
-    
+
     parts.push(`验证状态: ${validation.message}`);
-    
+
     if (!validation.isValid && validation.details) {
       parts.push(`问题详情: ${validation.details}`);
     }
-    
+
     return parts.join('\\n');
   }
 
@@ -254,9 +263,12 @@ export class VisualizationService {
     }
   }
 
-  private generateMermaidCode(nodes: MermaidNode[], edges: MermaidEdge[]): string {
+  private generateMermaidCode(
+    nodes: MermaidNode[],
+    edges: MermaidEdge[],
+  ): string {
     const lines: string[] = [];
-    
+
     lines.push('graph TD');
     lines.push('    %% 解题流程图');
     lines.push('');
@@ -275,7 +287,7 @@ export class VisualizationService {
 
     lines.push('');
     lines.push('    %% 样式定义');
-    
+
     for (const node of nodes) {
       if (node.style.length > 0) {
         lines.push(`    style ${node.id} ${node.style.join(',')}`);
@@ -321,7 +333,7 @@ export class VisualizationService {
 
   private generateEdgeCode(edge: MermaidEdge): string {
     let arrow = '-->';
-    
+
     if (edge.style === 'dashed') {
       arrow = '-.->';
     } else if (edge.style === 'bold') {
@@ -618,17 +630,26 @@ ${flowchart.code}
     }
   }
 
-  private exportToSVG(flowchart: MermaidFlowchart, options: ExportOptions): string {
+  private exportToSVG(
+    flowchart: MermaidFlowchart,
+    options: ExportOptions,
+  ): string {
     const html = this.generateInteractiveHTML(flowchart);
     return html;
   }
 
-  private exportToPNG(flowchart: MermaidFlowchart, options: ExportOptions): Buffer {
+  private exportToPNG(
+    flowchart: MermaidFlowchart,
+    options: ExportOptions,
+  ): Buffer {
     const html = this.generateInteractiveHTML(flowchart);
     return Buffer.from(html, 'utf-8');
   }
 
-  private exportToPDF(flowchart: MermaidFlowchart, options: ExportOptions): Buffer {
+  private exportToPDF(
+    flowchart: MermaidFlowchart,
+    options: ExportOptions,
+  ): Buffer {
     const html = this.generateInteractiveHTML(flowchart);
     return Buffer.from(html, 'utf-8');
   }
@@ -647,18 +668,18 @@ ${flowchart.code}
 
       details.push(`步骤 ${index + 1}: ${step.title}`);
       details.push(`描述: ${step.description}`);
-      
+
       if (step.formula) {
         details.push(`公式: ${step.formula}`);
       }
-      
+
       details.push(`过程: ${step.process}`);
       details.push(`结果: ${step.result}`);
-      
+
       if (step.highlight) {
         details.push(`注意: ${step.highlight}`);
       }
-      
+
       if (step.keyPoint) {
         details.push(`关键点: ${step.keyPoint}`);
       }

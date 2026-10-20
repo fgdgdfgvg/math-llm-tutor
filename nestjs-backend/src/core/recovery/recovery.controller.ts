@@ -14,7 +14,9 @@ export class RecoveryController {
 
   @Post('force/:serviceName')
   @Public()
-  async forceRecovery(@Param('serviceName') serviceName: string): Promise<{ success: boolean; message: string }> {
+  async forceRecovery(
+    @Param('serviceName') serviceName: string,
+  ): Promise<{ success: boolean; message: string }> {
     return this.recoveryService.forceRecovery(serviceName);
   }
 }
