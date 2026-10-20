@@ -1,11 +1,20 @@
-import { Injectable, Logger, BadRequestException, InternalServerErrorException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { KnowledgeService } from '../knowledge/knowledge.service';
 import { IsOptional, IsString, IsIn } from 'class-validator';
-import { describeErrorForLog, describeHttpError } from '../../common/utils/redact';
+import {
+  describeErrorForLog,
+  describeHttpError,
+} from '../../common/utils/redact';
 
 export class SolveProblemDto {
   @IsOptional()
@@ -64,8 +73,11 @@ export class AiSolverService {
         ? this.configService.get<string>('DEEPSEEK_API_KEY')
         : this.configService.get<string>('KATCODER_API_KEY');
 
-    const baseUrl = actualModel === 'DeepSeek' ? this.configService.get<string>('DEEPSEEK_BASE_URL') : this.configService.get<string>('KATCODER_BASE_URL');
-    
+    const baseUrl =
+      actualModel === 'DeepSeek'
+        ? this.configService.get<string>('DEEPSEEK_BASE_URL')
+        : this.configService.get<string>('KATCODER_BASE_URL');
+
     if (!apiKey || !baseUrl) {
       // 未配置大模型密钥时返回 503（而非 500），前端据此提示用户改用智能体模式，
       // 智能体模式完全依赖本地 SymPy 计算，无需任何 API Key
@@ -76,10 +88,16 @@ export class AiSolverService {
       );
     }
 
+    // 模型名：优先环境变量，其次按服务商给默认值。
+    // 注意：不同服务商的模型命名不同——DeepSeek 官方用 deepseek-chat/deepseek-reasoner，
+    // SiliconFlow 网关用 deepseek-ai/DeepSeek-V3。默认走 SiliconFlow 命名以匹配默认 baseUrl，
+    // 若 baseUrl 指向官方端点，务必同步设置 DEEPSEEK_MODEL=deepseek-chat（否则 404）。
     const modelId =
       actualModel === 'DeepSeek'
-        ? 'deepseek-ai/DeepSeek-V3'
-        : 'deepseek-ai/DeepSeek-V3';
+        ? this.configService.get<string>('DEEPSEEK_MODEL') ||
+          'deepseek-ai/DeepSeek-V3'
+        : this.configService.get<string>('KATCODER_MODEL') ||
+          'katcoder-math-v1';
 
     const requestUrl = `${baseUrl}/chat/completions`;
 
@@ -136,7 +154,7 @@ ${knowledgeContext}
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post(requestUrl, body, { 
+        this.httpService.post(requestUrl, body, {
           headers,
           timeout: 60000,
         }),
@@ -161,7 +179,9 @@ ${knowledgeContext}
       // 后者会把上游原始报文（含回显的请求头）写进日志；
       // 抛给客户端的 message 里也原样带了上游响应体 —— 属于信息泄露。
       // 统一改为脱敏摘要上游只保留状态码与错误码。
-      this.logger.error(`Failed to call AI API: ${describeErrorForLog(axiosError)}`);
+      this.logger.error(
+        `Failed to call AI API: ${describeErrorForLog(axiosError)}`,
+      );
 
       if (axiosError.response) {
         const summary = describeHttpError(axiosError);
@@ -174,7 +194,9 @@ ${knowledgeContext}
         throw new InternalServerErrorException('AI服务请求超时，请稍后重试');
       }
 
-      throw new InternalServerErrorException(`AI服务调用失败: ${axiosError.message}`);
+      throw new InternalServerErrorException(
+        `AI服务调用失败: ${axiosError.message}`,
+      );
     }
   }
 
