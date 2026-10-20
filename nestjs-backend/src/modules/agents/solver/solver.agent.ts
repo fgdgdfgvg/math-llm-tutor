@@ -480,7 +480,10 @@ export class SolverAgent extends BaseAgent {
         if (parsed.result && !this.isPlaceholderResult(parsed.result)) {
           return parsed.result;
         }
-      } catch (e) {}
+      } catch (e) {
+        // 非 JSON 步骤跳过；记录尝试过的位置便于排查"为何未提取到答案"
+        this.logger.debug(`步骤[${i}]非 JSON，跳过提取: ${(e as Error).message}`);
+        }
     }
 
     // 不编造答案：编一个看似合理的假答案比诚实地说「未得出」危害大得多

@@ -964,7 +964,10 @@ export class LocalComputationService {
               };
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          // 多项式解析失败视为不可解，降级到通用结论；记录原因便于排查
+          this.logger.debug(`computeLimitResult 解析异常: ${(e as Error).message}`);
+        }
       }
     }
     
