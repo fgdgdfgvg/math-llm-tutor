@@ -25,14 +25,14 @@ scripts/
 ## 一键自检（改完代码先跑这个）
 
 ```bash
-node self-check.cjs                 # 自动选择运行模式，跑完给出退出码
-node self-check.cjs --mode docker   # 强制走 docker compose（守护进程没起会自动拉起）
-node self-check.cjs --mode local    # 强制本机进程（本地 MongoDB + sympy-service/venv + node dist/main.js）
-node self-check.cjs --no-start      # 不启动任何服务，只体检已在运行的服务
-node self-check.cjs --full          # 额外跑 probe-routes / e2e-verify（+ 前后端数学自检）
-node self-check.cjs --with-frontend # 额外验证前端页面（本机模式会自动拉起 5173 的 H5 dev server）
-node self-check.cjs --build         # Docker 模式下强制重建后端镜像
-node self-check.cjs --stop          # 停掉自检启动的本机进程
+node scripts/self-check.cjs                 # 自动选择运行模式，跑完给出退出码
+node scripts/self-check.cjs --mode docker   # 强制走 docker compose（守护进程没起会自动拉起）
+node scripts/self-check.cjs --mode local    # 强制本机进程（本地 MongoDB + sympy-service/venv + node dist/main.js）
+node scripts/self-check.cjs --no-start      # 不启动任何服务，只体检已在运行的服务
+node scripts/self-check.cjs --full          # 额外跑 probe-routes / e2e-verify（+ 前后端数学自检）
+node scripts/self-check.cjs --with-frontend # 额外验证前端页面（本机模式会自动拉起 5173 的 H5 dev server）
+node scripts/self-check.cjs --build         # Docker 模式下强制重建后端镜像
+node scripts/self-check.cjs --stop          # 停掉自检启动的本机进程
 ```
 
 它会按顺序做六件事，最后用退出码回答「系统现在能不能用」：
@@ -53,7 +53,7 @@ node self-check.cjs --stop          # 停掉自检启动的本机进程
 退出码 `0` = 系统可用；`1` = 有致命问题（会列出失败项与排查提示）。
 每次运行都会写一份机器可读报告到 `.self-check/report.json`，服务日志在 `.self-check/*.log`。
 
-> 不用看这一串参数？日常一条就够：`node self-check.cjs`。
+> 不用看这一串参数？日常一条就够：`node scripts/self-check.cjs`。
 
 ## 服务地址
 

@@ -13,16 +13,16 @@
  *   6. 汇总          逐项结果 + 退出码（0 = 系统可用，1 = 有致命问题）
  *
  * 用法：
- *   node self-check.cjs                    # 自动选择 Docker 或本机模式
- *   node self-check.cjs --mode docker      # 强制 docker compose（守护进程没起会自动拉起）
- *   node self-check.cjs --mode local       # 强制本机进程（本地 MongoDB + sympy-service/venv）
- *   node self-check.cjs --no-start         # 不启动任何服务，只体检已在运行的服务
- *   node self-check.cjs --full             # 额外跑 probe-routes / e2e-verify
- *   node self-check.cjs --with-frontend    # 额外验证前端页面可访问
- *   node self-check.cjs --keep             # 保留自检临时账号与数据（默认清理）
- *   node self-check.cjs --stop             # 停止本脚本此前启动的本机进程后退出
- *   node self-check.cjs --build            # 本机模式下强制重新构建后端
- *   node self-check.cjs --timeout=300      # 等待服务就绪的最长秒数（默认 240）
+ *   node scripts/self-check.cjs                    # 自动选择 Docker 或本机模式
+ *   node scripts/self-check.cjs --mode docker      # 强制 docker compose（守护进程没起会自动拉起）
+ *   node scripts/self-check.cjs --mode local       # 强制本机进程（本地 MongoDB + sympy-service/venv）
+ *   node scripts/self-check.cjs --no-start         # 不启动任何服务，只体检已在运行的服务
+ *   node scripts/self-check.cjs --full             # 额外跑 probe-routes / e2e-verify
+ *   node scripts/self-check.cjs --with-frontend    # 额外验证前端页面可访问
+ *   node scripts/self-check.cjs --keep             # 保留自检临时账号与数据（默认清理）
+ *   node scripts/self-check.cjs --stop             # 停止本脚本此前启动的本机进程后退出
+ *   node scripts/self-check.cjs --build            # 本机模式下强制重新构建后端
+ *   node scripts/self-check.cjs --timeout=300      # 等待服务就绪的最长秒数（默认 240）
  */
 const fs = require('fs');
 const os = require('os');
@@ -32,7 +32,8 @@ const { spawn, spawnSync } = require('child_process');
 const { createRequire } = require('module');
 
 // ───────────────────────────── 基础设置 ─────────────────────────────
-const ROOT = __dirname;
+// 脚本位于 scripts/ 子目录，仓库根为其上一级
+const ROOT = path.resolve(__dirname, '..');
 const BACKEND_DIR = path.join(ROOT, 'nestjs-backend');
 const SYMPY_DIR = path.join(ROOT, 'sympy-service');
 const FRONTEND_DIR = path.join(ROOT, 'uniapp-frontend');
@@ -597,7 +598,7 @@ async function phaseStartDependencies() {
       } else {
         record(`后端 ${BASE_URL} 在运行但构建产物落后于源码`, false, {
           detail: '自检将验证的是旧代码，结论不可信',
-          hint: '请停掉当前后端（node self-check.cjs --stop 或手动 taskkill）后重跑，让它以最新构建启动',
+          hint: '请停掉当前后端（node scripts/self-check.cjs --stop 或手动 taskkill）后重跑，让它以最新构建启动',
         });
         throw new Abort('运行中的后端是旧构建，拒绝用旧代码出具自检结论');
       }
@@ -1027,7 +1028,7 @@ async function phaseLearningLoop(knowledgePoints) {
     const refreshedData = unwrap(refreshed.json) || {};
     record('refresh token 可换新令牌对（/auth/refresh）', refreshed.status === 200 && Boolean(refreshedData.access_token), {
       detail: `status=${refreshed.status} expires_in=${refreshedData.expires_in}`,
-      hint: '404 说明后端跑的是旧构建——先 node self-check.cjs --stop 再重跑',
+      hint: '404 说明后端跑的是旧构建——先 node scripts/self-check.cjs --stop 再重跑',
     });
     // 宽容窗口内重放同一旧值应幂等返回同一份（不是 401）
     const replay = await http('POST', `${BASE_URL}/auth/refresh`, { body: { refreshToken: refreshToken0 }, timeoutMs: 15_000 });
@@ -1123,7 +1124,7 @@ async function phaseLearningLoop(knowledgePoints) {
       const { purged, deletedUser } = await cleanupTempUser(username, [unwrap(reg.json)?.id, unwrap(reg.json)?._id, unwrap(login.json)?.user?.id]);
       record(`清理自检数据（账号 ${username}）`, deletedUser > 0, {
         detail: `删除账号 ${deletedUser} 个，清理用户数据 ${purged.join('、') || '无'}`,
-        hint: '清理失败可执行 `node reset-test-data.cjs` 恢复演示数据',
+        hint: '清理失败可执行 `node scripts/reset-test-data.cjs` 恢复演示数据',
         fatal: false,
       });
       const relogin = await http('POST', `${BASE_URL}/user/login`, { body: { username, password }, timeoutMs: 20_000 });
@@ -1134,7 +1135,7 @@ async function phaseLearningLoop(knowledgePoints) {
     } catch (error) {
       record('清理自检数据', false, {
         detail: String(error.message).slice(0, 120),
-        hint: `数据库清理失败（URI=${runtime.mongoUri}），可手动执行 node reset-test-data.cjs`,
+        hint: `数据库清理失败（URI=${runtime.mongoUri}），可手动执行 node scripts/reset-test-data.cjs`,
         fatal: false,
       });
     }
@@ -1148,13 +1149,13 @@ async function phaseExtras() {
   if (!opts.full && !opts.withFrontend) return;
   section('7/8 附加检查');
   if (opts.full) {
-    const probe = await runSuiteWithRetry('probe', 'probe-routes.cjs', { tolerant: true });
+    const probe = await runSuiteWithRetry('probe', 'scripts/probe-routes.cjs', { tolerant: true });
     if (!probe.rateLimited) record('路由探测（21 条接口，无 404/500）', probe.ok, { detail: probe.detail });
-    const e2e = await runSuiteWithRetry('e2e', 'e2e-verify.cjs', { tolerant: true });
+    const e2e = await runSuiteWithRetry('e2e', 'scripts/e2e-verify.cjs', { tolerant: true });
     if (!e2e.rateLimited) {
       record('端到端脚本 e2e-verify', e2e.ok, {
         detail: e2e.detail,
-        hint: 'e2e 会注册临时账号，可用 node reset-test-data.cjs 清理',
+        hint: 'e2e 会注册临时账号，可用 node scripts/reset-test-data.cjs 清理',
       });
     }
   }
@@ -1169,7 +1170,7 @@ async function phaseExtras() {
     } catch (error) {
       record('清理附加检查产生的临时账号', false, {
         detail: String(error.message).slice(0, 100),
-        hint: '可手动执行 node reset-test-data.cjs',
+        hint: '可手动执行 node scripts/reset-test-data.cjs',
         fatal: false,
       });
     }

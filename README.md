@@ -1,7 +1,22 @@
 # 高等数学智能教育系统 · Math LLM Tutor
 
+![CI](https://img.shields.io/github/actions/workflow/status/fgdgdfgvg/math-llm-tutor/verify.yml?branch=master&label=CI&logo=github)
+![License](https://img.shields.io/badge/license-ISC-blue)
+
 > 基于 **NestJS + MongoDB + Neo4j + Vue3/UniApp** 的高等数学 AI 辅导系统。
 > 核心链路：题目 → 多智能体（planner / solver / diagnostic / feedback）→ SymPy 符号计算 → 分步解答 + 掌握度诊断。
+
+| AI 解题（多智能体工作流） | 知识图谱（ECharts 力导向） |
+|---|---|
+| ![AI 解题](docs/images/solver-steps.png) | ![知识图谱](docs/images/knowledge-graph.png) |
+
+| 学习进度（掌握度 / 薄弱环节） | 错题本（按知识点归纳） |
+|---|---|
+| ![学习进度](docs/images/progress-dashboard.png) | ![错题本](docs/images/mistake-book.png) |
+
+| 部署与健康门禁 |
+|---|
+| ![部署与门禁](docs/images/deploy-gates.png) |
 
 当前状态：**可部署工程原型**。已建立完整的上线门禁（`npm run verify`）、部署加固探针（`npm run verify:probe`）、认证授权探针（`npm run auth:probe`）与 CI（`.github/workflows/verify.yml`），评估依据见 [`docs/可部署性评估报告.md`](./docs/可部署性评估报告.md)。
 
@@ -40,8 +55,7 @@ math_llm_tutor/
 ├── formula-renderer-service/# 公式渲染服务
 ├── datasets/                # 题库 / 基准数据
 ├── docs/                    # 设计 / 评估 / 自检 / 部署文档
-├── scripts/                 # 验证与部署脚本（verify-all / deploy-probe / secret-scan …）
-├── self-check.cjs           # 集成自检入口
+├── scripts/                 # 验证与部署脚本（verify-all / deploy-probe / secret-scan / self-check …）
 ├── docker-compose.yml       # 一键编排
 ├── .env.example             # 根级环境变量样例（生产部署用）
 ├── .github/workflows/verify.yml  # CI
@@ -171,7 +185,7 @@ npm run verify          # 6 项全绿才可交付：
 npm run verify:probe    # 部署加固探针 15 项（限流伪造 / 安全头 / CORS 403 / Swagger 收敛 / 探针语义）
 npm run auth:probe      # 认证授权探针（RBAC / 轮换 / 锁定 / 信封）
 npm run check:sh        # 启动脚本结构校验
-node self-check.cjs --mode local --full   # 集成自检（需 Mongo / SymPy）
+node scripts/self-check.cjs --mode local --full   # 集成自检（需 Mongo / SymPy）
 ```
 
 CI（`.github/workflows/verify.yml`）与本地同一份脚本，避免"本地绿、CI 红"。
@@ -179,6 +193,19 @@ CI（`.github/workflows/verify.yml`）与本地同一份脚本，避免"本地�
 ---
 
 ## 七、基准评测与 A/B 消融（可复现）
+
+### 核心指标
+
+| 指标 | 数值 | 可核对依据 |
+|---|---|---|
+| 基准集规模 | 500 题（11 个高数领域） | `datasets/benchmark-dataset.json` |
+| 符号可解子集 | 54 题 | `results/eval-summary.md` |
+| 解出题数 | 21 题 | `results/eval-summary.md`（成功求解 21） |
+| **解出即正确** | **21 / 21** | `results/eval-summary.md`（判为正确 21，成功子集正确率 1.0） |
+| 判定方式 | 数值等价 + 符号等价（`simplify(a-b)==0`）双重判定 | `scripts/benchmark-eval.cjs` |
+| 符号直解延迟 | 35 ms / 题（对照多智能体流水线 4018 ms） | `results/ablation-summary.md` |
+
+> 口径说明：上表"解出即正确"指**成功求解子集内**判定为正确的比例，体现的是判定器的严格性——本系统宁可记为 `unsupported`，也不虚报答案。它**不是**全量 500 题的整体准确率；未接入的题型（证明/选择/含 `+C` 不定积分）显式记为 `unsupported`，不纳入统计。
 
 `datasets/benchmark-dataset.json` 是 500 题标准基准集（`高等数学LLM基准测试集_v2`，覆盖 11 个高数领域）。`scripts/benchmark-eval.cjs` 对其中的**符号可解计算子集**做真实求解评测：
 
@@ -207,7 +234,23 @@ node scripts/ablation-eval.cjs
 # 注意：后端 /agents/* 端点限流 20 次/5 分钟/IP，脚本默认 16s 间隔 + 429 指数退避
 ```
 
-消融的价值：隔离"符号计算内核"与"多智能体编排层"的贡献——若 B 低于 A，瓶颈在题面解析/编排而非符号内核。当前结论见 [`results/ablation-summary.md`](./results/ablation-summary.md)。
+### 一次失败实验的价值：瓶颈是如何定位的
+
+本轮 A/B 消融本身是一份"诚实暴露差距"的工程记录，其价值不在于通过率，而在于它把瓶颈**精确定位到了可行动的一层**：
+
+| 指标 | A 纯符号直解 | B 多智能体流水线 |
+|---|---|---|
+| 评测题数（公平口径） | 27 | 27 |
+| 解出即正确 | **21 / 21** | 0 / 27 |
+| 平均耗时 | **35 ms** | 4018 ms |
+
+同一台 SymPy 服务，经本评测的 LaTeX→SymPy 转换器（策略 A）21/21 全对；经多智能体端点（策略 B）0/27。结论与归因（详见 [`results/ablation-summary.md`](./results/ablation-summary.md)）：
+
+- **瓶颈在题面解析层，而非符号内核**：B 的 solver 本地计算路径无法消化基准集的 LaTeX 题面，全部跌出到规则引擎兜底；符号计算内核本身（A 已证明）21/21 正确。
+- **编排开销可量化**：B 均耗 4018ms ≈ A（35ms）的 115 倍，为四智能体串行编排 + 规则兜底的固定成本。
+- **P1 行动项**：把 `scripts/latex-to-sympy.cjs` 的转换能力移植进 solver 本地计算路径（或直接复用），消除 LaTeX 题面解析缺口；同时把"已整理结论"等无信息泛化文本纳入 `isPlaceholderResult` 检测。
+
+> 这种"先跑对照组、再定位瓶颈到具体层"的做法，正是本仓库评测链路的可复现方法论：两策略吃相同题面、用同一判定器、逐题原始数据落盘 `results/ablation-raw.json`。
 
 ---
 
@@ -242,9 +285,7 @@ node scripts/ablation-eval.cjs
 1. **多实例必须配 Redis**：未配置时降级为进程内内存，多实例会不一致。
 2. **长任务同步返回**：多智能体求解为串行同步调用（数十秒），尚未任务化 + SSE；生产建议网关超时 ≥60s。
 3. **前端生产构建未在本机验证**：由 CI 的 `build:h5` 门禁覆盖。
-4. **`math-tutor-prototype/` 为旧版前端**：未接入 refresh token，建议正式交付前移除或改造。
-5. **3 组历史泄露密钥待作废**：已通过 `scripts/secret-scan.cjs` 从代码与日志中脱敏移除、并加入提交前门禁；但密钥值本身曾泄露，仍需到对应服务商后台**作废并轮换**（代码侧已无法自动完成，属纯人工运维动作）。
-6. **评测覆盖范围有限**：基准评测目前覆盖极限/导数/积分等符号计算；A/B 消融已接入（`scripts/ablation-eval.cjs`），当前结论暴露多智能体链路在 LaTeX 题面解析上的真实缺口（详见 `results/ablation-summary.md`），修复 solver 本地路径的 LaTeX 转换是下一步 P1。
+4. **评测覆盖范围有限**：基准评测目前覆盖极限/导数/积分等符号可解计算子集，证明题/选择题/含 `+C` 不定积分尚未接入求解器，均显式记为 `unsupported`。扩展求解器接入范围是后续迭代方向（详见 [`results/eval-summary.md`](./results/eval-summary.md)）。
 
 ---
 

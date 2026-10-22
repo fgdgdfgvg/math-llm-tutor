@@ -8,26 +8,38 @@
   },
   "name": "math_llm_tutor",
   "version": "1.0.0",
-  "description": "高等数学智能教育系统 — NestJS + MongoDB + Neo4j + Vue3/UniApp，多智能体 + SymPy 符号计算的分步辅导与掌握度诊断平台。",
+  "description": "高等数学智能教育系统 — NestJS + MongoDB + Neo4j + Vue3/UniApp，多智能体（planner/solver/diagnostic/feedback）+ SymPy 符号计算驱动的分步辅导与掌握度诊断平台，含公式渲染与 ECharts 知识图谱。",
+  "homepage": "https://github.com/fgdgdfgvg/math-llm-tutor#readme",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "node self-check.cjs",
-    "self-check": "node self-check.cjs",
-    "self-check:docker": "node self-check.cjs --mode docker",
-    "self-check:local": "node self-check.cjs --mode local",
-    "self-check:full": "node self-check.cjs --full --with-frontend",
+    "test": "node scripts/self-check.cjs",
+    "self-check": "node scripts/self-check.cjs",
+    "self-check:docker": "node scripts/self-check.cjs --mode docker",
+    "self-check:local": "node scripts/self-check.cjs --mode local",
+    "self-check:full": "node scripts/self-check.cjs --full --with-frontend",
     "secret:scan": "node scripts/secret-scan.cjs --scan",
     "log:scan": "node scripts/log-hygiene-scan.cjs",
     "secret:redact": "node scripts/secret-scan.cjs --redact",
     "verify": "node scripts/verify-all.cjs",
     "verify:probe": "node scripts/deploy-probe.cjs",
     "auth:probe": "node scripts/auth-probe.cjs",
-    "reset:data": "node reset-test-data.cjs",
+    "reset:data": "node scripts/reset-test-data.cjs",
     "check:sh": "node scripts/sh-structure-check.cjs"
   },
-  "keywords": [],
+  "keywords": [
+    "math-education",
+    "symbolic-computation",
+    "sympy",
+    "multi-agent",
+    "llm",
+    "nestjs",
+    "mongodb",
+    "neo4j",
+    "knowledge-graph",
+    "university-math"
+  ],
   "author": "",
   "license": "ISC"
 }

@@ -15,7 +15,8 @@ const path = require('path');
 const { createRequire } = require('module');
 
 // 依赖装在 nestjs-backend 里，这里显式按后端目录解析
-const backendRequire = createRequire(path.join(__dirname, 'nestjs-backend', 'package.json'));
+// 脚本位于 scripts/ 子目录，仓库根为其上一级
+const backendRequire = createRequire(path.join(__dirname, '..', 'nestjs-backend', 'package.json'));
 const { MongoClient } = backendRequire('mongodb');
 const bcrypt = backendRequire('bcrypt');
 
