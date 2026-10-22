@@ -156,9 +156,9 @@ export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
           '请使用短时效 access token + refresh token 续期，推荐 15m。',
       );
     }
-    // 弱口令/默认密钥只告警不阻断：它们属于“必须轮换”的部署卫生问题，
-    // 而 CORS 全放行是真实可利用的漏洞（上面已硬性拦截）。
-    // 这里用 ERROR 级日志确保在容器日志里一眼可见。
+    // 弱口令/默认密钥：生产环境直接拒绝启动（与 CORS 全放行同级，都是"真实可利用"）。
+    // 理由：JWT_SECRET 若命中公开默认值，攻击者可凭该默认密钥伪造任意用户令牌，
+    // 全站认证体系形同虚设；仅告警会留下"服务已启动但认证可被绕过"的假安全。
     const weak = [
       ['JWT_SECRET', jwtSecret],
       ['MONGO_ROOT_PASSWORD', process.env.MONGO_ROOT_PASSWORD],
@@ -168,9 +168,11 @@ export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
       ([, value]) => value && WEAK_SECRETS.includes(String(value).trim()),
     );
     if (weak.length > 0) {
-      logger.error(
-        `检测到默认口令/弱密钥: ${weak.map(([key]) => key).join(', ')} —— 仅限本地演示使用，正式部署前必须在 .env 中更换`,
-      );
+      const message = `检测到默认口令/弱密钥: ${weak
+        .map(([key]) => key)
+        .join(', ')} —— 生产环境禁止使用默认口令/弱密钥，请在 .env 中更换`;
+      logger.error(message);
+      throw new Error(message);
     }
   }
 

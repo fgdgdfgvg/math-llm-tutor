@@ -67,7 +67,7 @@ async function registerAndLogin(username, password) {
   // 2. 令牌形态
   const expiresIn = login.data?.expires_in;
   check('access token 为短时效（≤ 3600s）', typeof expiresIn === 'number' && expiresIn <= 3600, `expires_in=${expiresIn}`);
-  check('登录响应包含 refresh_token', Boolean(login.data?.refresh_token'));
+  check('登录响应包含 refresh_token', Boolean(login.data?.refresh_token));
   const refresh0 = login.data?.refresh_token;
 
   // 3. 轮换 / 重放 / 宽容窗口

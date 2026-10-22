@@ -68,21 +68,27 @@ export class AiSolverService {
 
     const knowledgePoints = await this.findRelevantKnowledge(actualPrompt);
 
+    // 变量名向后兼容收敛：优先读新多智能体链路统一的 AI_DEEPSEEK_* 前缀，
+    // 回退旧直连模块的 DEEPSEEK_*（无前缀）。避免"只配了新变量名、旧模块却报未配置"。
     const apiKey =
       actualModel === 'DeepSeek'
-        ? this.configService.get<string>('DEEPSEEK_API_KEY')
+        ? this.configService.get<string>('AI_DEEPSEEK_API_KEY') ||
+          this.configService.get<string>('DEEPSEEK_API_KEY')
         : this.configService.get<string>('KATCODER_API_KEY');
 
     const baseUrl =
       actualModel === 'DeepSeek'
-        ? this.configService.get<string>('DEEPSEEK_BASE_URL')
+        ? this.configService.get<string>('AI_DEEPSEEK_BASE_URL') ||
+          this.configService.get<string>('DEEPSEEK_BASE_URL')
         : this.configService.get<string>('KATCODER_BASE_URL');
 
     if (!apiKey || !baseUrl) {
       // 未配置大模型密钥时返回 503（而非 500），前端据此提示用户改用智能体模式，
       // 智能体模式完全依赖本地 SymPy 计算，无需任何 API Key
       const envKey =
-        actualModel === 'DeepSeek' ? 'DEEPSEEK_API_KEY' : 'KATCODER_API_KEY';
+        actualModel === 'DeepSeek'
+          ? 'AI_DEEPSEEK_API_KEY（或旧 DEEPSEEK_API_KEY）'
+          : 'KATCODER_API_KEY';
       throw new ServiceUnavailableException(
         `AI 模型（${actualModel}）未配置：请在后端 .env 中设置 ${envKey}，或改用「智能体模式」（无需 API Key）`,
       );
@@ -94,7 +100,8 @@ export class AiSolverService {
     // 若 baseUrl 指向官方端点，务必同步设置 DEEPSEEK_MODEL=deepseek-chat（否则 404）。
     const modelId =
       actualModel === 'DeepSeek'
-        ? this.configService.get<string>('DEEPSEEK_MODEL') ||
+        ? this.configService.get<string>('AI_DEEPSEEK_MODEL') ||
+          this.configService.get<string>('DEEPSEEK_MODEL') ||
           'deepseek-ai/DeepSeek-V3'
         : this.configService.get<string>('KATCODER_MODEL') ||
           'katcoder-math-v1';

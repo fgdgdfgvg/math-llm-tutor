@@ -127,7 +127,10 @@ describe('UserController', () => {
     it('凭据错误返回 401 且不签发令牌', async () => {
       userService.validateUser.mockResolvedValue(null);
       await expect(
-        controller.login({ username: 'bob', password: 'secret123' }),
+        controller.login(
+          { username: 'bob', password: 'secret123' },
+          { ip: '127.0.0.1' },
+        ),
       ).rejects.toThrow();
       expect(authService.login).not.toHaveBeenCalled();
     });
@@ -139,10 +142,13 @@ describe('UserController', () => {
         roles: ['student'],
       });
       authService.login.mockResolvedValue({ access_token: 'token' });
-      const result = await controller.login({
-        username: 'bob',
-        password: 'secret123',
-      });
+      const result = await controller.login(
+        {
+          username: 'bob',
+          password: 'secret123',
+        },
+        { ip: '127.0.0.1' },
+      );
       expect(result).toEqual({ access_token: 'token' });
     });
   });

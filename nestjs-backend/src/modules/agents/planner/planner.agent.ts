@@ -516,7 +516,7 @@ ${knowledgeContext}
         const aiContent = response.content || '';
         const plan = this.parsePlan(aiContent);
         this.logger.log(
-          `AI(HuggingFace-MiniMax)生成解题计划成功: ${plan.problemType}, ${plan.steps.length}步`,
+          `AI(规划槽位/DeepSeek-V3)生成解题计划成功: ${plan.problemType}, ${plan.steps.length}步`,
         );
         return plan;
       }

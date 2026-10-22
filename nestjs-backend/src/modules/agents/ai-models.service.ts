@@ -135,7 +135,10 @@ export class AIModelsService {
     };
     this.modelConfigs.set(AIModelProvider.GLM, glmConfig);
 
-    // HuggingFace → 规划智能体。独立凭据：AI_HUGGINGFACE_API_KEY / HF_TOKEN。
+    // 规划智能体专用槽位（历史命名为 HUGGINGFACE）。独立凭据：AI_HUGGINGFACE_API_KEY / HF_TOKEN。
+    // 注意：槽位名是 HUGGINGFACE，但实际 baseUrl 走 SiliconFlow、默认模型是
+    // deepseek-ai/DeepSeek-V3（规划任务的重推理模型），并非 HuggingFace 平台或模型。
+    // 命名与模型错配属历史遗留，保留槽位名以保证向后兼容，语义以本注释为准。
     // 不得借用 AI_DEEPSEEK_API_KEY（同上，防 DeepSeek 官方 key 发往第三方）。
     const huggingFaceConfig: AIModelConfig = {
       provider: AIModelProvider.HUGGINGFACE,

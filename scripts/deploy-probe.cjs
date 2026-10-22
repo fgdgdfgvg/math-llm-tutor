@@ -24,6 +24,12 @@ const BACKEND = path.join(ROOT, 'nestjs-backend');
 const BASE_PORT = 3121;
 const VERBOSE = process.argv.includes('--verbose');
 
+// 生产场景专用 JWT_SECRET（≥32 字符）。CI 的 auth-integration 环境里
+// JWT_SECRET 占位符只有 30 字符，会被 validateServerEnv 的长度硬校验（<32）
+// 拒绝启动，导致"生产"场景的后端永远起不来、探针超时失败。
+// 这里显式注入一个探测专用占位符，仅用于验证"生产加固行为"，不含任何真实密钥。
+const PROBE_JWT_SECRET = 'deploy-probe-jwt-secret-not-for-production-0123456789';
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const results = [];
@@ -168,6 +174,7 @@ async function burst(port, n, headerFor) {
         NODE_ENV: 'production',
         CORS_ORIGIN: 'http://localhost:5173',
         TRUST_PROXY: '1',
+        JWT_SECRET: PROBE_JWT_SECRET,
       });
       started.push(child);
       console.log('\n【3】生产环境 —— CORS 拒绝语义 / 文档收敛 / HSTS');
@@ -215,6 +222,7 @@ async function burst(port, n, headerFor) {
         NODE_ENV: 'production',
         CORS_ORIGIN: 'http://localhost:5173',
         ENABLE_SWAGGER: 'true',
+        JWT_SECRET: PROBE_JWT_SECRET,
       });
       started.push(child);
       console.log('\n【4】生产环境 + ENABLE_SWAGGER=true');

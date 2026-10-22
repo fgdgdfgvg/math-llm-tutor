@@ -184,6 +184,12 @@
 | **GLM-4.7-Flash** | ModelScope/ZhipuAI | 诊断+反馈（超快速） | 20s |
 | **MiniMax-M2.7** | HuggingFace | 规划智能体备选 | 60s |
 
+> ⚠️ **注意**：上表为"目标模型矩阵"的规划愿景，部分模型（GPT-5.2、DeepSeek-R1-0528、
+> MiniMax-M2.7 等）并非当前代码实际接入。**当前实现的真实映射**见 §13.2「LLM API 免费方案」
+> 的实测对照表——7 个槽位实际统一走 SiliconFlow，其中规划智能体所用槽位（历史命名 HuggingFace）
+> 默认模型为 `deepseek-ai/DeepSeek-V3`。简历/答辩表述请以 §13.2 为准，避免"规划智能体=HuggingFace 平台"
+> 之类与代码不符的说法。
+
 ### 4.2 模型路由器（ModelRouterService）
 
 这是系统最精巧的设计之一。路由器将数学问题分为 **60+ 种细粒度类型**，每种类型预设最优模型：
