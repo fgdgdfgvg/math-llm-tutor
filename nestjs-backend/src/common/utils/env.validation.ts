@@ -156,23 +156,30 @@ export function validateServerEnv(options: ServerEnvCheckOptions = {}): void {
           '请使用短时效 access token + refresh token 续期，推荐 15m。',
       );
     }
-    // 弱口令/默认密钥：生产环境直接拒绝启动（与 CORS 全放行同级，都是"真实可利用"）。
-    // 理由：JWT_SECRET 若命中公开默认值，攻击者可凭该默认密钥伪造任意用户令牌，
-    // 全站认证体系形同虚设；仅告警会留下"服务已启动但认证可被绕过"的假安全。
-    const weak = [
-      ['JWT_SECRET', jwtSecret],
+    // 弱密钥：仅 JWT_SECRET 命中弱密钥时生产直接拒绝启动——攻击者可凭公开默认值
+    // 伪造任意用户令牌，全站认证形同虚设。其余口令（Mongo/Neo4j/Redis）命中默认值
+    // 只告警不阻断：它们要么是可选依赖、要么属于"必须轮换"的部署卫生问题，
+    // 一刀切 throw 会让 Neo4j 默认口令（12345678）等可选依赖连累整个服务启动失败。
+    const weakJwt = WEAK_SECRETS.includes(String(jwtSecret).trim());
+    if (weakJwt) {
+      const message =
+        '生产环境 JWT_SECRET 使用了默认值/弱密钥，禁止启动，请在 .env 中更换';
+      logger.error(message);
+      throw new Error(message);
+    }
+    const weakOthers = [
       ['MONGO_ROOT_PASSWORD', process.env.MONGO_ROOT_PASSWORD],
       ['NEO4J_PASSWORD', process.env.NEO4J_PASSWORD],
       ['REDIS_PASSWORD', process.env.REDIS_PASSWORD],
     ].filter(
       ([, value]) => value && WEAK_SECRETS.includes(String(value).trim()),
     );
-    if (weak.length > 0) {
-      const message = `检测到默认口令/弱密钥: ${weak
-        .map(([key]) => key)
-        .join(', ')} —— 生产环境禁止使用默认口令/弱密钥，请在 .env 中更换`;
-      logger.error(message);
-      throw new Error(message);
+    if (weakOthers.length > 0) {
+      logger.error(
+        `检测到默认口令（仅告警不阻断）: ${weakOthers
+          .map(([key]) => key)
+          .join(', ')} —— 正式部署前请在 .env 中更换`,
+      );
     }
   }
 

@@ -73,3 +73,6 @@ desktop.ini
 *.dmg
 *.iso
 *.zip
+
+# ============ 工程保障交付物（本地留档，不入库） ============
+deliverables/

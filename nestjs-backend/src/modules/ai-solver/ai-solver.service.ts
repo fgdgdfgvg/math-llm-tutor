@@ -15,6 +15,7 @@ import {
   describeErrorForLog,
   describeHttpError,
 } from '../../common/utils/redact';
+import { pickEnvPair } from '../../common/utils/env-pair.util';
 
 export class SolveProblemDto {
   @IsOptional()
@@ -68,19 +69,28 @@ export class AiSolverService {
 
     const knowledgePoints = await this.findRelevantKnowledge(actualPrompt);
 
-    // 变量名向后兼容收敛：优先读新多智能体链路统一的 AI_DEEPSEEK_* 前缀，
-    // 回退旧直连模块的 DEEPSEEK_*（无前缀）。避免"只配了新变量名、旧模块却报未配置"。
+    // 变量名向后兼容收敛：用「成对选择」整组读取，避免新组 key + 旧组 baseUrl
+    // 的跨组混合（会把官方 DeepSeek Key 发往第三方网关）。
+    // 只要 AI_DEEPSEEK_* 新组任一键被设置，就整组用新组；否则整组回退旧组 DEEPSEEK_*。
+    // 模型名默认 deepseek-ai/DeepSeek-V3（SiliconFlow 命名，匹配默认 baseUrl）；
+    // 若 baseUrl 指向官方端点，务必同步设置 *_MODEL=deepseek-chat（否则 404）。
+    const ds = pickEnvPair(this.configService, 'AI_DEEPSEEK_', 'DEEPSEEK_', {
+      model: 'deepseek-ai/DeepSeek-V3',
+    });
+
     const apiKey =
       actualModel === 'DeepSeek'
-        ? this.configService.get<string>('AI_DEEPSEEK_API_KEY') ||
-          this.configService.get<string>('DEEPSEEK_API_KEY')
+        ? ds.key
         : this.configService.get<string>('KATCODER_API_KEY');
-
     const baseUrl =
       actualModel === 'DeepSeek'
-        ? this.configService.get<string>('AI_DEEPSEEK_BASE_URL') ||
-          this.configService.get<string>('DEEPSEEK_BASE_URL')
+        ? ds.baseUrl
         : this.configService.get<string>('KATCODER_BASE_URL');
+    const modelId =
+      actualModel === 'DeepSeek'
+        ? ds.model
+        : this.configService.get<string>('KATCODER_MODEL') ||
+          'katcoder-math-v1';
 
     if (!apiKey || !baseUrl) {
       // 未配置大模型密钥时返回 503（而非 500），前端据此提示用户改用智能体模式，
@@ -93,18 +103,6 @@ export class AiSolverService {
         `AI 模型（${actualModel}）未配置：请在后端 .env 中设置 ${envKey}，或改用「智能体模式」（无需 API Key）`,
       );
     }
-
-    // 模型名：优先环境变量，其次按服务商给默认值。
-    // 注意：不同服务商的模型命名不同——DeepSeek 官方用 deepseek-chat/deepseek-reasoner，
-    // SiliconFlow 网关用 deepseek-ai/DeepSeek-V3。默认走 SiliconFlow 命名以匹配默认 baseUrl，
-    // 若 baseUrl 指向官方端点，务必同步设置 DEEPSEEK_MODEL=deepseek-chat（否则 404）。
-    const modelId =
-      actualModel === 'DeepSeek'
-        ? this.configService.get<string>('AI_DEEPSEEK_MODEL') ||
-          this.configService.get<string>('DEEPSEEK_MODEL') ||
-          'deepseek-ai/DeepSeek-V3'
-        : this.configService.get<string>('KATCODER_MODEL') ||
-          'katcoder-math-v1';
 
     const requestUrl = `${baseUrl}/chat/completions`;
 

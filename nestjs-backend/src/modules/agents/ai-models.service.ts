@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { pickEnvPair } from '../../common/utils/env-pair.util';
 import {
   AIModelProvider,
   AIModelConfig,
@@ -28,20 +29,17 @@ export class AIModelsService {
     // DeepSeek 官方 API（api.deepseek.com）。model 名由环境变量覆盖，
     // 默认 deepseek-chat（官方通用对话），可改 deepseek-reasoner（推理）或
     // SiliconFlow 命名（deepseek-ai/DeepSeek-V3）以适配第三方网关。
+    // 使用「成对选择」：只要 AI_DEEPSEEK_* 新组任一键被设置，就整组用新组；
+    // 否则整组回退旧组 DEEPSEEK_*，绝不跨组混合（防官方 Key 发往第三方网关）。
+    const ds = pickEnvPair(this.configService, 'AI_DEEPSEEK_', 'DEEPSEEK_', {
+      baseUrl: 'https://api.deepseek.com/v1',
+      model: 'deepseek-chat',
+    });
     const deepSeekConfig: AIModelConfig = {
       provider: AIModelProvider.DEEPSEEK,
-      apiKey:
-        this.configService.get<string>('AI_DEEPSEEK_API_KEY') ||
-        this.configService.get<string>('DEEPSEEK_API_KEY') ||
-        '',
-      baseUrl:
-        this.configService.get<string>('AI_DEEPSEEK_BASE_URL') ||
-        this.configService.get<string>('DEEPSEEK_BASE_URL') ||
-        'https://api.deepseek.com/v1',
-      model:
-        this.configService.get<string>('AI_DEEPSEEK_MODEL') ||
-        this.configService.get<string>('DEEPSEEK_MODEL') ||
-        'deepseek-chat',
+      apiKey: ds.key,
+      baseUrl: ds.baseUrl,
+      model: ds.model,
       timeout: 60000,
       maxRetries: 2,
     };

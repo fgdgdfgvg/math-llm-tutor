@@ -464,7 +464,11 @@ Layer 4: 方法层 (Method)
 ### 13.2 LLM API 免费方案（国内可用，已实测验证）
 
 海外服务（Groq/Together/Mistral）注册困难，已切换为国内直连方案。
-**2026-05-09 实测结果**：SiliconFlow 全部 7 个槽位连通，高等数学解题正确。
+**2026-05-09 实测结果**：SiliconFlow 全部 7 个槽位曾连通（历史实测，见下注），高等数学解题正确。
+> ⚠️ **代码当前默认（与实际措辞修正）**：7 个槽位中**只有 4 个**默认 baseUrl 指向
+> SiliconFlow——`ModelScope`、`Qwen`、`GLM`、`HuggingFace`；`DeepSeek` 默认指向官方
+> `api.deepseek.com/v1`，`GPT`/`KatCoder` 无默认 baseUrl（须显式配置）。下表为历史实测记录，
+> 并非当前代码默认映射，请勿据此声称"7 个槽位统一走 SiliconFlow"。
 
 | 系统槽位 | 实际调用 | 模型 | 实测状态 | 数学能力 |
 |----------|----------|------|----------|----------|
@@ -482,7 +486,7 @@ Layer 4: 方法层 (Method)
 - `meta-llama/Llama-3.1-8B` → 400（不可用）
 - `Pro/*` → 400（付费模型）
 
-**只需注册 1 个服务**：硅基流动（siliconflow.cn），一个 key 填满全部 7 个槽位。
+**只需注册 1 个服务**：硅基流动（siliconflow.cn），一个 key 即可填满默认走 SiliconFlow 的 4 个槽位（ModelScope/Qwen/GLM/HuggingFace）；DeepSeek 走官方端点、GPT/KatCoder 需另配 baseUrl。
 
 ### 13.3 诚实的功能清单
 
