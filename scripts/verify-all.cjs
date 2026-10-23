@@ -4,7 +4,7 @@
  * 用法：node scripts/verify-all.cjs          （或 npm run verify）
  * 内容：
  *   1. 后端类型检查   tsc -p tsconfig.build.json --noEmit
- *   2. 后端单元测试   jest（20 套件）
+ *   2. 后端单元测试   jest（21 套件）
  *   3. 前端类型检查   vue-tsc --noEmit
  *   4. 密钥扫描       scripts/secret-scan.cjs --scan
  *   5. 日志卫生扫描   scripts/log-hygiene-scan.cjs

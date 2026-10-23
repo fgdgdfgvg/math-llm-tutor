@@ -278,9 +278,9 @@ export function collectPrerequisites(edges: GraphEdge[], targetId: string): stri
 }
 
 export const AREA_MAP: Record<string, { label: string; color: string; nodeIds: string[] }> = {
-  limit: { label: '极限', color: '#6366f1', nodeIds: ['limit', 'limit_definition', 'limit_properties', 'limit_computation'] },
-  derivative: { label: '导数', color: '#f97316', nodeIds: ['derivative', 'derivative_definition', 'derivative_rules'] },
-  integral: { label: '积分', color: '#22c55e', nodeIds: ['integral', 'integral_definition', 'integral_techniques', 'substitution_method', 'integration_by_parts'] },
-  series: { label: '级数', color: '#a855f7', nodeIds: ['series', 'series_convergence', 'power_series', 'taylor_series'] },
-  differential: { label: '微分方程', color: '#ef4444', nodeIds: ['differential_equation', 'separation_method'] },
+  limit: { label: '极限', color: '#6366f1', nodeIds: ['limit_definition', 'limit_properties', 'limit_computation', 'infinity_limits', 'continuity', 'discontinuity', 'lhopital_rule'] },
+  derivative: { label: '导数', color: '#f97316', nodeIds: ['derivative_definition', 'derivative_rules', 'chain_rule', 'product_rule', 'quotient_rule', 'implicit_differentiation', 'higher_derivatives', 'mean_value_theorem', 'extreme_values', 'concavity'] },
+  integral: { label: '积分', color: '#22c55e', nodeIds: ['integral_definition', 'indefinite_integral', 'definite_integral', 'fundamental_theorem', 'substitution_method', 'integration_by_parts', 'partial_fractions', 'improper_integrals'] },
+  series: { label: '级数', color: '#a855f7', nodeIds: ['taylor_series', 'power_series', 'convergence_tests'] },
+  differential: { label: '微分方程', color: '#ef4444', nodeIds: ['differential_equations', 'separable_equations', 'linear_equations'] },
 }

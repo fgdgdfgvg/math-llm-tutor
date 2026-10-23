@@ -2,24 +2,17 @@
 
 ## 一键启动
 
-### 方式一：根目录脚本
-双击运行根目录下的脚本：
+所有启动/停止脚本统一位于 `scripts/` 目录（根目录下没有脚本）：
 
-```
-start-all.bat    # 一键启动所有服务
-stop-all.bat     # 一键停止所有服务
-```
-
-### 方式二：scripts 目录脚本
 ```
 scripts/
-├── start-all.bat      # 启动所有服务
-├── start-docker.bat   # 仅启动 Docker (MongoDB + Neo4j)
-├── start-backend.bat  # 仅启动后端
-├── start-frontend.bat # 仅启动前端
-├── start-sympy.bat    # 仅启动 SymPy 服务
-├── stop-all.bat       # 停止所有服务
-└── check-status.bat   # 检查服务状态
+├── start-all.bat             # 一键启动所有服务
+├── start-docker.bat          # 启动基础依赖（MongoDB + Redis；Neo4j 可选）
+├── start-backend.bat         # 仅启动后端
+├── start-frontend.bat        # 仅启动前端
+├── start-sympy.bat           # 仅启动 SymPy 服务
+├── start-formula-renderer.bat # 仅启动公式渲染服务
+└── stop-all.bat              # 停止所有服务
 ```
 
 ## 一键自检（改完代码先跑这个）

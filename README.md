@@ -127,10 +127,14 @@ flowchart TB
 cp .env.example .env               # 根级（compose 用）
 cp nestjs-backend/.env.example nestjs-backend/.env   # 后端进程用
 
-# 2. 启动全部服务
+# 2.【必填】把 .env 里的 JWT_SECRET 改成 ≥32 字符的强随机值。
+#    照抄 .env.example（JWT_SECRET 留空）会回落到 compose 的弱密钥默认值，
+#    后端以生产模式启动时直接拒绝启动，陷入 crash loop（restart: unless-stopped）。
+
+# 3. 启动全部服务
 docker compose up -d
 
-# 3. 确认健康
+# 4. 确认健康
 docker compose ps                  # 全部 healthy
 curl http://localhost/health/ready # 200 = 就绪
 ```
@@ -291,14 +295,33 @@ node scripts/ablation-eval.cjs
 
 ## 十一、文档索引
 
+**评估与门禁**
+
 - [`docs/可部署性评估报告.md`](./docs/可部署性评估报告.md) — 7 维度评估结论与依据
 - [`docs/部署就绪清单.md`](./docs/部署就绪清单.md) — 组件 / 端口 / 环境变量 / 门禁 / 安全基线
-- [`docs/目标对照与缺陷清单.md`](./docs/目标对照与缺陷清单.md) — 目标 vs 实现分级缺陷清单
+- [`docs/deployment-check-report.md`](./docs/deployment-check-report.md) — 功能部署与 KatCoder 故障排查报告
+- [`docs/performance-report.md`](./docs/performance-report.md) — 系统性能测试报告
+
+**代码审阅与改进**
+
 - [`docs/系统代码审阅与改进方案.md`](./docs/系统代码审阅与改进方案.md) — 系统性短板与改造方向
+- [`docs/目标对照与缺陷清单.md`](./docs/目标对照与缺陷清单.md) — 目标 vs 实现分级缺陷清单
+- [`docs/改进实施进度.md`](./docs/改进实施进度.md) — 审阅方案的落地进度
+- [`docs/方案复盘与第二轮实施报告.md`](./docs/方案复盘与第二轮实施报告.md) — 第二轮改造复盘
+- [`docs/实现自检报告.md`](./docs/实现自检报告.md) — 20 项自检发现（第二轮改造后）
+- [`docs/optimization-plan.md`](./docs/optimization-plan.md) — 系统整体优化方案
+
+**设计选型与专题**
+
 - [`docs/Neo4j取舍论证.md`](./docs/Neo4j取舍论证.md) — 知识图谱选型理由、实测现状与取舍建议
-- [`docs/改进实施进度.md`](./docs/改进实施进度.md) — 改进实施进度
-- [`docs/方案复盘与第二轮实施报告.md`](./docs/方案复盘与第二轮实施报告.md) — 第二轮复盘
-- [`docs/实现自检报告.md`](./docs/实现自检报告.md) — 20 项自检发现
+- [`docs/sympy-examples.md`](./docs/sympy-examples.md) — SymPy 求解示例集合
+
+**故障排查与修复记录**
+
+- [`docs/troubleshooting-report.md`](./docs/troubleshooting-report.md) — 故障排查报告
+- [`docs/system-function-fix-report.md`](./docs/system-function-fix-report.md) — 系统功能修复报告（英文版）
+- [`docs/user-feedback-fix-report.md`](./docs/user-feedback-fix-report.md) — 用户反馈问题修复报告
+- [`docs/user-requirements-fix-report.md`](./docs/user-requirements-fix-report.md) — 用户需求修复报告
 
 ---
 
